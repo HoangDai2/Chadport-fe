@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import "./style/app.css";
@@ -13,6 +12,7 @@ import Category from "./components/Category";
 import ProductSale from "./components/ProductSale";
 import Admin from "./admin/Admin";
 import ListUser from "./admin/pages/ListUser";
+import BetsSale from "./pages/BetsSale";
 function App() {
   return (
     <>
@@ -25,6 +25,7 @@ function App() {
               <Banner />
               <div className="content" style={{ padding: "70px" }}>
                 <Category />
+                <BetsSale />
                 <ProductSale />
               </div>
               <FooterClient />
