@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import '../style/Home.css'; // Assuming you add styles here or inline
+// import '../style/Home.css'; // Assuming you add styles here or inline
 
 // Define the shape of the product data
 interface Product {
@@ -29,7 +29,7 @@ const Home = () => {
           <div className="block-title">
             <h2>Best Seller</h2>
           </div>
-          <div className="products-container">
+          <div className="products-grid">
             {/* Iterate through products */}
             {products.map((product) => (
               <div className="product-card" key={product.id}>

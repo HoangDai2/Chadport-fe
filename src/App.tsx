@@ -3,6 +3,7 @@ import "./App.css";
 import "./style/app.css";
 import "./style/responsive.css";
 import "./style/toast.css";
+import "./style/Home.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import HeaderClient from "./components/HeaderClient";
