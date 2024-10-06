@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 // import '../style/Home.css'; // Assuming you add styles here or inline
 
 // Define the shape of the product data
-interface Product {
+export interface Product {
   id: number;
   title: string;
   image: string;
   price: number;
+  description: string;
 }
 
 const Home = () => {
@@ -15,12 +17,18 @@ const Home = () => {
 
   useEffect(() => {
     // Fetch products from the API
-    fetch('https://fakestoreapi.com/products')
+    fetch("https://fakestoreapi.com/products")
       .then((res) => res.json())
-      .then((data: Product[]) => setProducts(data))  // Ensure that the response is cast to Product[]
-      .catch((error) => console.error('Error fetching data:', error));
+      .then((data: Product[]) => setProducts(data)) // Ensure that the response is cast to Product[]
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
-
+  const navigate = useNavigate();
+  const handleAddToCart = () => {
+    navigate("/shopcart");
+  };
+  const handleAddWishlist = () => {
+    navigate("/wishlist");
+  };
   return (
     <section className="section section-padding">
       <div className="section-container">
@@ -42,8 +50,18 @@ const Home = () => {
                   <h3 className="product-title">{product.title}</h3>
                   <span className="product-price">${product.price}</span>
                   <div className="product-buttons">
-                    <button className="btn-wishlist">Wishlist</button>
-                    <button className="btn-add-to-cart">Add to Cart</button>
+                    <button
+                      onClick={() => handleAddWishlist()}
+                      className="btn-wishlist"
+                    >
+                      Wishlist
+                    </button>
+                    <button
+                      onClick={() => handleAddToCart()}
+                      className="btn-add-to-cart"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               </div>

@@ -3,7 +3,7 @@ import "./App.css";
 import "./style/app.css";
 import "./style/responsive.css";
 import "./style/toast.css";
-import "./style/Home.css"
+import "./style/Home.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HeaderClient from "./components/HeaderClient";
 import FooterClient from "./components/FooterClient";
@@ -15,14 +15,17 @@ import ListUser from "./admin/pages/ListUser";
 import Home from "./pages/Home";
 import ShopList from "./pages/ShopList";
 import "./libs/feather-font/css/iconfont.css";
-import './libs/icomoon-font/css/icomoon.css';
+import "./libs/icomoon-font/css/icomoon.css";
 // import './libs/font-awesome/css/font-awesome.css';
-import './libs/wpbingofont/css/wpbingofont.css';
-import './libs/elegant-icons/css/elegant.css';
-import './libs/slick/css/slick.css';
-import './libs/slick/css/slick-theme.css';
-import './libs/mmenu/css/mmenu.min.css';
+import "./libs/wpbingofont/css/wpbingofont.css";
+import "./libs/elegant-icons/css/elegant.css";
+import "./libs/slick/css/slick.css";
+import "./libs/slick/css/slick-theme.css";
+import "./libs/mmenu/css/mmenu.min.css";
 import LoginRegister from "./pages/Login";
+import ShopDetails from "./pages/ShopDetails";
+import Wishlist from "./pages/Wishlist";
+import ShopCart from "./pages/ShopCart";
 function App() {
   return (
     <>
@@ -62,6 +65,40 @@ function App() {
               <div className="content" style={{ padding: "70px" }}>
                 <LoginRegister />
               </div>
+              <FooterClient />
+            </>
+          }
+        />
+        <Route
+          path="shop-details/:id"
+          element={
+            <>
+              <HeaderClient />
+              <div className="content" style={{ padding: "70px" }}>
+                <ShopDetails />
+              </div>
+              <FooterClient />
+            </>
+          }
+        />
+        <Route
+          path="wishlist"
+          element={
+            <>
+              <HeaderClient />
+              <div className="content" style={{ padding: "70px" }}>
+                <Wishlist />
+              </div>
+              <FooterClient />
+            </>
+          }
+        />
+        <Route
+          path="shopcart"
+          element={
+            <>
+              <HeaderClient />
+              <ShopCart />
               <FooterClient />
             </>
           }

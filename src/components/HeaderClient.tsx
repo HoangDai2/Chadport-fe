@@ -13,7 +13,7 @@ const Headerclient = (props: Props) => {
               <div className="row">
                 <div className="col-xl-3 col-lg-2 col-md-12 col-sm-12 header-left mt-[20px]">
                   <div className="site-logo">
-                    <a href="index.html">
+                    <a href="/">
                       <img
                         width="400"
                         height="79"
