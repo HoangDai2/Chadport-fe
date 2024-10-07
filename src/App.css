@@ -242,3 +242,160 @@ main {
   color: #333;
   height: 1200px;
 }
+/* ================ */
+/* Ẩn thẻ div ban đầu */
+.hidden-div {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Khi hiện ra */
+.show-div {
+  display: block;
+  opacity: 1;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #333;
+}
+
+h2 {
+  color: #555;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+p {
+  color: #555;
+}
+
+.container {
+  position: relative;
+}
+
+/* Nút toggle */
+.toggle-button {
+  position: fixed;
+  bottom: 25px;
+  right: 46px;
+  padding: 10px 20px;
+  background-color: #909096;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Khi ẩn, nút toggle cũng được ẩn đi */
+.toggle-button.hidden {
+  display: none;
+}
+
+/* Danh sách toggle */
+.side-panel {
+  position: fixed;
+  top: 0;
+  left: -300px; /* Ẩn bên ngoài màn hình */
+  width: 300px;
+  height: 100%;
+  background-color: #f4f4f4;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  transition: left 0.3s ease;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Khi mở danh sách */
+.side-panel.show {
+  left: 0;
+}
+
+/* Cấu trúc nội dung của danh sách */
+.out {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 12px; /* Đặt vị trí cố định khi cuộn */
+  background-color: #f4f4f4; /* Màu nền để dễ nhìn thấy */
+  z-index: 10; /* Đảm bảo nó nằm trên các phần khác */
+  padding: 10px; /* Thêm khoảng đệm */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Tạo hiệu ứng bóng */
+}
+
+.out span {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#closeIcon {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+ul {
+  padding-left: 0;
+  margin-top: 45px;
+}
+
+li {
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+li a {
+  text-decoration: none;
+  color: gray;
+  font-size: 16px;
+}
+
+li a:hover {
+  color: #007bff;
+}
+
+li a.active {
+  color: #007bff;
+  font-weight: bold;
+  border-bottom: 2px solid #007bff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .side-panel {
+    width: 100%;
+    left: -100%;
+  }
+
+  .side-panel.show {
+    left: 0;
+  }
+
+  .toggle-button {
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 769px) {
+  .side-panel {
+    width: 300px;
+  }
+}
+.side-panel.show {
+  left: 0;
+  width: 35%;
+}

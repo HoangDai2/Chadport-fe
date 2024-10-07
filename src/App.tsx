@@ -32,6 +32,8 @@ import LoginRegister from "./pages/Login";
 import ShopDetails from "./pages/ShopDetails";
 import Wishlist from "./pages/Wishlist";
 import ShopCart from "./pages/ShopCart";
+import CartList from "./function/CartList";
+import "./js/CartList.js";
 function App() {
   const navigate = useNavigate();
   const [product, setProducts] = useState<TProduct[]>([]);
@@ -68,6 +70,7 @@ function App() {
                 <BetsSale />
                 <Home />
                 <ProductSale />
+                <CartList />
               </div>
               <FooterClient />
             </>
