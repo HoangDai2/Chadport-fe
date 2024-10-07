@@ -6,7 +6,16 @@ type Props = {};
 const Headerclient = (props: Props) => {
   return (
     <>
-      <div className="header-desktop p-4 border-b">
+      <div
+        className="header-desktop p-4 border-b"
+        style={{
+          position: "fixed",
+          top: "0",
+          width: "100%",
+          zIndex: "999",
+          backgroundColor: "white",
+        }}
+      >
         <div className="header-wrapper">
           <div className="section-padding">
             <div className="section-container p-l-r">
@@ -29,7 +38,7 @@ const Headerclient = (props: Props) => {
                     <nav id="main-navigation">
                       <ul id="menu-main-menu" className="menu">
                         <li className="level-0 menu-item">
-                          <a href="index.html" className="menu-item-text">
+                          <a href="/" className="menu-item-text">
                             Home
                           </a>
                         </li>

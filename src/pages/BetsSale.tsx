@@ -1,7 +1,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Navigation } from "swiper";
-
+import imgSP from "../img/AIR+JORDAN+1+LOW+SE+1.jpg";
 import "swiper/css";
 import "swiper/css/navigation";
 
@@ -14,9 +14,9 @@ const BetsSale = (props: Props) => {
         <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
           Best Saler
         </h2>
-        <div className="relative">
+        <div className="relative mt-[30px]">
           <Swiper
-            spaceBetween={20}
+            spaceBetween={50}
             slidesPerView={1}
             navigation={true}
             breakpoints={{
@@ -36,9 +36,9 @@ const BetsSale = (props: Props) => {
             {[...Array(6)].map((_, index) => (
               <SwiperSlide key={index}>
                 <li className="min-w-[300px]">
-                  <a href="#" className="group block overflow-hidden">
+                  <a href="/detail" className="group block overflow-hidden">
                     <img
-                      src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+                      src={imgSP}
                       alt=""
                       className="h-[350px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[450px]"
                     />

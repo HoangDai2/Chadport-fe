@@ -1,0 +1,80 @@
+{
+  "products": [
+    {
+      "pro_id": 1,
+      "cat_id": 101,
+      "name": "Product A",
+      "status": "available",
+      "col_id": 1,
+      "size_id": 2,
+      "brand_id": 1,
+      "quantity": 100,
+      "image_product": "https://example.com/images/productA.jpg",
+      "price": 200,
+      "price_sale": 150,
+      "type": "sneakers",
+      "date_create": "2024-09-01",
+      "date_update": "2024-09-05"
+    },
+    {
+      "pro_id": 2,
+      "cat_id": 102,
+      "name": "Product B",
+      "status": "out of stock",
+      "col_id": 2,
+      "size_id": 3,
+      "brand_id": 2,
+      "quantity": 0,
+      "image_product": "https://example.com/images/productB.jpg",
+      "price": 300,
+      "price_sale": 250,
+      "type": "boots",
+      "date_create": "2024-08-01"
+    },
+    {
+      "pro_id": 3,
+      "cat_id": 102,
+      "name": "Product B",
+      "status": "out of stock",
+      "col_id": 2,
+      "size_id": 3,
+      "brand_id": 2,
+      "quantity": 0,
+      "image_product": "https://example.com/images/productB.jpg",
+      "price": 300,
+      "price_sale": 250,
+      "type": "boots",
+      "date_create": "2024-08-01"
+    },
+    {
+      "pro_id": 4,
+      "cat_id": 102,
+      "name": "Product B",
+      "status": "out of stock",
+      "col_id": 2,
+      "size_id": 3,
+      "brand_id": 2,
+      "quantity": 0,
+      "image_product": "https://example.com/images/productB.jpg",
+      "price": 300,
+      "price_sale": 250,
+      "type": "boots",
+      "date_create": "2024-08-01"
+    },
+    {
+      "pro_id": 5,
+      "cat_id": 102,
+      "name": "Product B",
+      "status": "out of stock",
+      "col_id": 2,
+      "size_id": 3,
+      "brand_id": 2,
+      "quantity": 0,
+      "image_product": "https://example.com/images/productB.jpg",
+      "price": 300,
+      "price_sale": 250,
+      "type": "boots",
+      "date_create": "2024-08-01"
+    }
+  ]
+}
