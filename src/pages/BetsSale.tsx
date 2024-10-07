@@ -1,6 +1,5 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Navigation } from "swiper";
 import imgSP from "../img/AIR+JORDAN+1+LOW+SE+1.jpg";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -54,7 +53,7 @@ const BetsSale = (props: Props) => {
                       </p>
                     </div>
                   </a>
-                  <div className="btn-add-to-cart">
+                  <div className="btn-add-to-carts">
                     <div className="Add to cart border border-[#d8d6d6] p-2 text-[#979292] mt-[20px]">
                       <a href="#" className="button">
                         Add to cart
