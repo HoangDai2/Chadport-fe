@@ -237,7 +237,7 @@ const ShopCart = () => {
                           </div>
                           <div className="proceed-to-checkout">
                             <a
-                              href="shop-checkout.html"
+                              href="/checkout"
                               className="checkout-button button"
                             >
                               Proceed to checkout

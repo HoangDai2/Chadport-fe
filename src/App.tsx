@@ -16,7 +16,7 @@ import Category from "./components/Category";
 import ProductSale from "./components/ProductSale";
 import Admin from "./admin/Admin";
 import ListUser from "./admin/pages/ListUser";
-import BetsSale from "./pages/BetsSale";
+import BestSale from "./pages/BestSale";
 import instance from "./Service";
 import Home from "./pages/Home";
 import ShopList from "./pages/ShopList";
@@ -34,6 +34,9 @@ import Wishlist from "./pages/Wishlist";
 import ShopCart from "./pages/ShopCart";
 import CartList from "./function/CartList";
 import About from "./pages/About";
+import Checkout from "./pages/Checkout";
+import BillOrder from "./pages/BillOrder";
+import MyAccountPage from "./pages/MyAccountPage";
 function App() {
   const navigate = useNavigate();
   const [product, setProducts] = useState<TProduct[]>([]);
@@ -67,7 +70,7 @@ function App() {
                 style={{ padding: "70px", marginTop: "120px" }}
               >
                 <Category />
-                <BetsSale />
+                <BestSale />
                 <Home />
                 <ProductSale />
                 <CartList />
@@ -126,6 +129,42 @@ function App() {
           }
         />
         <Route
+          path="checkout"
+          element={
+            <>
+              <HeaderClient />
+              <div className="content" style={{ padding: "70px" }}>
+                <Checkout />
+              </div>
+              <FooterClient />
+            </>
+          }
+        />
+        <Route
+          path="billorder"
+          element={
+            <>
+              <HeaderClient />
+              <div className="content" style={{ padding: "70px" }}>
+                <BillOrder />
+              </div>
+              <FooterClient />
+            </>
+          }
+        />
+        <Route
+          path="myaccount"
+          element={
+            <>
+              <HeaderClient />
+              <div className="content" style={{ padding: "70px" }}>
+                <MyAccountPage />
+              </div>
+              <FooterClient />
+            </>
+          }
+        />
+        <Route
           path="shopcart"
           element={
             <>
@@ -136,7 +175,7 @@ function App() {
           }
         />
         <Route
-          path="/about"
+          path="about"
           element={
             <>
               <HeaderClient />

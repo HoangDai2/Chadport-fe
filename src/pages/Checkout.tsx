@@ -545,7 +545,7 @@ const Checkout = () => {
                               <div className="terms-and-conditions-wrapper">
                                 <div className="privacy-policy-text" />
                               </div>
-                              <button type="submit" className="button alt">Place order</button>
+                              <a href="/billorder"><button type="submit" className="button alt">Place order</button></a>
                             </div>
                           </div>
                         </div>

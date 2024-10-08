@@ -43,7 +43,7 @@ const Headerclient = (props: Props) => {
                           </a>
                         </li>
                         <li className="level-0 menu-item menu-item-has-children current-menu-item">
-                          <a href="shop-grid-left.html">
+                          <a href="/shoplist">
                             <span className="menu-item-text">Shop</span>
                           </a>
                           <ul className="sub-menu " style={{ top: "111px" }}>
@@ -107,7 +107,7 @@ const Headerclient = (props: Props) => {
 
                 <div className="col-xl-3 col-lg-4 col-md-12 col-sm-12 header-right mt-[28px]">
                   <div className="flex items-center space-x-4 gap-[40px]">
-                    <span className="text-lg tracking-wide">LOGIN</span>
+                    <a href="/login"><span className="text-lg tracking-wide">LOGIN</span></a>
                     <button>
                       <i
                         className="fas fa-search text-lg"
@@ -115,23 +115,23 @@ const Headerclient = (props: Props) => {
                       ></i>
                     </button>
                     <div className="relative">
-                      <button>
+                      <a href="/wishlist"><button>
                         <i
                           className="far fa-heart text-lg"
                           style={{ fontSize: "25px" }}
                         ></i>
-                      </button>
+                      </button></a>
                       <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
                         1
                       </span>
                     </div>
                     <div className="relative">
-                      <button>
+                      <a href="/shopcart"><button>
                         <i
                           className="fas fa-shopping-bag text-lg"
                           style={{ fontSize: "25px" }}
                         ></i>
-                      </button>
+                      </button></a>
                       <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
                         2
                       </span>
