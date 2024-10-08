@@ -91,7 +91,7 @@ const Headerclient = (props: Props) => {
                           </a>
                         </li>
                         <li className="level-0 menu-item">
-                          <a href="page-about.html">
+                          <a href="/about">
                             <span className="menu-item-text">About</span>
                           </a>
                         </li>

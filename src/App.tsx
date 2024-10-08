@@ -33,6 +33,7 @@ import ShopDetails from "./pages/ShopDetails";
 import Wishlist from "./pages/Wishlist";
 import ShopCart from "./pages/ShopCart";
 import CartList from "./function/CartList";
+import About from "./pages/About";
 function App() {
   const navigate = useNavigate();
   const [product, setProducts] = useState<TProduct[]>([]);
@@ -134,6 +135,19 @@ function App() {
             </>
           }
         />
+        <Route
+          path="/about"
+          element={
+            <>
+              <HeaderClient />
+              <div className="content" style={{ marginTop: "120px" }}>
+                <About />
+              </div>
+              <FooterClient />
+            </>
+          }
+        />
+
         {/* Router admin */}
         <Route path="/admin" element={<Admin />}>
           <Route index element={<div>Welcome to Admin Dashboard</div>} />

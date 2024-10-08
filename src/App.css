@@ -285,7 +285,7 @@ p {
   bottom: 25px;
   right: 46px;
   padding: 10px 20px;
-  background-color: #909096;
+  background-color: #000000;
   color: white;
   border: none;
   cursor: pointer;
@@ -305,10 +305,10 @@ p {
 .side-panel {
   position: fixed;
   top: 0;
-  left: -300px; /* Ẩn bên ngoài màn hình */
+  left: -300px;
   width: 300px;
   height: 100%;
-  background-color: #f4f4f4;
+  background-color: #ffffff;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   transition: left 0.3s ease;
   z-index: 1000;
@@ -329,11 +329,11 @@ p {
   align-items: center;
   margin-bottom: 20px;
   position: sticky;
-  top: 12px; /* Đặt vị trí cố định khi cuộn */
-  background-color: #f4f4f4; /* Màu nền để dễ nhìn thấy */
-  z-index: 10; /* Đảm bảo nó nằm trên các phần khác */
-  padding: 10px; /* Thêm khoảng đệm */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Tạo hiệu ứng bóng */
+  top: 12px;
+  background-color: #ffffff;
+  z-index: 10;
+  padding: 10px;
+  cursor: pointer;
 }
 
 .out span {
@@ -373,7 +373,7 @@ li a.active {
 }
 
 /* Responsive */
-/* @media (max-width: 768px) {
+@media (max-width: 768px) {
   .side-panel {
     width: 100%;
     left: -100%;
@@ -394,7 +394,7 @@ li a.active {
   .side-panel {
     width: 300px;
   }
-} */
+}
 .side-panel.show {
   left: 0;
   width: 35%;

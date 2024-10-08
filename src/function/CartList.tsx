@@ -64,7 +64,10 @@ const CartList = (props: Props) => {
   return (
     <div className="container">
       <button id="toggleButton" className="toggle-button">
-        ☰
+        <i
+          className="fas fa-shopping-bag text-lg"
+          style={{ fontSize: "25px" }}
+        ></i>
       </button>
 
       <div id="toggleList" className="side-panel">
