@@ -34,3 +34,4 @@ export function initializeMenu() {
     });
   });
 }
+export default initializeMenu;

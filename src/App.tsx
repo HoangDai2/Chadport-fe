@@ -22,7 +22,7 @@ import Home from "./pages/Home";
 import ShopList from "./pages/ShopList";
 import "./libs/feather-font/css/iconfont.css";
 import "./libs/icomoon-font/css/icomoon.css";
-import "./libs/font-awesome/css/font-awesome.css";
+// import "./libs/font-awesome/css/font-awesome.css";
 import "./libs/wpbingofont/css/wpbingofont.css";
 import "./libs/elegant-icons/css/elegant.css";
 import "./libs/slick/css/slick.css";
@@ -33,7 +33,6 @@ import ShopDetails from "./pages/ShopDetails";
 import Wishlist from "./pages/Wishlist";
 import ShopCart from "./pages/ShopCart";
 import CartList from "./function/CartList";
-import "./js/CartList.js";
 function App() {
   const navigate = useNavigate();
   const [product, setProducts] = useState<TProduct[]>([]);

@@ -232,7 +232,8 @@ const ShopList: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      {/* List layout tab can be added here */}
+                      {/* List layout tab can 
+                       added here */}
                     </div>
 
                     <div className="pagination-wrapper clearfix">
