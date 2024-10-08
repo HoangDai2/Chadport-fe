@@ -35,7 +35,7 @@ const Home = () => {
         {/* Block Products */}
         <div className="block block-products">
           <div className="block-title">
-            <h2>PRODUCTS</h2><br></br>
+            <h2>PRODUCTS</h2>
           </div>
           <div className="products-grid">
             {/* Iterate through products */}
