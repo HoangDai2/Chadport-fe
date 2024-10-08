@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
 // Định nghĩa cấu trúc của sản phẩm khớp với db.json
 export interface Product {
+  title: ReactNode;
   pro_id: number;
   name: string;
   image_product: string;
@@ -67,7 +68,10 @@ const Home = () => {
                 <div className="relative bg-white p-6">
                   <p className="text-gray-700">
                     ${product.price_sale} {/* Hiển thị giá sale */}
-                    <span className="text-gray-400 line-through">${product.price}</span> {/* Giá gốc */}
+                    <span className="text-gray-400 line-through">
+                      ${product.price}
+                    </span>{" "}
+                    {/* Giá gốc */}
                   </p>
 
                   <h3 className="mt-1.5 text-lg font-medium text-gray-900 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis">

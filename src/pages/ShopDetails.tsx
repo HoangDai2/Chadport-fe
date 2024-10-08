@@ -1,11 +1,23 @@
 import { useEffect, useState } from "react";
-import { Product } from "./Home";
 import { useParams } from "react-router-dom";
 
 const ShopDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+
+  interface Product {
+    id: number;
+    title: string;
+    price: number;
+    description: string;
+    category: string;
+    image: string;
+    rating: {
+      rate: number;
+      count: number;
+    };
+  }
 
   useEffect(() => {
     fetch(`https://fakestoreapi.com/products/${id}`)
