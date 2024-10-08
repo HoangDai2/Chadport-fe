@@ -38,24 +38,7 @@ import Checkout from "./pages/Checkout";
 import BillOrder from "./pages/BillOrder";
 import MyAccountPage from "./pages/MyAccountPage";
 function App() {
-  const navigate = useNavigate();
-  const [product, setProducts] = useState<TProduct[]>([]);
-
-  // hàm lấy dữ liệu để show ra màn hình
-  const Getdata = async () => {
-    try {
-      const { data } = await instance.get("/products");
-      console.log(data);
-
-      setProducts(data);
-    } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu sản phẩm:", error);
-    }
-  };
-  useEffect(() => {
-    Getdata();
-  }, []);
-
+  
   return (
     <>
       <Routes>

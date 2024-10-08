@@ -1,47 +1,40 @@
 import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import '../style/Home.css'; // Assuming you add styles here or inline
 
-// Define the shape of the product data
+// Định nghĩa cấu trúc của sản phẩm khớp với db.json
 export interface Product {
-  id: number;
-  title: string;
-  image: string;
+  pro_id: number;
+  name: string;
+  image_product: string;
   price: number;
-  description: string;
+  price_sale: number;
 }
 
 const Home = () => {
-  // Set the type of products as an array of Product
+  // Đặt state để lưu trữ danh sách sản phẩm
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    // Fetch products from the API
-    fetch("https://fakestoreapi.com/products")
+    // Fetch sản phẩm từ file db.json (hoặc từ API mock json-server)
+    fetch("http://localhost:3000/products")
       .then((res) => res.json())
-      .then((data: Product[]) => setProducts(data)) // Ensure that the response is cast to Product[]
+      .then((data: Product[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
-  // const navigate = useNavigate();
-  // const handleAddToCart = () => {
-  //   navigate("/shopcart");
-  // };
-  // const handleAddWishlist = () => {
-  //   navigate("/wishlist");
-  // };
+
   return (
     <section className="section section-padding">
       <div className="section-container">
-        {/* Block Products */}
+        {/* Block sản phẩm */}
         <div className="block block-products">
           <div className="block-title">
             <h2>PRODUCTS</h2>
           </div>
           <div className="products-grid">
-            {/* Iterate through products */}
+            {/* Lặp qua danh sách sản phẩm */}
             {products.map((product) => (
               <a
-                href={`shop-details/${product.id}`}
+                key={product.pro_id} // Dùng pro_id làm key
+                href={`shop-details/${product.pro_id}`}
                 className="group relative block overflow-hidden"
                 style={{ border: "1px solid #e1dbdb" }}
               >
@@ -65,20 +58,20 @@ const Home = () => {
 
                 <div className="h-64 w-full overflow-hidden sm:h-72">
                   <img
-                    src={product.image}
-                    alt=""
+                    src={product.image_product} // Hiển thị ảnh từ trường image_product
+                    alt={product.name}
                     className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
                   />
                 </div>
 
                 <div className="relative bg-white p-6">
                   <p className="text-gray-700">
-                    {product.price}
-                    <span className="text-gray-400 line-through">$80</span>
+                    ${product.price_sale} {/* Hiển thị giá sale */}
+                    <span className="text-gray-400 line-through">${product.price}</span> {/* Giá gốc */}
                   </p>
 
                   <h3 className="mt-1.5 text-lg font-medium text-gray-900 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis">
-                    {product.title}
+                    {product.name} {/* Hiển thị tên sản phẩm */}
                   </h3>
                   <form className="mt-4 flex gap-4">
                     <button className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105">
@@ -94,32 +87,6 @@ const Home = () => {
                   </form>
                 </div>
               </a>
-
-              // <div className="product-card" key={product.id}>
-              //   <div className="product-image">
-              //     <a href={`shop-details/${product.id}`}>
-              //       <img src={product.image} alt={product.title} />
-              //     </a>
-              //   </div>
-              //   <div className="product-info">
-              //     <h3 className="product-title">{product.title}</h3>
-              //     <span className="product-price">${product.price}</span>
-              //     <div className="product-buttons">
-              //       <button
-              //         onClick={() => handleAddWishlist()}
-              //         className="btn-wishlist"
-              //       >
-              //         Wishlist
-              //       </button>
-              //       <button
-              //         onClick={() => handleAddToCart()}
-              //         className="btn-add-to-cart"
-              //       >
-              //         Add to Cart
-              //       </button>
-              //     </div>
-              //   </div>
-              // </div>
             ))}
           </div>
         </div>
