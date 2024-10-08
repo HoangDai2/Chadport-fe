@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 
 const ShopCart = () => {
+  const [quantity, setQuantity] = useState(1);
+
+  const handleUp = () => {
+    if (quantity < 10) {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const handleDown = () => {
+    if (quantity > 0) {
+      setQuantity(quantity - 1);
+    }
+  };
   return (
     <>
       <div id="site-main" className="site-main">
@@ -61,7 +74,11 @@ const ShopCart = () => {
                                   </td>
                                   <td className="product-quantity">
                                     <div className="quantity">
-                                      <button type="button" className="minus">
+                                      <button
+                                        type="button"
+                                        className="minus"
+                                        onClick={handleDown}
+                                      >
                                         -
                                       </button>
                                       <input
@@ -71,14 +88,28 @@ const ShopCart = () => {
                                         min={0}
                                         max={10}
                                         name="quantity"
-                                        defaultValue={2}
+                                        value={quantity}
+                                        onChange={(e) =>
+                                          setQuantity(
+                                            Math.min(
+                                              10,
+                                              Math.max(
+                                                0,
+                                                parseInt(e.target.value)
+                                              )
+                                            )
+                                          )
+                                        }
                                         title="Qty"
                                         size={4}
-                                        placeholder="1"
                                         inputMode="numeric"
                                         autoComplete="off"
                                       />
-                                      <button type="button" className="plus">
+                                      <button
+                                        type="button"
+                                        className="plus"
+                                        onClick={handleUp}
+                                      >
                                         +
                                       </button>
                                     </div>
@@ -114,7 +145,11 @@ const ShopCart = () => {
                                   </td>
                                   <td className="product-quantity">
                                     <div className="quantity">
-                                      <button type="button" className="minus">
+                                      <button
+                                        type="button"
+                                        className="minus"
+                                        onClick={handleDown}
+                                      >
                                         -
                                       </button>
                                       <input
@@ -124,14 +159,28 @@ const ShopCart = () => {
                                         min={0}
                                         max={10}
                                         name="quantity"
-                                        defaultValue={1}
+                                        value={quantity}
+                                        onChange={(e) =>
+                                          setQuantity(
+                                            Math.min(
+                                              10,
+                                              Math.max(
+                                                0,
+                                                parseInt(e.target.value)
+                                              )
+                                            )
+                                          )
+                                        }
                                         title="Qty"
                                         size={4}
-                                        placeholder={""}
                                         inputMode="numeric"
                                         autoComplete="off"
                                       />
-                                      <button type="button" className="plus">
+                                      <button
+                                        type="button"
+                                        className="plus"
+                                        onClick={handleUp}
+                                      >
                                         +
                                       </button>
                                     </div>
