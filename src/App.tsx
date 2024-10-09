@@ -40,8 +40,8 @@ import About from "./pages/About";
 import Checkout from "./pages/Checkout";
 import BillOrder from "./pages/BillOrder";
 import MyAccountPage from "./pages/MyAccountPage";
+import DetailProduct from "./pages/DetailProduct";
 function App() {
-  
   return (
     <>
       <Routes>
@@ -167,6 +167,18 @@ function App() {
               <HeaderClient />
               <div className="content" style={{ marginTop: "120px" }}>
                 <About />
+              </div>
+              <FooterClient />
+            </>
+          }
+        />
+        <Route
+          path="detailproduct/:id"
+          element={
+            <>
+              <HeaderClient />
+              <div className="content" style={{ marginTop: "120px" }}>
+                <DetailProduct />
               </div>
               <FooterClient />
             </>

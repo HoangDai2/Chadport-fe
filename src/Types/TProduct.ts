@@ -1,11 +1,13 @@
 type TProduct = {
   pro_id: number; // ID sản phẩm
   cat_id: number; // ID danh mục
+  title: string; // Tiêu đề sp
   name: string; // Tên sản phẩm
   status: string; // Trạng thái (e.g. "out of stock")
   col_id: number; // ID màu sắc
   size_id: number; // ID kích cỡ
   brand_id: number; // ID thương hiệu
+  description: string; //Mô tả
   quantity: number; // Số lượng sản phẩm trong kho
   image_product: string; // URL hình ảnh sản phẩm
   price: number; // Giá gốc

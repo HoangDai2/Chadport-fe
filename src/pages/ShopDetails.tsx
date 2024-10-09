@@ -1,26 +1,27 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import TProduct from "../Types/TProduct";
 
 const ShopDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [product, setProduct] = useState<TProduct | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<TProduct[]>([]);
 
-  interface Product {
-    id: number;
-    title: string;
-    price: number;
-    description: string;
-    category: string;
-    image: string;
-    rating: {
-      rate: number;
-      count: number;
-    };
-  }
+  // interface Product {
+  //   id: number;
+  //   title: string;
+  //   price: number;
+  //   description: string;
+  //   category: string;
+  //   image: string;
+  //   rating: {
+  //     rate: number;
+  //     count: number;
+  //   };
+  // }
 
   useEffect(() => {
-    fetch(`https://fakestoreapi.com/products/${id}`)
+    fetch(`http://localhost:3000/products/${id}`)
       .then((res) => res.json())
       .then((data) => setProduct(data))
       .catch((error) =>
@@ -29,7 +30,7 @@ const ShopDetails = () => {
   }, [id]);
   // Fetch danh sách sản phẩm liên quan
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
+    fetch("http://localhost:3000/products")
       .then((res) => res.json())
       .then((data) => setRelatedProducts(data))
       // .then(() => console.log(relatedProducts))
@@ -100,7 +101,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -109,7 +110,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -118,7 +119,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -127,7 +128,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -136,7 +137,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -147,7 +148,7 @@ const ShopDetails = () => {
                               <div className="scroll-image main-image">
                                 <div className="scroll-image main-image">
                                   <img
-                                    src={product.image}
+                                    src={product.image_product}
                                     width={900}
                                     height={900}
                                     alt={product.title}
@@ -558,7 +559,7 @@ const ShopDetails = () => {
                                 {relatedProducts.map((relatedProduct) => (
                                   <div
                                     className="item-product slick-slider-item"
-                                    key={relatedProduct.id}
+                                    key={relatedProduct.pro_id}
                                   >
                                     <div className="items">
                                       <div className="products-entry clearfix product-wapper">
@@ -568,19 +569,23 @@ const ShopDetails = () => {
                                           </div>
                                           <div className="product-thumb-hover">
                                             <a
-                                              href={`/shop-details/${relatedProduct.id}`}
+                                              href={`/shop-details/${relatedProduct.pro_id}`}
                                             >
                                               <img
                                                 width={600}
                                                 height={600}
-                                                src={relatedProduct.image}
+                                                src={
+                                                  relatedProduct.image_product
+                                                }
                                                 className="post-image"
                                                 alt={relatedProduct.title}
                                               />
                                               <img
                                                 width={600}
                                                 height={600}
-                                                src={relatedProduct.image}
+                                                src={
+                                                  relatedProduct.image_product
+                                                }
                                                 className="hover-image back"
                                                 alt={relatedProduct.title}
                                               />
@@ -633,7 +638,7 @@ const ShopDetails = () => {
                                           <div className="contents text-center">
                                             <h3 className="product-title">
                                               <a
-                                                href={`/shop-details/${relatedProduct.id}`}
+                                                href={`/shop-details/${relatedProduct.pro_id}`}
                                               >
                                                 {relatedProduct.title}
                                               </a>
