@@ -1,24 +1,25 @@
 import React, { ReactNode, useEffect, useState } from "react";
+import TProduct from "../Types/TProduct";
 
 // Định nghĩa cấu trúc của sản phẩm khớp với db.json
-export interface Product {
-  title: ReactNode;
-  pro_id: number;
-  name: string;
-  image_product: string;
-  price: number;
-  price_sale: number;
-}
+// export interface Product {
+//   title: ReactNode;
+//   pro_id: number;
+//   name: string;
+//   image_product: string;
+//   price: number;
+//   price_sale: number;
+// }
 
 const Home = () => {
   // Đặt state để lưu trữ danh sách sản phẩm
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<TProduct[]>([]);
 
   useEffect(() => {
     // Fetch sản phẩm từ file db.json (hoặc từ API mock json-server)
     fetch("http://localhost:3000/products")
       .then((res) => res.json())
-      .then((data: Product[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
+      .then((data: TProduct[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
@@ -34,8 +35,8 @@ const Home = () => {
             {/* Lặp qua danh sách sản phẩm */}
             {products.map((product) => (
               <a
-                key={product.pro_id} // Dùng pro_id làm key
-                href={`shop-details/${product.pro_id}`}
+                key={product.id} // Dùng id làm key
+                href={`shop-details/${product.id}`}
                 className="group relative block overflow-hidden"
                 style={{ border: "1px solid #e1dbdb" }}
               >

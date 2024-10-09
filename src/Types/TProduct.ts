@@ -1,5 +1,5 @@
 type TProduct = {
-  pro_id: number; // ID sản phẩm
+  id: number; // ID sản phẩm
   cat_id: number; // ID danh mục
   title: string; // Tiêu đề sp
   name: string; // Tên sản phẩm
