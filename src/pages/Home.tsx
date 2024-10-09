@@ -18,20 +18,20 @@ const Home = () => {
     // Fetch sản phẩm từ file db.json (hoặc từ API mock json-server)
     fetch("http://localhost:3000/products")
       .then((res) => res.json())
-      .then((data: Product[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
+      .then((data: Product[]) => setProducts(data)) 
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   return (
     <section className="section section-padding">
       <div className="section-container">
-        {/* Block sản phẩm */}
+        
         <div className="block block-products">
           <div className="block-title">
             <h2>PRODUCTS</h2>
           </div>
           <div className="products-grid">
-            {/* Lặp qua danh sách sản phẩm */}
+            
             {products.map((product) => (
               <a
                 key={product.pro_id} // Dùng pro_id làm key

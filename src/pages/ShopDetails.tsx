@@ -49,14 +49,14 @@ const ShopDetails = () => {
             <div id="title" className="page-title">
               <div className="section-container">
                 <div className="content-title-heading">
-                  <h1 className="text-title-heading">{product.title}</h1>
+                  <h1 className="text-title-heading">{product.name}</h1>
                 </div>
                 <div className="breadcrumbs">
                   <a href="index.html">Home</a>
                   <span className="delimiter" />
                   <a href="shop-grid-left.html">Shop</a>
                   <span className="delimiter" />
-                  {product.title}
+                  {product.name}
                 </div>
               </div>
             </div>
@@ -151,7 +151,7 @@ const ShopDetails = () => {
                                     src={product.image_product}
                                     width={900}
                                     height={900}
-                                    alt={product.title}
+                                    alt={product.name}
                                   />
                                 </div>
                               </div>
@@ -159,7 +159,7 @@ const ShopDetails = () => {
                           </div>
                         </div>
                         <div className="product-info col-lg-5 col-md-12 col-12 ">
-                          <h1 className="title">{product.title}</h1>
+                          <h1 className="title">{product.name}</h1>
                           <span className="price">
                             <del aria-hidden="true">
                               <span>${product.price}</span>
@@ -578,7 +578,7 @@ const ShopDetails = () => {
                                                   relatedProduct.image_product
                                                 }
                                                 className="post-image"
-                                                alt={relatedProduct.title}
+                                                alt={relatedProduct.name}
                                               />
                                               <img
                                                 width={600}
@@ -587,7 +587,7 @@ const ShopDetails = () => {
                                                   relatedProduct.image_product
                                                 }
                                                 className="hover-image back"
-                                                alt={relatedProduct.title}
+                                                alt={relatedProduct.name}
                                               />
                                             </a>
                                           </div>
@@ -640,7 +640,7 @@ const ShopDetails = () => {
                                               <a
                                                 href={`/shop-details/${relatedProduct.pro_id}`}
                                               >
-                                                {relatedProduct.title}
+                                                {relatedProduct.name}
                                               </a>
                                             </h3>
                                             <div className="rating">
