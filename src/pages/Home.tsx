@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import TProduct from "../Types/TProduct";
+import instance from "../Service";
 
 // Định nghĩa cấu trúc của sản phẩm khớp với db.json
 // export interface Product {
@@ -17,26 +18,21 @@ const Home = () => {
 
   useEffect(() => {
     // Fetch sản phẩm từ file db.json (hoặc từ API mock json-server)
-    fetch("http://localhost:3000/products")
-      .then((res) => res.json())
-<<<<<<< HEAD
-      .then((data: Product[]) => setProducts(data)) 
-=======
+    instance
+      .get("products")
+      .then((res) => res.data)
       .then((data: TProduct[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
->>>>>>> c6a9363f8ef5dc192d446e59ad03b9bb7f4396c1
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   return (
     <section className="section section-padding">
       <div className="section-container">
-        
         <div className="block block-products">
           <div className="block-title">
             <h2>PRODUCTS</h2>
           </div>
           <div className="products-grid">
-            
             {products.map((product) => (
               <a
                 key={product.id} // Dùng id làm key
