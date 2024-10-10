@@ -1,46 +1,36 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TProduct from "../Types/TProduct";
 
-// Định nghĩa cấu trúc của sản phẩm khớp với db.json
-// export interface Product {
-//   title: ReactNode;
-//   pro_id: number;
-//   name: string;
-//   image_product: string;
-//   price: number;
-//   price_sale: number;
-// }
-
 const Home = () => {
-  // Đặt state để lưu trữ danh sách sản phẩm
   const [products, setProducts] = useState<TProduct[]>([]);
 
+  // Lấy danh sách sản phẩm từ API
   useEffect(() => {
-    // Fetch sản phẩm từ file db.json (hoặc từ API mock json-server)
     fetch("http://localhost:3000/products")
       .then((res) => res.json())
-<<<<<<< HEAD
-      .then((data: Product[]) => setProducts(data)) 
-=======
-      .then((data: TProduct[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
->>>>>>> c6a9363f8ef5dc192d446e59ad03b9bb7f4396c1
+      .then((data: TProduct[]) => setProducts(data))
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
+  // Hàm để thêm sản phẩm vào giỏ hàng và lưu vào localStorage
+  const addToCart = (product: TProduct) => {
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]"); // Lấy giỏ hàng từ localStorage
+    cart.push(product); // Thêm sản phẩm vào giỏ hàng
+    localStorage.setItem("cart", JSON.stringify(cart)); // Lưu lại giỏ hàng vào localStorage
+    alert(`${product.name} has been added to your cart!`); // Thông báo khi thêm vào giỏ hàng
+  };
 
   return (
     <section className="section section-padding">
       <div className="section-container">
-        
         <div className="block block-products">
           <div className="block-title">
             <h2>PRODUCTS</h2>
           </div>
           <div className="products-grid">
-            
             {products.map((product) => (
-              <a
-                key={product.id} // Dùng id làm key
-                href={`shop-details/${product.id}`}
+              <div
+                key={product.id}
                 className="group relative block overflow-hidden"
                 style={{ border: "1px solid #e1dbdb" }}
               >
@@ -64,7 +54,7 @@ const Home = () => {
 
                 <div className="h-64 w-full overflow-hidden sm:h-72">
                   <img
-                    src={product.image_product} // Hiển thị ảnh từ trường image_product
+                    src={product.image_product}
                     alt={product.name}
                     className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
                   />
@@ -72,18 +62,22 @@ const Home = () => {
 
                 <div className="relative bg-white p-6">
                   <p className="text-gray-700">
-                    ${product.price_sale} {/* Hiển thị giá sale */}
+                    ${product.price_sale}
                     <span className="text-gray-400 line-through">
                       ${product.price}
-                    </span>{" "}
-                    {/* Giá gốc */}
+                    </span>
                   </p>
 
                   <h3 className="mt-1.5 text-lg font-medium text-gray-900 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis">
-                    {product.name} {/* Hiển thị tên sản phẩm */}
+                    {product.name}
                   </h3>
+
                   <form className="mt-4 flex gap-4">
-                    <button className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105">
+                    <button
+                      type="button"
+                      onClick={() => addToCart(product)} // Khi click, gọi hàm addToCart
+                      className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
+                    >
                       Add to Cart
                     </button>
 
@@ -95,7 +89,7 @@ const Home = () => {
                     </button>
                   </form>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         </div>
