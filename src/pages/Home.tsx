@@ -34,13 +34,13 @@ const Home = () => {
   return (
     <section className="section section-padding">
       <ToastContainer
-        theme="light" // Thay đổi theme ở đây
-        position="top-right" // Vị trí hiển thị toast
-        autoClose={3000} // Thời gian tự động đóng toast
-        hideProgressBar={false} // Hiện thanh tiến trình
-        closeOnClick={true} // Đóng toast khi nhấn vào
-        pauseOnHover={true} // Dừng lại khi hover
-        draggable={true} // Cho phép kéo
+        theme="light"
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+        draggable={true}
       />
       <div className="section-container">
         <div className="block block-products">
