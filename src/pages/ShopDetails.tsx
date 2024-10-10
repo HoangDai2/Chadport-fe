@@ -559,7 +559,7 @@ const ShopDetails = () => {
                                 {relatedProducts.map((relatedProduct) => (
                                   <div
                                     className="item-product slick-slider-item"
-                                    key={relatedProduct.pro_id}
+                                    key={relatedProduct.id}
                                   >
                                     <div className="items">
                                       <div className="products-entry clearfix product-wapper">
@@ -569,7 +569,7 @@ const ShopDetails = () => {
                                           </div>
                                           <div className="product-thumb-hover">
                                             <a
-                                              href={`/shop-details/${relatedProduct.pro_id}`}
+                                              href={`/shop-details/${relatedProduct.id}`}
                                             >
                                               <img
                                                 width={600}
@@ -638,7 +638,7 @@ const ShopDetails = () => {
                                           <div className="contents text-center">
                                             <h3 className="product-title">
                                               <a
-                                                href={`/shop-details/${relatedProduct.pro_id}`}
+                                                href={`/shop-details/${relatedProduct.id}`}
                                               >
                                                 {relatedProduct.name}
                                               </a>
