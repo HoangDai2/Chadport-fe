@@ -1,42 +1,46 @@
 import React, { useEffect, useState } from "react";
-
-// Định nghĩa cấu trúc của sản phẩm khớp với db.json
-export interface Product {
-  pro_id: number;
-  name: string;
-  image_product: string;
-  price: number;
-  price_sale: number;
-}
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import TProduct from "../Types/TProduct";
 
 const Home = () => {
-  // Đặt state để lưu trữ danh sách sản phẩm
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<TProduct[]>([]);
+  const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
 
+  // Lấy danh sách sản phẩm từ API
   useEffect(() => {
-    // Fetch sản phẩm từ file db.json (hoặc từ API mock json-server)
     fetch("http://localhost:3000/products")
       .then((res) => res.json())
-      .then((data: Product[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
+      .then((data: TProduct[]) => setProducts(data))
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
+  // Hàm để thêm sản phẩm vào giỏ hàng và lưu vào localStorage
+  const addToCart = (product: TProduct) => {
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    cart.push(product);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(`${product.name} has been added to your cart!`);
+  };
+
+  // Hàm chuyển hướng đến trang chi tiết sản phẩm
+  const goToProductDetail = (id: number) => {
+    navigate(`/shop-details/${id}`);
+  };
 
   return (
     <section className="section section-padding">
       <div className="section-container">
-        {/* Block sản phẩm */}
         <div className="block block-products">
           <div className="block-title">
             <h2>PRODUCTS</h2>
           </div>
           <div className="products-grid">
-            {/* Lặp qua danh sách sản phẩm */}
             {products.map((product) => (
-              <a
-                key={product.pro_id} // Dùng pro_id làm key
-                href={`shop-details/${product.pro_id}`}
+              <div
+                key={product.id}
                 className="group relative block overflow-hidden"
                 style={{ border: "1px solid #e1dbdb" }}
+                onClick={() => goToProductDetail(product.id)} // Thêm sự kiện onClick để điều hướng
               >
                 <button className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75">
                   <span className="sr-only">Wishlist</span>
@@ -58,7 +62,7 @@ const Home = () => {
 
                 <div className="h-64 w-full overflow-hidden sm:h-72">
                   <img
-                    src={product.image_product} // Hiển thị ảnh từ trường image_product
+                    src={product.image_product}
                     alt={product.name}
                     className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
                   />
@@ -66,15 +70,25 @@ const Home = () => {
 
                 <div className="relative bg-white p-6">
                   <p className="text-gray-700">
-                    ${product.price_sale} {/* Hiển thị giá sale */}
-                    <span className="text-gray-400 line-through">${product.price}</span> {/* Giá gốc */}
+                    ${product.price_sale}
+                    <span className="text-gray-400 line-through">
+                      ${product.price}
+                    </span>
                   </p>
 
                   <h3 className="mt-1.5 text-lg font-medium text-gray-900 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis">
-                    {product.name} {/* Hiển thị tên sản phẩm */}
+                    {product.name}
                   </h3>
+
                   <form className="mt-4 flex gap-4">
-                    <button className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Ngăn không cho sự kiện click vào product card xảy ra
+                        addToCart(product);
+                      }}
+                      className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
+                    >
                       Add to Cart
                     </button>
 
@@ -86,7 +100,7 @@ const Home = () => {
                     </button>
                   </form>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         </div>

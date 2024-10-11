@@ -1,39 +1,84 @@
-import { useEffect, useState } from "react";
-import { Product } from "./Home";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
-const ShopDetails = () => {
+import TProduct from "../Types/TProduct";
+import instance from "../Service";
+import { ToastContainer } from "react-toastify";
+const ShopDetails = ({
+  addToCart,
+  addToWishlist,
+}: {
+  addToCart: (product: TProduct) => void;
+  addToWishlist: (product: TProduct) => void;
+}) => {
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<TProduct | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<TProduct[]>([]);
+  // State để quản lý số lượng sản phẩm
+  const [quantity, setQuantity] = useState(1);
+
+  const handleIncrement = () => setQuantity((prev) => prev + 1);
+  const handleDecrement = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   useEffect(() => {
-    fetch(`https://fakestoreapi.com/products/${id}`)
-      .then((res) => res.json())
-      .then((data) => setProduct(data))
+    instance
+      .get(`products/${id}`)
+      .then((res) => setProduct(res.data))
       .catch((error) =>
         console.error("Error fetching product details:", error)
       );
   }, [id]);
-
+  useEffect(() => {
+    if (product) {
+      instance
+        .get("/products")
+        .then((res) => {
+          const related = res.data.filter((relatedProduct: TProduct) => {
+            return (
+              relatedProduct.id !== product.id && // Không lấy sản phẩm hiện tại
+              relatedProduct.category.some((relatedCategory) =>
+                product.category.some(
+                  (currentCategory) => currentCategory.id === relatedCategory.id
+                )
+              )
+            );
+          });
+          setRelatedProducts(related);
+        })
+        .catch((error) =>
+          console.error("Error fetching related products:", error)
+        );
+    }
+  }, [product]);
   if (!product) {
     return <div>Loading...</div>;
   }
+
   return (
     <>
       <div id="site-main" className="site-main">
+        <ToastContainer
+          theme="light"
+          position="top-right"
+          autoClose={1000}
+          hideProgressBar={false}
+          closeOnClick={true}
+          pauseOnHover={true}
+          draggable={true}
+        />
         <div id="main-content" className="main-content">
           <div id="primary" className="content-area">
             <div id="title" className="page-title">
               <div className="section-container">
                 <div className="content-title-heading">
-                  <h1 className="text-title-heading">{product.title}</h1>
+                  <h1 className="text-title-heading">{product.name}</h1>
                 </div>
                 <div className="breadcrumbs">
                   <a href="index.html">Home</a>
                   <span className="delimiter" />
                   <a href="shop-grid-left.html">Shop</a>
                   <span className="delimiter" />
-                  {product.title}
+                  {product.name}
                 </div>
               </div>
             </div>
@@ -70,15 +115,15 @@ const ShopDetails = () => {
                                   data-columns1={4}
                                   data-columns={4}
                                   data-nav="true"
-                                  data-vertical='"true"'
-                                  data-verticalswiping='"true"'
+                                  data-vertical="true"
+                                  data-verticalswiping="true"
                                 >
                                   <div className="img-item slick-slide">
                                     <span className="img-thumbnail-scroll">
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -87,7 +132,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -96,7 +141,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -105,7 +150,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -114,7 +159,7 @@ const ShopDetails = () => {
                                       <img
                                         width={600}
                                         height={600}
-                                        src={product.image}
+                                        src={product.image_product}
                                       />
                                     </span>
                                   </div>
@@ -125,10 +170,10 @@ const ShopDetails = () => {
                               <div className="scroll-image main-image">
                                 <div className="scroll-image main-image">
                                   <img
-                                    src={product.image}
+                                    src={product.image_product}
                                     width={900}
                                     height={900}
-                                    alt={product.title}
+                                    alt={product.name}
                                   />
                                 </div>
                               </div>
@@ -136,7 +181,7 @@ const ShopDetails = () => {
                           </div>
                         </div>
                         <div className="product-info col-lg-5 col-md-12 col-12 ">
-                          <h1 className="title">{product.title}</h1>
+                          <h1 className="title">{product.name}</h1>
                           <span className="price">
                             <del aria-hidden="true">
                               <span>${product.price}</span>
@@ -195,7 +240,11 @@ const ShopDetails = () => {
                           <div className="buttons">
                             <div className="add-to-cart-wrap">
                               <div className="quantity">
-                                <button type="button" className="plus">
+                                <button
+                                  type="button"
+                                  className="plus"
+                                  onClick={handleIncrement}
+                                >
                                   +
                                 </button>
                                 <input
@@ -209,14 +258,30 @@ const ShopDetails = () => {
                                   size={4}
                                   inputMode="numeric"
                                   autoComplete="off"
+                                  value={quantity}
+                                  onChange={(e) => {
+                                    const value = parseInt(e.target.value); // Lấy giá trị từ input
+                                    console.log(value);
+                                    if (!isNaN(value) && value > 0) {
+                                      // Kiểm tra giá trị là số và lớn hơn 0
+                                      setQuantity(value); // Cập nhật state quantity
+                                    }
+                                  }}
                                 />
-                                <button type="button" className="minus">
+                                <button
+                                  type="button"
+                                  className="minus"
+                                  onClick={handleDecrement}
+                                >
                                   -
                                 </button>
                               </div>
                               <div className="btn-add-to-cart">
                                 <a
-                                  href="/shopcart"
+                                  onClick={() => {
+                                    addToCart({ ...product, quantity });
+                                  }}
+                                  href="#"
                                   className="button"
                                   tabIndex={0}
                                 >
@@ -232,8 +297,11 @@ const ShopDetails = () => {
                                 Buy It Now
                               </button>
                             </div>
-                            <div className="btn-wishlist" data-title="Wishlist">
-                              <button className="product-btn">
+                            <div className="btn-wishlist btn" data-title="">
+                              <button
+                                className="product-btn"
+                                onClick={() => addToWishlist(product)}
+                              >
                                 Add to wishlist
                               </button>
                             </div>
@@ -509,6 +577,8 @@ const ShopDetails = () => {
                     </div>
                   </div>
                 </div>
+                {/* Related Products */}
+                {/* {console.log(product)} */}
                 <div className="product-related">
                   <div className="section-padding">
                     <div className="section-container p-l-r">
@@ -519,7 +589,7 @@ const ShopDetails = () => {
                         <div className="block-content">
                           <div className="content-product-list slick-wrap">
                             <div
-                              className="slick-sliders products-list grid"
+                              className="products-list grid"
                               data-slidestoscroll="true"
                               data-dots="false"
                               data-nav={1}
@@ -530,434 +600,114 @@ const ShopDetails = () => {
                               data-columns1440={4}
                               data-columns={4}
                             >
-                              <div className="item-product slick-slide">
-                                <div className="items">
-                                  <div className="products-entry clearfix product-wapper">
-                                    <div className="products-thumb">
-                                      <div className="product-lable">
-                                        <div className="hot">Hot</div>
-                                      </div>
-                                      <div className="product-thumb-hover">
-                                        <a href="shop-details.html">
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src={product.image}
-                                            className="post-image"
-                                          />
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src={product.image}
-                                            className="hover-image back"
-                                          />
-                                        </a>
-                                      </div>
-                                      <div className="product-button">
-                                        <div
-                                          className="btn-add-to-cart"
-                                          data-title="Add to cart"
-                                        >
-                                          <a
-                                            rel="nofollow"
-                                            href="#"
-                                            className="product-btn button"
-                                          >
-                                            Add to cart
-                                          </a>
+                              <div className="slick-sliders">
+                                {relatedProducts.map((relatedProduct) => (
+                                  <div
+                                    className="item-product slick-slider-item"
+                                    key={relatedProduct.id}
+                                  >
+                                    <div className="items">
+                                      <div className="products-entry clearfix product-wapper">
+                                        <div className="products-thumb">
+                                          <div className="product-lable">
+                                            <div className="hot">Hot</div>
+                                          </div>
+                                          <div className="product-thumb-hover">
+                                            <a
+                                              href={`/shop-details/${relatedProduct.id}`}
+                                            >
+                                              <img
+                                                width={600}
+                                                height={600}
+                                                src={
+                                                  relatedProduct.image_product
+                                                }
+                                                className="post-image"
+                                                alt={relatedProduct.name}
+                                              />
+                                              <img
+                                                width={600}
+                                                height={600}
+                                                src={
+                                                  relatedProduct.image_product
+                                                }
+                                                className="hover-image back"
+                                                alt={relatedProduct.name}
+                                              />
+                                            </a>
+                                          </div>
+                                          <div className="product-button">
+                                            <div
+                                              className="cart_default"
+                                              data-title="Add to cart"
+                                            >
+                                              <a
+                                                onClick={() => {
+                                                  addToCart(relatedProduct);
+                                                }}
+                                                rel="nofollow"
+                                                // href="#"
+                                                className="product-btn"
+                                              >
+                                                Add to cart
+                                              </a>
+                                            </div>
+                                            <div
+                                              className=""
+                                              data-title="Wishlist"
+                                            >
+                                              <button
+                                                className="product-btn"
+                                                onClick={() =>
+                                                  addToWishlist(relatedProduct)
+                                                }
+                                              >
+                                                Add to wishlist
+                                              </button>
+                                            </div>
+                                            <div
+                                              className="btn-compare"
+                                              data-title="Compare"
+                                            >
+                                              <button className="product-btn">
+                                                Compare
+                                              </button>
+                                            </div>
+                                            <span
+                                              className="product-quickview"
+                                              data-title="Quick View"
+                                            >
+                                              <a
+                                                href="#"
+                                                className="quickview quickview-button"
+                                              >
+                                                Quick View{" "}
+                                                <i className="icon-search" />
+                                              </a>
+                                            </span>
+                                          </div>
                                         </div>
-                                        <div
-                                          className="btn-wishlist"
-                                          data-title="Wishlist"
-                                        >
-                                          <button className="product-btn">
-                                            Add to wishlist
-                                          </button>
+                                        <div className="products-content">
+                                          <div className="contents text-center">
+                                            <h3 className="product-title">
+                                              <a
+                                                href={`/shop-details/${relatedProduct.id}`}
+                                              >
+                                                {relatedProduct.name}
+                                              </a>
+                                            </h3>
+                                            <div className="rating">
+                                              <div className="star star-5" />
+                                            </div>
+                                            <span className="price">
+                                              ${relatedProduct.price}
+                                            </span>
+                                          </div>
                                         </div>
-                                        <div
-                                          className="btn-compare"
-                                          data-title="Compare"
-                                        >
-                                          <button className="product-btn">
-                                            Compare
-                                          </button>
-                                        </div>
-                                        <span
-                                          className="product-quickview"
-                                          data-title="Quick View"
-                                        >
-                                          <a
-                                            href="#"
-                                            className="quickview quickview-button"
-                                          >
-                                            Quick View{" "}
-                                            <i className="icon-search" />
-                                          </a>
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="products-content">
-                                      <div className="contents text-center">
-                                        <h3 className="product-title">
-                                          <a href="shop-details.html">
-                                            BLAZER PHANTOM LOW
-                                          </a>
-                                        </h3>
-                                        <div className="rating">
-                                          <div className="star star-5" />
-                                        </div>
-                                        <span className="price">$100.00</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="item-product slick-slide">
-                                <div className="items">
-                                  <div className="products-entry clearfix product-wapper">
-                                    <div className="products-thumb">
-                                      <div className="product-lable">
-                                        <div className="hot">Hot</div>
-                                      </div>
-                                      <div className="product-thumb-hover">
-                                        <a href="shop-details.html">
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src="./img/NIKE+AIR+MAX+1+ESS+PRM+1.png"
-                                            className="post-image"
-                                          />
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src="./img/NIKE+AIR+MAX+1+ESS+PRM+2.png"
-                                            className="hover-image back"
-                                          />
-                                        </a>
-                                      </div>
-                                      <div className="product-button">
-                                        <div
-                                          className="btn-add-to-cart"
-                                          data-title="Add to cart"
-                                        >
-                                          <a
-                                            rel="nofollow"
-                                            href="#"
-                                            className="product-btn button"
-                                          >
-                                            Add to cart
-                                          </a>
-                                        </div>
-                                        <div
-                                          className="btn-wishlist"
-                                          data-title="Wishlist"
-                                        >
-                                          <button className="product-btn">
-                                            Add to wishlist
-                                          </button>
-                                        </div>
-                                        <div
-                                          className="btn-compare"
-                                          data-title="Compare"
-                                        >
-                                          <button className="product-btn">
-                                            Compare
-                                          </button>
-                                        </div>
-                                        <span
-                                          className="product-quickview"
-                                          data-title="Quick View"
-                                        >
-                                          <a
-                                            href="#"
-                                            className="quickview quickview-button"
-                                          >
-                                            Quick View{" "}
-                                            <i className="icon-search" />
-                                          </a>
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="products-content">
-                                      <div className="contents text-center">
-                                        <h3 className="product-title">
-                                          <a href="shop-details.html">
-                                            NIKE AIR MAX 1 ESS PRM
-                                          </a>
-                                        </h3>
-                                        <div className="rating">
-                                          <div className="star star-4" />
-                                        </div>
-                                        <span className="price">$200.00</span>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                              </div>
-                              <div className="item-product slick-slide">
-                                <div className="items">
-                                  <div className="products-entry clearfix product-wapper">
-                                    <div className="products-thumb">
-                                      <div className="product-lable">
-                                        <div className="hot">Hot</div>
-                                      </div>
-                                      <div className="product-thumb-hover">
-                                        <a href="shop-details.html">
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src="./img/W+BLAZER+LOW+'77+VNTG+1.png"
-                                            className="post-image"
-                                          />
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src="./img/W+BLAZER+LOW+'77+VNTG+2.png"
-                                            className="hover-image back"
-                                          />
-                                        </a>
-                                      </div>
-                                      <div className="product-button">
-                                        <div
-                                          className="btn-add-to-cart"
-                                          data-title="Add to cart"
-                                        >
-                                          <a
-                                            rel="nofollow"
-                                            href="#"
-                                            className="product-btn button"
-                                          >
-                                            Add to cart
-                                          </a>
-                                        </div>
-                                        <div
-                                          className="btn-wishlist"
-                                          data-title="Wishlist"
-                                        >
-                                          <button className="product-btn">
-                                            Add to wishlist
-                                          </button>
-                                        </div>
-                                        <div
-                                          className="btn-compare"
-                                          data-title="Compare"
-                                        >
-                                          <button className="product-btn">
-                                            Compare
-                                          </button>
-                                        </div>
-                                        <span
-                                          className="product-quickview"
-                                          data-title="Quick View"
-                                        >
-                                          <a
-                                            href="#"
-                                            className="quickview quickview-button"
-                                          >
-                                            Quick View{" "}
-                                            <i className="icon-search" />
-                                          </a>
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="products-content">
-                                      <div className="contents text-center">
-                                        <h3 className="product-title">
-                                          <a href="shop-details.html">
-                                            W BLAZER LOW '77 VNTG
-                                          </a>
-                                        </h3>
-                                        <div className="rating">
-                                          <div className="star star-0" />
-                                        </div>
-                                        <span className="price">$150.00</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="item-product slick-slide">
-                                <div className="items">
-                                  <div className="products-entry clearfix product-wapper">
-                                    <div className="products-thumb">
-                                      <div className="product-lable">
-                                        <div className="onsale">-33%</div>
-                                      </div>
-                                      <div className="product-thumb-hover">
-                                        <a href="shop-details.html">
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src="./img/4.jpg"
-                                            className="post-image"
-                                          />
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src="./img/4-2.jpg"
-                                            className="hover-image back"
-                                          />
-                                        </a>
-                                      </div>
-                                      <div className="product-button">
-                                        <div
-                                          className="btn-add-to-cart"
-                                          data-title="Add to cart"
-                                        >
-                                          <a
-                                            rel="nofollow"
-                                            href="#"
-                                            className="product-btn button"
-                                          >
-                                            Add to cart
-                                          </a>
-                                        </div>
-                                        <div
-                                          className="btn-wishlist"
-                                          data-title="Wishlist"
-                                        >
-                                          <button className="product-btn">
-                                            Add to wishlist
-                                          </button>
-                                        </div>
-                                        <div
-                                          className="btn-compare"
-                                          data-title="Compare"
-                                        >
-                                          <button className="product-btn">
-                                            Compare
-                                          </button>
-                                        </div>
-                                        <span
-                                          className="product-quickview"
-                                          data-title="Quick View"
-                                        >
-                                          <a
-                                            href="#"
-                                            className="quickview quickview-button"
-                                          >
-                                            Quick View{" "}
-                                            <i className="icon-search" />
-                                          </a>
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="products-content">
-                                      <div className="contents text-center">
-                                        <h3 className="product-title">
-                                          <a href="shop-details.html">
-                                            Pillar Dining Table Round
-                                          </a>
-                                        </h3>
-                                        <div className="rating">
-                                          <div className="star star-5" />
-                                        </div>
-                                        <span className="price">
-                                          <del aria-hidden="true">
-                                            <span>$150.00</span>
-                                          </del>
-                                          <ins>
-                                            <span>$100.00</span>
-                                          </ins>
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="item-product slick-slide">
-                                <div className="items">
-                                  <div className="products-entry clearfix product-wapper">
-                                    <div className="products-thumb">
-                                      <div className="product-lable">
-                                        <div className="onsale">-7%</div>
-                                      </div>
-                                      <div className="product-thumb-hover">
-                                        <a href="shop-details.html">
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src="./img/5.jpg"
-                                            className="post-image"
-                                          />
-                                          <img
-                                            width={600}
-                                            height={600}
-                                            src="./img/5-2.jpg"
-                                            className="hover-image back"
-                                          />
-                                        </a>
-                                      </div>
-                                      <div className="product-button">
-                                        <div
-                                          className="btn-add-to-cart"
-                                          data-title="Add to cart"
-                                        >
-                                          <a
-                                            rel="nofollow"
-                                            href="#"
-                                            className="product-btn button"
-                                          >
-                                            Add to cart
-                                          </a>
-                                        </div>
-                                        <div
-                                          className="btn-wishlist"
-                                          data-title="Wishlist"
-                                        >
-                                          <button className="product-btn">
-                                            Add to wishlist
-                                          </button>
-                                        </div>
-                                        <div
-                                          className="btn-compare"
-                                          data-title="Compare"
-                                        >
-                                          <button className="product-btn">
-                                            Compare
-                                          </button>
-                                        </div>
-                                        <span
-                                          className="product-quickview"
-                                          data-title="Quick View"
-                                        >
-                                          <a
-                                            href="#"
-                                            className="quickview quickview-button"
-                                          >
-                                            Quick View{" "}
-                                            <i className="icon-search" />
-                                          </a>
-                                        </span>
-                                      </div>
-                                      <div className="product-stock">
-                                        <span className="stock">
-                                          Out Of Stock
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="products-content">
-                                      <div className="contents text-center">
-                                        <h3 className="product-title">
-                                          <a href="shop-details.html">
-                                            Amp Pendant Light Large
-                                          </a>
-                                        </h3>
-                                        <div className="rating">
-                                          <div className="star star-4" />
-                                        </div>
-                                        <span className="price">
-                                          <del aria-hidden="true">
-                                            <span>$150.00</span>
-                                          </del>
-                                          <ins>
-                                            <span>$140.00</span>
-                                          </ins>
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
+                                ))}
                               </div>
                             </div>
                           </div>
