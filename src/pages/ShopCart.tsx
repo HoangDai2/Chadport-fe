@@ -121,6 +121,17 @@ const ShopCart = () => {
                     <div className="col-xl-4 col-lg-12 col-md-12 col-12 p-4">
                       <div className="cart-totals bg-gray-100 p-4 rounded-lg shadow">
                         <h2 className="text-xl font-bold mb-4">Cart Totals</h2>
+                        
+                        {/* Thông tin sơ lược các sản phẩm trong giỏ hàng */}
+                        <ul className="mb-4">
+                          {cartItems.map((item, index) => (
+                            <li key={index} className="flex justify-between mb-2">
+                              <span>{item.name} (x{quantity[index]})</span>
+                              <span>${(item.price_sale * quantity[index]).toFixed(2)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        
                         <div className="flex justify-between mb-2">
                           <span>Total:</span>
                           <span>${getTotal().toFixed(2)}</span>

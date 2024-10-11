@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import TProduct from "../Types/TProduct";
 
 const Home = () => {
   const [products, setProducts] = useState<TProduct[]>([]);
+  const navigate = useNavigate(); 
 
-  // Lấy danh sách sản phẩm từ API
   useEffect(() => {
     fetch("http://localhost:3000/products")
       .then((res) => res.json())
@@ -14,10 +15,15 @@ const Home = () => {
 
   // Hàm để thêm sản phẩm vào giỏ hàng và lưu vào localStorage
   const addToCart = (product: TProduct) => {
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]"); // Lấy giỏ hàng từ localStorage
-    cart.push(product); // Thêm sản phẩm vào giỏ hàng
-    localStorage.setItem("cart", JSON.stringify(cart)); // Lưu lại giỏ hàng vào localStorage
-    alert(`${product.name} has been added to your cart!`); // Thông báo khi thêm vào giỏ hàng
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    cart.push(product);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(`${product.name} has been added to your cart!`);
+  };
+
+  // Hàm chuyển hướng đến trang chi tiết sản phẩm
+  const goToProductDetail = (id: number) => {
+    navigate(`/shop-details/${id}`);
   };
 
   return (
@@ -33,6 +39,7 @@ const Home = () => {
                 key={product.id}
                 className="group relative block overflow-hidden"
                 style={{ border: "1px solid #e1dbdb" }}
+                onClick={() => goToProductDetail(product.id)} 
               >
                 <button className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75">
                   <span className="sr-only">Wishlist</span>
@@ -75,7 +82,10 @@ const Home = () => {
                   <form className="mt-4 flex gap-4">
                     <button
                       type="button"
-                      onClick={() => addToCart(product)} // Khi click, gọi hàm addToCart
+                      onClick={(e) => {
+                        e.stopPropagation(); 
+                        addToCart(product);
+                      }}
                       className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
                     >
                       Add to Cart
