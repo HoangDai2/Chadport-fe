@@ -4,9 +4,8 @@ import instance from "../Service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Home = () => {
+const Home = ({ addToCart }: { addToCart: (product: TProduct) => void }) => {
   const [products, setProducts] = useState<TProduct[]>([]);
-
   // Lấy danh sách sản phẩm từ API
   useEffect(() => {
     instance
@@ -15,32 +14,54 @@ const Home = () => {
       .then((data: TProduct[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+  // start cart
 
-  const addToCart = (product: TProduct) => {
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]"); // Lấy giỏ hàng từ localStorage
-    cart.push(product); // Thêm sản phẩm vào giỏ hàng
-    localStorage.setItem("cart", JSON.stringify(cart)); // Lưu lại giỏ hàng vào localStorage
-    toast.success(`${product.name} đã được thêm vào giỏ hàng!`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+  // end cart
+
+  // start wishlist
+  const addToWishlist = (product: TProduct) => {
+    let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const isProductInWishlist = wishlist.some(
+      (item: TProduct) => item.id === product.id
+    );
+
+    if (isProductInWishlist) {
+      toast.info(`${product.name} đã có trong wishlist!`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      wishlist.push(product);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      window.dispatchEvent(new Event("storage"));
+      toast.success(`${product.name} đã được thêm vào wishlist!`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
+  // end wishlist
 
   return (
     <section className="section section-padding">
       <ToastContainer
-        theme="light" // Thay đổi theme ở đây
-        position="top-right" // Vị trí hiển thị toast
-        autoClose={3000} // Thời gian tự động đóng toast
-        hideProgressBar={false} // Hiện thanh tiến trình
-        closeOnClick={true} // Đóng toast khi nhấn vào
-        pauseOnHover={true} // Dừng lại khi hover
-        draggable={true} // Cho phép kéo
+        theme="light"
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+        draggable={true}
       />
       <div className="section-container">
         <div className="block block-products">
@@ -54,7 +75,10 @@ const Home = () => {
                 className="group relative block overflow-hidden"
                 style={{ border: "1px solid #e1dbdb" }}
               >
-                <button className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75">
+                <button
+                  onClick={() => addToWishlist(product)}
+                  className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75"
+                >
                   <span className="sr-only">Wishlist</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +121,7 @@ const Home = () => {
                   <form className="mt-4 flex gap-4">
                     <button
                       type="button"
-                      onClick={() => addToCart(product)} // Khi click, gọi hàm addToCart
+                      onClick={() => addToCart(product)}
                       className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
                     >
                       Add to Cart
