@@ -1,17 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import TProduct from "../Types/TProduct";
+import instance from "../Service";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 
-const Home = () => {
+const Home = ({
+  addToCart,
+  addToWishlist,
+}: {
+  addToCart: (product: TProduct) => void;
+  addToWishlist: (product: TProduct) => void;
+}) => {
   const [products, setProducts] = useState<TProduct[]>([]);
+<<<<<<< HEAD
   const navigate = useNavigate(); 
 
+=======
+  // Lấy danh sách sản phẩm từ API
+>>>>>>> 53cefe01cd96fd637874c95fc25b4119febc6ea8
   useEffect(() => {
-    fetch("http://localhost:3000/products")
-      .then((res) => res.json())
-      .then((data: TProduct[]) => setProducts(data))
+    instance
+      .get("products")
+      .then((res) => res.data)
+      .then((data: TProduct[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+<<<<<<< HEAD
 
   // Hàm để thêm sản phẩm vào giỏ hàng và lưu vào localStorage
   const addToCart = (product: TProduct) => {
@@ -26,8 +42,19 @@ const Home = () => {
     navigate(`/shop-details/${id}`);
   };
 
+=======
+>>>>>>> 53cefe01cd96fd637874c95fc25b4119febc6ea8
   return (
     <section className="section section-padding">
+      <ToastContainer
+        theme="light"
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+        draggable={true}
+      />
       <div className="section-container">
         <div className="block block-products">
           <div className="block-title">
@@ -41,7 +68,10 @@ const Home = () => {
                 style={{ border: "1px solid #e1dbdb" }}
                 onClick={() => goToProductDetail(product.id)} 
               >
-                <button className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75">
+                <button
+                  onClick={() => addToWishlist(product)}
+                  className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75"
+                >
                   <span className="sr-only">Wishlist</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -60,11 +90,13 @@ const Home = () => {
                 </button>
 
                 <div className="h-64 w-full overflow-hidden sm:h-72">
-                  <img
-                    src={product.image_product}
-                    alt={product.name}
-                    className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
-                  />
+                  <a href={`shop-details/${product.id}`}>
+                    <img
+                      src={product.image_product}
+                      alt={product.name}
+                      className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
+                    />
+                  </a>
                 </div>
 
                 <div className="relative bg-white p-6">
@@ -76,27 +108,33 @@ const Home = () => {
                   </p>
 
                   <h3 className="mt-1.5 text-lg font-medium text-gray-900 max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis">
-                    {product.name}
+                    <a href={`shop-details/${product.id}`}>{product.name}</a>
                   </h3>
 
                   <form className="mt-4 flex gap-4">
                     <button
                       type="button"
+<<<<<<< HEAD
                       onClick={(e) => {
                         e.stopPropagation(); 
                         addToCart(product);
                       }}
+=======
+                      onClick={() => addToCart(product)}
+>>>>>>> 53cefe01cd96fd637874c95fc25b4119febc6ea8
                       className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
                     >
                       Add to Cart
                     </button>
 
-                    <button
-                      type="button"
-                      className="block w-full rounded bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:scale-105"
-                    >
-                      Buy Now
-                    </button>
+                    <Link to={`shop-details/${product.id}`}>
+                      <button
+                        type="button"
+                        className="block w-full rounded bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:scale-105"
+                      >
+                        Buy Now
+                      </button>
+                    </Link>
                   </form>
                 </div>
               </div>

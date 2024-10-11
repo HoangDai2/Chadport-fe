@@ -40,7 +40,68 @@ import About from "./pages/About";
 import Checkout from "./pages/Checkout";
 import BillOrder from "./pages/BillOrder";
 import MyAccountPage from "./pages/MyAccountPage";
+import { toast } from "react-toastify";
 function App() {
+  const addToCart = (product: TProduct) => {
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const isProductCart = cart.some((item: TProduct) => item.id === product.id);
+
+    if (isProductCart) {
+      toast.info(`${product.name} đã có trong giỏ hàng!`, {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      cart.push(product);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      window.dispatchEvent(new Event("storage"));
+      toast.success(`${product.name} đã được thêm vào giỏ hàng!`, {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+  const addToWishlist = (product: TProduct) => {
+    let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const isProductInWishlist = wishlist.some(
+      (item: TProduct) => item.id === product.id
+    );
+
+    if (isProductInWishlist) {
+      toast.info(`${product.name} đã có trong wishlist!`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      wishlist.push(product);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      window.dispatchEvent(new Event("storage"));
+      toast.success(`${product.name} đã được thêm vào wishlist!`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
   return (
     <>
       <Routes>
@@ -55,8 +116,8 @@ function App() {
                 style={{ padding: "70px", marginTop: "120px" }}
               >
                 <Category />
-                <BestSale />
-                <Home />
+                <BestSale addToCart={addToCart} addToWishlist={addToWishlist} />
+                <Home addToCart={addToCart} addToWishlist={addToWishlist} />
                 <ProductSale />
                 <CartList />
               </div>
@@ -95,7 +156,10 @@ function App() {
             <>
               <HeaderClient />
               <div className="content" style={{ padding: "70px" }}>
-                <ShopDetails />
+                <ShopDetails
+                  addToCart={addToCart}
+                  addToWishlist={addToWishlist}
+                />
               </div>
               <FooterClient />
             </>
@@ -107,7 +171,7 @@ function App() {
             <>
               <HeaderClient />
               <div className="content" style={{ padding: "70px" }}>
-                <Wishlist />
+                <Wishlist addToCart={addToCart} />
               </div>
               <FooterClient />
             </>

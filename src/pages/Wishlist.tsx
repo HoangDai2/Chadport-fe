@@ -1,10 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import TProduct from "../Types/TProduct";
+import { ToastContainer } from "react-toastify";
 
-const Wishlist = () => {
+const Wishlist = ({
+  addToCart,
+}: {
+  addToCart: (product: TProduct) => void;
+}) => {
+  const [wishlist, setWishlist] = useState<TProduct[]>([]);
+  useEffect(() => {
+    const savedWishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    setWishlist(savedWishlist);
+  }, []);
+  const removeFromWishlist = (productId: number) => {
+    const updatedWishlist = wishlist.filter((item) => item.id !== productId);
+    setWishlist(updatedWishlist);
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    window.dispatchEvent(new Event("storage"));
+  };
+
   return (
     <>
       <div id="site-main" className="site-main">
         <div id="main-content" className="main-content">
+          <ToastContainer
+            theme="light"
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            closeOnClick={true}
+            pauseOnHover={true}
+            draggable={true}
+          />
           <div id="primary" className="content-area">
             <div id="title" className="page-title">
               <div className="section-container">
@@ -16,108 +43,79 @@ const Wishlist = () => {
                   <span className="delimiter" />
                   <a href="shop-grid-left.html">Shop</a>
                   <span className="delimiter" />
-                  Shopping Cart
+                  Wishlist
                 </div>
               </div>
             </div>
             <div id="content" className="site-content" role="main">
               <div className="section-padding">
                 <div className="section-container p-l-r">
-                  <div className="shop-wishlist">
-                    <table className="wishlist-items">
-                      <tbody>
-                        <tr className="wishlist-item">
-                          <td className="wishlist-item-remove">
-                            <span />
-                          </td>
-                          <td className="wishlist-item-image">
-                            <a href="shop-details.html">
-                              <img
-                                width={600}
-                                height={600}
-                                src="media/product/W+NIKE+V2K+RUN+XX+1.png"
-                                alt=""
-                              />
-                            </a>
-                          </td>
-                          <td className="wishlist-item-info">
-                            <div className="wishlist-item-name">
-                              <a href="shop-details.html">
-                                AIR JORDAN 1 LOW SE
-                              </a>
-                            </div>
-                            <div className="wishlist-item-price">
-                              <span>$150.00</span>
-                            </div>
-                            <div className="wishlist-item-time">
-                              June 6, 2022
-                            </div>
-                          </td>
-                          <td className="wishlist-item-actions">
-                            <div className="wishlist-item-stock">In stock</div>
-                            <div className="wishlist-item-add">
-                              <div className="" data-title="Add to cart">
-                                <a
-                                  rel="nofollow"
-                                  href="#"
-                                  className="product-btn button"
+                  {wishlist.length > 0 ? (
+                    <div className="shop-wishlist">
+                      <table className="wishlist-items">
+                        <tbody>
+                          {wishlist.map((product) => (
+                            <tr key={product.id} className="wishlist-item">
+                              <td className="wishlist-item-remove">
+                                <button
+                                  onClick={() => removeFromWishlist(product.id)}
                                 >
-                                  Add to cart
+                                  <span role="img" aria-label="Remove">
+                                    ❌
+                                  </span>
+                                </button>
+                              </td>
+                              <td className="wishlist-item-image">
+                                <a href={`shop-details/${product.id}`}>
+                                  <img
+                                    width={600}
+                                    height={600}
+                                    src={product.image_product}
+                                    alt={product.name}
+                                  />
                                 </a>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr className="wishlist-item">
-                          <td className="wishlist-item-remove">
-                            <span />
-                          </td>
-                          <td className="wishlist-item-image">
-                            <a href="shop-details.html">
-                              <img
-                                width={600}
-                                height={600}
-                                src="media/product/AIR+JORDAN+1+LOW+SE+2.png"
-                                alt=""
-                              />
-                            </a>
-                          </td>
-                          <td className="wishlist-item-info">
-                            <div className="wishlist-item-name">
-                              <a href="shop-details.html">
-                                AIR JORDAN 1 LOW SE
-                              </a>
-                            </div>
-                            <div className="wishlist-item-price">
-                              <del aria-hidden="true">
-                                <span>$150.00</span>
-                              </del>
-                              <ins>
-                                <span>$100.00</span>
-                              </ins>
-                            </div>
-                            <div className="wishlist-item-time">
-                              June 6, 2022
-                            </div>
-                          </td>
-                          <td className="wishlist-item-actions">
-                            <div className="wishlist-item-stock">In stock</div>
-                            <div className="wishlist-item-add">
-                              <div className="" data-title="Add to cart">
-                                <a
-                                  rel="nofollow"
-                                  href="#"
-                                  className="product-btn button"
-                                >
-                                  Add to cart
-                                </a>
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                              </td>
+                              <td className="wishlist-item-info">
+                                <div className="wishlist-item-name">
+                                  <a href={`shop-details/${product.id}`}>
+                                    {product.name}
+                                  </a>
+                                </div>
+                                <div className="wishlist-item-price">
+                                  <del aria-hidden="true">
+                                    <span>${product.price}</span>
+                                  </del>
+                                  <ins>
+                                    <span>${product.price_sale}</span>
+                                  </ins>
+                                </div>
+                              </td>
+                              <td className="wishlist-item-actions">
+                                <div className="wishlist-item-stock">
+                                  In stock
+                                </div>
+                                <div className="wishlist-item-add">
+                                  <div className="" data-title="Add to cart">
+                                    <button onClick={() => addToCart(product)}>
+                                      <a
+                                        rel="nofollow"
+                                        href="#"
+                                        className="product-btn button"
+                                      >
+                                        Add to cart
+                                      </a>
+                                    </button>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p>Your wishlist is currently empty.</p>
+                  )}
                 </div>
               </div>
             </div>

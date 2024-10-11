@@ -1,49 +1,71 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TProduct from "../Types/TProduct";
-
-const ShopDetails = () => {
+import instance from "../Service";
+import { ToastContainer } from "react-toastify";
+const ShopDetails = ({
+  addToCart,
+  addToWishlist,
+}: {
+  addToCart: (product: TProduct) => void;
+  addToWishlist: (product: TProduct) => void;
+}) => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<TProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<TProduct[]>([]);
+  // State để quản lý số lượng sản phẩm
+  const [quantity, setQuantity] = useState(1);
 
-  // interface Product {
-  //   id: number;
-  //   title: string;
-  //   price: number;
-  //   description: string;
-  //   category: string;
-  //   image: string;
-  //   rating: {
-  //     rate: number;
-  //     count: number;
-  //   };
-  // }
+  const handleIncrement = () => setQuantity((prev) => prev + 1);
+  const handleDecrement = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   useEffect(() => {
-    fetch(`http://localhost:3000/products/${id}`)
-      .then((res) => res.json())
-      .then((data) => setProduct(data))
+    instance
+      .get(`products/${id}`)
+      .then((res) => setProduct(res.data))
       .catch((error) =>
         console.error("Error fetching product details:", error)
       );
   }, [id]);
-  // Fetch danh sách sản phẩm liên quan
   useEffect(() => {
-    fetch("http://localhost:3000/products")
-      .then((res) => res.json())
-      .then((data) => setRelatedProducts(data))
-      // .then(() => console.log(relatedProducts))
-      .catch((error) =>
-        console.error("Error fetching related products:", error)
-      );
-  }, []);
+    if (product) {
+      instance
+        .get("/products")
+        .then((res) => {
+          const related = res.data.filter((relatedProduct: TProduct) => {
+            return (
+              relatedProduct.id !== product.id && // Không lấy sản phẩm hiện tại
+              relatedProduct.category.some((relatedCategory) =>
+                product.category.some(
+                  (currentCategory) => currentCategory.id === relatedCategory.id
+                )
+              )
+            );
+          });
+          setRelatedProducts(related);
+        })
+        .catch((error) =>
+          console.error("Error fetching related products:", error)
+        );
+    }
+  }, [product]);
   if (!product) {
     return <div>Loading...</div>;
   }
+
   return (
     <>
       <div id="site-main" className="site-main">
+        <ToastContainer
+          theme="light"
+          position="top-right"
+          autoClose={1000}
+          hideProgressBar={false}
+          closeOnClick={true}
+          pauseOnHover={true}
+          draggable={true}
+        />
         <div id="main-content" className="main-content">
           <div id="primary" className="content-area">
             <div id="title" className="page-title">
@@ -93,8 +115,8 @@ const ShopDetails = () => {
                                   data-columns1={4}
                                   data-columns={4}
                                   data-nav="true"
-                                  data-vertical='"true"'
-                                  data-verticalswiping='"true"'
+                                  data-vertical="true"
+                                  data-verticalswiping="true"
                                 >
                                   <div className="img-item slick-slide">
                                     <span className="img-thumbnail-scroll">
@@ -218,7 +240,11 @@ const ShopDetails = () => {
                           <div className="buttons">
                             <div className="add-to-cart-wrap">
                               <div className="quantity">
-                                <button type="button" className="plus">
+                                <button
+                                  type="button"
+                                  className="plus"
+                                  onClick={handleIncrement}
+                                >
                                   +
                                 </button>
                                 <input
@@ -232,14 +258,30 @@ const ShopDetails = () => {
                                   size={4}
                                   inputMode="numeric"
                                   autoComplete="off"
+                                  value={quantity}
+                                  onChange={(e) => {
+                                    const value = parseInt(e.target.value); // Lấy giá trị từ input
+                                    console.log(value);
+                                    if (!isNaN(value) && value > 0) {
+                                      // Kiểm tra giá trị là số và lớn hơn 0
+                                      setQuantity(value); // Cập nhật state quantity
+                                    }
+                                  }}
                                 />
-                                <button type="button" className="minus">
+                                <button
+                                  type="button"
+                                  className="minus"
+                                  onClick={handleDecrement}
+                                >
                                   -
                                 </button>
                               </div>
                               <div className="btn-add-to-cart">
                                 <a
-                                  href="/shopcart"
+                                  onClick={() => {
+                                    addToCart({ ...product, quantity });
+                                  }}
+                                  href="#"
                                   className="button"
                                   tabIndex={0}
                                 >
@@ -255,8 +297,11 @@ const ShopDetails = () => {
                                 Buy It Now
                               </button>
                             </div>
-                            <div className="btn-wishlist" data-title="Wishlist">
-                              <button className="product-btn">
+                            <div className="btn-wishlist btn" data-title="">
+                              <button
+                                className="product-btn"
+                                onClick={() => addToWishlist(product)}
+                              >
                                 Add to wishlist
                               </button>
                             </div>
@@ -597,8 +642,11 @@ const ShopDetails = () => {
                                               data-title="Add to cart"
                                             >
                                               <a
+                                                onClick={() => {
+                                                  addToCart(relatedProduct);
+                                                }}
                                                 rel="nofollow"
-                                                href="#"
+                                                // href="#"
                                                 className="product-btn"
                                               >
                                                 Add to cart
@@ -608,7 +656,12 @@ const ShopDetails = () => {
                                               className=""
                                               data-title="Wishlist"
                                             >
-                                              <button className="product-btn">
+                                              <button
+                                                className="product-btn"
+                                                onClick={() =>
+                                                  addToWishlist(relatedProduct)
+                                                }
+                                              >
                                                 Add to wishlist
                                               </button>
                                             </div>

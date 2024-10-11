@@ -1,9 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logochartport from "../img/logochadport.png";
 
-type Props = {};
+const Headerclient = () => {
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [carCount, setCarCount] = useState(0);
+  useEffect(() => {
+    const updateWishlistCount = () => {
+      const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      setWishlistCount(wishlist.length);
+    };
+    updateWishlistCount();
+    window.addEventListener("storage", updateWishlistCount);
+    return () => {
+      window.removeEventListener("storage", updateWishlistCount);
+    };
+  }, []);
+  useEffect(() => {
+    const updatedCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCarCount(cart.length);
+    };
+    updatedCartCount();
+    window.addEventListener("storage", updatedCartCount);
+    return () => {
+      window.removeEventListener("storage", updatedCartCount);
+    };
+  }, []);
 
-const Headerclient = (props: Props) => {
   return (
     <>
       <div
@@ -107,7 +130,9 @@ const Headerclient = (props: Props) => {
 
                 <div className="col-xl-3 col-lg-4 col-md-12 col-sm-12 header-right mt-[28px]">
                   <div className="flex items-center space-x-4 gap-[40px]">
-                    <a href="/login"><span className="text-lg tracking-wide">LOGIN</span></a>
+                    <a href="/login">
+                      <span className="text-lg tracking-wide">LOGIN</span>
+                    </a>
                     <button>
                       <i
                         className="fas fa-search text-lg"
@@ -115,25 +140,29 @@ const Headerclient = (props: Props) => {
                       ></i>
                     </button>
                     <div className="relative">
-                      <a href="/wishlist"><button>
-                        <i
-                          className="far fa-heart text-lg"
-                          style={{ fontSize: "25px" }}
-                        ></i>
-                      </button></a>
+                      <a href="/wishlist">
+                        <button>
+                          <i
+                            className="far fa-heart text-lg"
+                            style={{ fontSize: "25px" }}
+                          ></i>
+                        </button>
+                      </a>
                       <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
-                        1
+                        {wishlistCount}
                       </span>
                     </div>
                     <div className="relative">
-                      <a href="/shopcart"><button>
-                        <i
-                          className="fas fa-shopping-bag text-lg"
-                          style={{ fontSize: "25px" }}
-                        ></i>
-                      </button></a>
+                      <a href="/shopcart">
+                        <button>
+                          <i
+                            className="fas fa-shopping-bag text-lg"
+                            style={{ fontSize: "25px" }}
+                          ></i>
+                        </button>
+                      </a>
                       <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
-                        2
+                        {carCount}
                       </span>
                     </div>
                   </div>

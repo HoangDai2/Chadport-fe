@@ -10,7 +10,12 @@ const ShopCart = () => {
     setCartItems(storedCart);
     setQuantity(storedCart.map(() => 1));
   }, []);
-
+  const delOneCart = (productId: number) => {
+    const updatedCart = cartItems.filter((item) => item.id !== productId);
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event("storage"));
+  };
   const handleUp = (index: number) => {
     setQuantity((prevQuantity) => {
       const newQuantity = [...prevQuantity];
@@ -26,14 +31,6 @@ const ShopCart = () => {
       return newQuantity;
     });
   };
-
-  const handleRemove = (index: number) => {
-    const updatedCart = cartItems.filter((_, i) => i !== index);
-    setCartItems(updatedCart);
-    setQuantity(updatedCart.map(() => 1)); // Cập nhật số lượng tương ứng
-    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Cập nhật localStorage
-  };
-
   const getTotal = () => {
     return cartItems.reduce(
       (total, item, index) => total + item.price_sale * quantity[index],
@@ -68,7 +65,10 @@ const ShopCart = () => {
                             </thead>
                             <tbody>
                               {cartItems.map((item, index) => (
-                                <tr key={item.id} className="border-b hover:bg-gray-50">
+                                <tr
+                                  key={item.id}
+                                  className="border-b hover:bg-gray-50"
+                                >
                                   <td className="py-3 px-4 flex items-center">
                                     <img
                                       src={item.image_product}
@@ -77,7 +77,9 @@ const ShopCart = () => {
                                     />
                                     <span className="ml-4">{item.name}</span>
                                   </td>
-                                  <td className="py-3 px-4">${item.price_sale.toFixed(2)}</td>
+                                  <td className="py-3 px-4">
+                                    ${item.price_sale.toFixed(2)}
+                                  </td>
                                   <td className="py-3 px-4">
                                     <div className="flex items-center justify-center">
                                       <button
@@ -102,10 +104,15 @@ const ShopCart = () => {
                                       </button>
                                     </div>
                                   </td>
-                                  <td className="py-3 px-4">${(item.price_sale * quantity[index]).toFixed(2)}</td>
+                                  <td className="py-3 px-4">
+                                    $
+                                    {(
+                                      item.price_sale * quantity[index]
+                                    ).toFixed(2)}
+                                  </td>
                                   <td className="py-3 px-4">
                                     <button
-                                      onClick={() => handleRemove(index)}
+                                      onClick={() => delOneCart(item.id)}
                                       className="text-red-500 hover:text-red-700"
                                     >
                                       Remove
@@ -136,7 +143,10 @@ const ShopCart = () => {
                           <span>Total:</span>
                           <span>${getTotal().toFixed(2)}</span>
                         </div>
-                        <a href="/checkout" className="block text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-700 transition">
+                        <a
+                          href="/checkout"
+                          className="block text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-700 transition"
+                        >
                           Proceed to Checkout
                         </a>
                       </div>
