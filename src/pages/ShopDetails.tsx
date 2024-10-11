@@ -2,7 +2,14 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import instance from "../Service";
-const ShopDetails = () => {
+import { ToastContainer } from "react-toastify";
+const ShopDetails = ({
+  addToCart,
+  addToWishlist,
+}: {
+  addToCart: (product: TProduct) => void;
+  addToWishlist: (product: TProduct) => void;
+}) => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<TProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<TProduct[]>([]);
@@ -21,13 +28,11 @@ const ShopDetails = () => {
         console.error("Error fetching product details:", error)
       );
   }, [id]);
-  // Fetch danh sách sản phẩm liên quan
   useEffect(() => {
     if (product) {
       instance
         .get("/products")
         .then((res) => {
-          // Lọc sản phẩm dựa vào category
           const related = res.data.filter((relatedProduct: TProduct) => {
             return (
               relatedProduct.id !== product.id && // Không lấy sản phẩm hiện tại
@@ -38,7 +43,7 @@ const ShopDetails = () => {
               )
             );
           });
-          setRelatedProducts(related); // Cập nhật state với sản phẩm liên quan
+          setRelatedProducts(related);
         })
         .catch((error) =>
           console.error("Error fetching related products:", error)
@@ -48,9 +53,19 @@ const ShopDetails = () => {
   if (!product) {
     return <div>Loading...</div>;
   }
+
   return (
     <>
       <div id="site-main" className="site-main">
+        <ToastContainer
+          theme="light"
+          position="top-right"
+          autoClose={1000}
+          hideProgressBar={false}
+          closeOnClick={true}
+          pauseOnHover={true}
+          draggable={true}
+        />
         <div id="main-content" className="main-content">
           <div id="primary" className="content-area">
             <div id="title" className="page-title">
@@ -100,8 +115,8 @@ const ShopDetails = () => {
                                   data-columns1={4}
                                   data-columns={4}
                                   data-nav="true"
-                                  data-vertical='"true"'
-                                  data-verticalswiping='"true"'
+                                  data-vertical="true"
+                                  data-verticalswiping="true"
                                 >
                                   <div className="img-item slick-slide">
                                     <span className="img-thumbnail-scroll">
@@ -244,11 +259,14 @@ const ShopDetails = () => {
                                   inputMode="numeric"
                                   autoComplete="off"
                                   value={quantity}
-                                  onChange={(e) =>
-                                    setQuantity(
-                                      Math.max(1, parseInt(e.target.value))
-                                    )
-                                  }
+                                  onChange={(e) => {
+                                    const value = parseInt(e.target.value); // Lấy giá trị từ input
+                                    console.log(value);
+                                    if (!isNaN(value) && value > 0) {
+                                      // Kiểm tra giá trị là số và lớn hơn 0
+                                      setQuantity(value); // Cập nhật state quantity
+                                    }
+                                  }}
                                 />
                                 <button
                                   type="button"
@@ -260,7 +278,10 @@ const ShopDetails = () => {
                               </div>
                               <div className="btn-add-to-cart">
                                 <a
-                                  href="/shopcart"
+                                  onClick={() => {
+                                    addToCart({ ...product, quantity });
+                                  }}
+                                  href="#"
                                   className="button"
                                   tabIndex={0}
                                 >
@@ -277,7 +298,10 @@ const ShopDetails = () => {
                               </button>
                             </div>
                             <div className="btn-wishlist btn" data-title="">
-                              <button className="product-btn">
+                              <button
+                                className="product-btn"
+                                onClick={() => addToWishlist(product)}
+                              >
                                 Add to wishlist
                               </button>
                             </div>
@@ -618,7 +642,9 @@ const ShopDetails = () => {
                                               data-title="Add to cart"
                                             >
                                               <a
-                                                // onClick={handleAddToCart}
+                                                onClick={() => {
+                                                  addToCart(relatedProduct);
+                                                }}
                                                 rel="nofollow"
                                                 // href="#"
                                                 className="product-btn"
@@ -630,7 +656,12 @@ const ShopDetails = () => {
                                               className=""
                                               data-title="Wishlist"
                                             >
-                                              <button className="product-btn">
+                                              <button
+                                                className="product-btn"
+                                                onClick={() =>
+                                                  addToWishlist(relatedProduct)
+                                                }
+                                              >
                                                 Add to wishlist
                                               </button>
                                             </div>

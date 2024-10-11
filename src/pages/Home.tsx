@@ -3,8 +3,15 @@ import TProduct from "../Types/TProduct";
 import instance from "../Service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 
-const Home = ({ addToCart }: { addToCart: (product: TProduct) => void }) => {
+const Home = ({
+  addToCart,
+  addToWishlist,
+}: {
+  addToCart: (product: TProduct) => void;
+  addToWishlist: (product: TProduct) => void;
+}) => {
   const [products, setProducts] = useState<TProduct[]>([]);
   // Lấy danh sách sản phẩm từ API
   useEffect(() => {
@@ -14,44 +21,6 @@ const Home = ({ addToCart }: { addToCart: (product: TProduct) => void }) => {
       .then((data: TProduct[]) => setProducts(data)) // Đảm bảo dữ liệu trả về được cast về mảng Product
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
-  // start cart
-
-  // end cart
-
-  // start wishlist
-  const addToWishlist = (product: TProduct) => {
-    let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-    const isProductInWishlist = wishlist.some(
-      (item: TProduct) => item.id === product.id
-    );
-
-    if (isProductInWishlist) {
-      toast.info(`${product.name} đã có trong wishlist!`, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } else {
-      wishlist.push(product);
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
-      window.dispatchEvent(new Event("storage"));
-      toast.success(`${product.name} đã được thêm vào wishlist!`, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  };
-  // end wishlist
-
   return (
     <section className="section section-padding">
       <ToastContainer
@@ -127,12 +96,14 @@ const Home = ({ addToCart }: { addToCart: (product: TProduct) => void }) => {
                       Add to Cart
                     </button>
 
-                    <button
-                      type="button"
-                      className="block w-full rounded bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:scale-105"
-                    >
-                      Buy Now
-                    </button>
+                    <Link to={`shop-details/${product.id}`}>
+                      <button
+                        type="button"
+                        className="block w-full rounded bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:scale-105"
+                      >
+                        Buy Now
+                      </button>
+                    </Link>
                   </form>
                 </div>
               </div>
