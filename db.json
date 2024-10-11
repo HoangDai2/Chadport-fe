@@ -249,5 +249,89 @@
         }
       ]
     }
-  ]
+  ],
+
+    "users": [
+      {
+        "user_id": 1,
+        "role_id": 1,
+        "first_name": "John",
+        "last_name": "Doe",
+        "gender": "male",
+        "birthday": "1990-05-15",
+        "address": "123 Main St, New York, NY",
+        "img_user": "john_doe.png",
+        "phonenumber": "1234567890",
+        "email": "john.doe@example.com",
+        "password": "hashed_password_1",
+        "status": "active",
+        "date_create": "2024-01-01",
+        "date_update": "2024-01-10"
+      },
+      {
+        "user_id": 2,
+        "role_id": 2,
+        "first_name": "Jane",
+        "last_name": "Smith",
+        "gender": "female",
+        "birthday": "1985-07-22",
+        "address": "456 Elm St, Los Angeles, CA",
+        "img_user": "jane_smith.png",
+        "phonenumber": "0987654321",
+        "email": "jane.smith@example.com",
+        "password": "hashed_password_2",
+        "status": "inactive",
+        "date_create": "2023-12-01",
+        "date_update": "2024-01-05"
+      },
+      {
+        "user_id": 3,
+        "role_id": 3,
+        "first_name": "Alice",
+        "last_name": "Brown",
+        "gender": "female",
+        "birthday": "1992-03-10",
+        "address": "789 Oak St, Chicago, IL",
+        "img_user": "alice_brown.png",
+        "phonenumber": "5551234567",
+        "email": "alice.brown@example.com",
+        "password": "hashed_password_3",
+        "status": "active",
+        "date_create": "2024-01-03",
+        "date_update": "2024-01-10"
+      },
+      {
+        "user_id": 4,
+        "role_id": 2,
+        "first_name": "Bob",
+        "last_name": "White",
+        "gender": "male",
+        "birthday": "1988-12-15",
+        "address": "321 Pine St, Houston, TX",
+        "img_user": "bob_white.png",
+        "phonenumber": "4441234567",
+        "email": "bob.white@example.com",
+        "password": "hashed_password_4",
+        "status": "pending",
+        "date_create": "2023-11-15",
+        "date_update": "2024-01-08"
+      },
+      {
+        "user_id": 5,
+        "role_id": 1,
+        "first_name": "Charlie",
+        "last_name": "Green",
+        "gender": "male",
+        "birthday": "1995-09-05",
+        "address": "654 Maple St, Miami, FL",
+        "img_user": "charlie_green.png",
+        "phonenumber": "7771234567",
+        "email": "charlie.green@example.com",
+        "password": "hashed_password_5",
+        "status": "active",
+        "date_create": "2024-01-05",
+        "date_update": "2024-01-10"
+      }
+    ]
+  
 }
