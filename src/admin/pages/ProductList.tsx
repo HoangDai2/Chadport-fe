@@ -1,12 +1,12 @@
-// src/admin/pages/ProductList.tsx
 import React, { useState, useEffect } from 'react';
 import instance from '../../Service';
-import { TProduct } from '../../Types/TProduct'; // Import interface TProduct
+import { TProduct } from '../../Types/TProduct'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ProductList() {
   const [products, setProducts] = useState<TProduct[]>([]);
-  const [alertVisible, setAlertVisible] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -17,6 +17,7 @@ function ProductList() {
         console.error('Error fetching products:', error);
       }
     };
+
     fetchProducts();
   }, []);
 
@@ -25,17 +26,11 @@ function ProductList() {
     try {
       await instance.delete(`/products/${id}`);
       setProducts(products.filter(product => product.id !== id));
-      showAlert();
+      toast.success('Product deleted successfully!');
     } catch (error) {
       console.error('Error deleting product:', error);
+      toast.error('Error deleting product!');
     }
-  };
-
-  const showAlert = () => {
-    setAlertVisible(true);
-    setTimeout(() => {
-      setAlertVisible(false);
-    }, 2000);
   };
 
   return (
@@ -44,7 +39,7 @@ function ProductList() {
       <table className="table table-striped">
         <thead className="thead-dark">
           <tr>
-            <th>ID</th>
+            <th>STT</th>
             <th>Image</th>
             <th>Name</th>
             <th>Price</th>
@@ -56,9 +51,9 @@ function ProductList() {
           </tr>
         </thead>
         <tbody>
-          {products?.map((product) => (
+          {products.map((product, i) => (
             <tr key={product.id}>
-              <td>{product.id}</td>
+              <td>{i+1}</td>
               <td>
                 <img src={product.image_product} alt={product.name} className="img-fluid" style={{ width: '100px' }} />
               </td>
@@ -81,7 +76,7 @@ function ProductList() {
           ))}
         </tbody>
       </table>
-      {alertVisible && <div className="alert alert-success position-fixed" style={{ top: '20px', right: '20px' }}>Product deleted successfully!</div>}
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </div>
   );
 }
