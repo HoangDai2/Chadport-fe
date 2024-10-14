@@ -35,7 +35,6 @@ function ProductList() {
     setAlertVisible(true);
     setTimeout(() => {
       setAlertVisible(false);
-      window.location.reload();
     }, 2000);
   };
 
@@ -57,9 +56,9 @@ function ProductList() {
           </tr>
         </thead>
         <tbody>
-          {products?.map((product, index) => (
+          {products?.map((product) => (
             <tr key={product.id}>
-              <td>{index + 1}</td>
+              <td>{product.id}</td>
               <td>
                 <img src={product.image_product} alt={product.name} className="img-fluid" style={{ width: '100px' }} />
               </td>
