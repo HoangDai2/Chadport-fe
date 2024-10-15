@@ -1,12 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import TProduct from "../Types/TProduct";
+const ShopList = () => {
+  const [products, setProducts] = useState<TProduct[]>([]);
+  const navigate = useNavigate();
 
-// Import images
-import airJordan1LowSe1 from '../media/product/AIR+JORDAN+1+LOW+SE+1.jpg';
-// import airJordan1LowSe2 from '../media/product/AIR+JORDAN+1+LOW+SE+2.png';
-import airJordan1MidSe1 from '../media/product/AIR+JORDAN+1+MID+SE+1.jpg';
-import blazerPhantomLow1 from '../media/product/BLAZER+PHANTOM+LOW+1.png';
+  // Fetch product data from API
+  useEffect(() => {
+    fetch("http://localhost:3000/products")
+      .then((res) => res.json())
+      .then((data: TProduct[]) => setProducts(data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
-const ShopList: React.FC = () => {
+  // Navigate to product detail page
+  const goToProductDetail = (id: number) => {
+    navigate(`/shop-details/${id}`);
+  };
+
   return (
     <div id="site-main" className="site-main">
       <div id="main-content" className="main-content">
@@ -73,78 +84,35 @@ const ShopList: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Block Product Filter */}
-                    <div className="block block-product-filter">
-                      <div className="block-title">
-                        <h2>Price</h2>
-                      </div>
-                      <div className="block-content">
-                        <div id="slider-range" className="price-filter-wrap">
-                          <div className="filter-item price-filter">
-                            <div className="layout-slider">
-                              <input id="price-filter" name="price" value="0;100" />
-                            </div>
-                            <div className="layout-slider-settings"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Block Products */}
-                    <div className="block block-products">
+                    <div className="block block-products" >
                       <div className="block-title">
                         <h2>Feature Product</h2>
                       </div>
                       <div className="block-content">
                         <ul className="products-list">
-                          <li className="product-item">
-                            <a href="shop-details.html" className="product-image">
-                              <img src={airJordan1LowSe1} alt="AIR JORDAN 1 LOW SE" />
-                            </a>
-                            <div className="product-content">
-                              <h2 className="product-title">
-                                <a href="shop-details.html">AIR JORDAN 1 LOW SE</a>
-                              </h2>
-                              <div className="rating small">
-                                <div className="star star-5"></div>
+                          {products.slice(0, 3).map((product) => (
+                            <li key={product.id} className="product-item">
+                              <a onClick={() => goToProductDetail(product.id)} className="product-image">
+                                <img src={product.image_product} alt={product.name} />
+                              </a>
+                              <div className="product-content">
+                                <h2 className="product-title">
+                                  <a onClick={() => goToProductDetail(product.id)}>
+                                    {product.name}
+                                  </a>
+                                </h2>
+                                <span className="price">
+                                  <del aria-hidden="true">
+                                    <span>${product.price}</span>
+                                  </del>
+                                  <ins>
+                                    <span>${product.price_sale}</span>
+                                  </ins>
+                                </span>
                               </div>
-                              <span className="price">
-                                <del aria-hidden="true"><span>$150.00</span></del>
-                                <ins><span>$100.00</span></ins>
-                              </span>
-                            </div>
-                          </li>
-                          <li className="product-item">
-                            <a href="shop-details.html" className="product-image">
-                              <img src={airJordan1MidSe1} alt="AIR JORDAN 1 MID SE" />
-                            </a>
-                            <div className="product-content">
-                              <h2 className="product-title">
-                                <a href="shop-details.html">AIR JORDAN 1 MID SE</a>
-                              </h2>
-                              <div className="rating small">
-                                <div className="star star-0"></div>
-                              </div>
-                              <span className="price">$120.00</span>
-                            </div>
-                          </li>
-                          <li className="product-item">
-                            <a href="shop-details.html" className="product-image">
-                              <img src={blazerPhantomLow1} alt="BLAZER PHANTOM LOW 1" />
-                            </a>
-                            <div className="product-content">
-                              <h2 className="product-title">
-                                <a href="shop-details.html">BLAZER PHANTOM LOW 1</a>
-                              </h2>
-                              <div className="rating small">
-                                <div className="star star-5"></div>
-                              </div>
-                              <span className="price">
-                                <del aria-hidden="true"><span>$200.00</span></del>
-                                <ins><span>$180.00</span></ins>
-                              </span>
-                            </div>
-                          </li>
+                            </li>
+                          ))}
                         </ul>
                       </div>
                     </div>
@@ -153,7 +121,9 @@ const ShopList: React.FC = () => {
                   <div className="col-xl-9 col-lg-9 col-md-12 col-12">
                     <div className="products-topbar clearfix">
                       <div className="products-topbar-left">
-                        <div className="products-count">Showing all 21 results</div>
+                        <div className="products-count">
+                          Showing all {products.length} results
+                        </div>
                       </div>
                       <div className="products-topbar-right">
                         <div className="products-sort dropdown">
@@ -169,71 +139,51 @@ const ShopList: React.FC = () => {
                             <li><a href="#">Sort by price: high to low</a></li>
                           </ul>
                         </div>
-                        <ul className="layout-toggle nav nav-tabs">
-                          <li className="nav-item">
-                            <a className="layout-grid nav-link active" data-toggle="tab" href="#layout-grid" role="tab">
-                              <span className="icon-column">
-                                <span className="layer first"><span></span><span></span><span></span></span>
-                                <span className="layer middle"><span></span><span></span><span></span></span>
-                                <span className="layer last"><span></span><span></span><span></span></span>
-                              </span>
-                            </a>
-                          </li>
-                          <li className="nav-item">
-                            <a className="layout-list nav-link" data-toggle="tab" href="#layout-list" role="tab">
-                              <span className="icon-column">
-                                <span className="layer first"><span></span><span></span></span>
-                                <span className="layer middle"><span></span><span></span></span>
-                                <span className="layer last"><span></span><span></span><span></span></span>
-                              </span>
-                            </a>
-                          </li>
-                        </ul>
                       </div>
                     </div>
 
-                    <div className="tab-content">
+                    <div className="tab-content" >
                       <div className="tab-pane fade show active" id="layout-grid" role="tabpanel">
                         <div className="products-list grid">
                           <div className="row">
-                            <div className="col-xl-4 col-lg-4 col-md-4 col-sm-6">
-                              <div className="product-item">
-                                <div className="product-image">
-                                  <a href="shop-details.html">
-                                    <img src={airJordan1LowSe1} alt="AIR JORDAN 1 LOW SE" />
-                                  </a>
-                                </div>
-                                <div className="products-content">
-                                  <h2 className="product-title">
-                                    <a href="shop-details.html">AIR JORDAN 1 LOW SE</a>
-                                  </h2>
-                                  <div className="rating small">
-                                    <div className="star star-5"></div>
+                            {products.map((product) => (
+                              <div key={product.id} className="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                                <div className="product-item">
+                                  <div className="product-image">
+                                    <a onClick={() => goToProductDetail(product.id)}>
+                                      <img src={product.image_product} alt={product.name} />
+                                    </a>
                                   </div>
-                                  <span className="price">
-                                    <del aria-hidden="true"><span>$150.00</span></del>
-                                    <ins><span>$100.00</span></ins>
-                                  </span>
-                                  <div className="product-action">
-                                    <a href="#" className="add-to-cart">
-                                      <span className="icon-cart"></span>
-                                    </a>
-                                    <a href="#" className="add-to-wishlist">
-                                      <span className="icon-heart"></span>
-                                    </a>
-                                    <a href="#" className="add-to-compare">
-                                      <span className="icon-shuffle"></span>
-                                    </a>
+                                  <div className="products-content">
+                                    <h2 className="product-title">
+                                      <a onClick={() => goToProductDetail(product.id)}>
+                                        {product.name}
+                                      </a>
+                                    </h2>
+                                    <span className="price">
+                                      <del aria-hidden="true">
+                                        <span>${product.price}</span>
+                                      </del>
+                                      <ins>
+                                        <span>${product.price_sale}</span>
+                                      </ins>
+                                    </span>
+                                    <div className="product-action">
+                                      <a href="#" className="add-to-cart">
+                                        <span className="icon-cart"></span>
+                                      </a>
+                                      
+                                      <a href="#" className="add-to-compare">
+                                        <span className="icon-shuffle"></span>
+                                      </a>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            {/* More products go here */}
+                            ))}
                           </div>
                         </div>
                       </div>
-                      {/* List layout tab can 
-                       added here */}
                     </div>
 
                     <div className="pagination-wrapper clearfix">
