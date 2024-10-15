@@ -110,42 +110,28 @@ function App() {
             path="/"
             element={
               <>
-              
                 <Category />
                 <Home addToCart={addToCart} addToWishlist={addToWishlist} />
                 <ProductSale />
               </>
             }
           />
-          <Route
-            path="/shoplist"
-            element={
-              <ShopList />
-            }
-          />
+          <Route path="/shoplist" element={<ShopList />} />
           <Route
             path="/shop-details/:id"
             element={
-              <ShopDetails addToCart={addToCart} addToWishlist={addToWishlist} />
+              <ShopDetails
+                addToCart={addToCart}
+                addToWishlist={addToWishlist}
+              />
             }
           />
-          <Route
-            path="/shopcart"
-            element={
-              <ShopCart />
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <LoginRegister />
-            }
-          />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/shopcart" element={<ShopCart />} />
+          <Route path="/login" element={<LoginRegister />} />
           <Route
             path="/wishlist"
-            element={
-              <Wishlist addToCart={addToCart} />
-            }
+            element={<Wishlist addToCart={addToCart} />}
           />
           {/* Router admin */}
           <Route path="/admin" element={<Admin />}>
@@ -160,7 +146,6 @@ function App() {
       <FooterClient />
     </>
   );
-
 }
 
 export default App;
