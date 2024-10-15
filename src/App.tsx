@@ -133,8 +133,11 @@ function App() {
             path="/wishlist"
             element={<Wishlist addToCart={addToCart} />}
           />
-          {/* Router admin */}
-          <Route path="/admin" element={<Admin />}>
+         
+        </Routes>
+        <Routes>
+           {/* Router admin */}
+           <Route path="/admin" element={<Admin />}>
           <Route index element={<div>Welcome to Admin Dashboard</div>} />
           <Route path="listuser" element={<ListUser />} />
           <Route path="products" element={<ProductList />} />
