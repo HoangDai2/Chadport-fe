@@ -1,4 +1,3 @@
-// src/types.ts
 export interface Category {
   id?: number;
   name: string;
@@ -9,7 +8,7 @@ export interface Category {
 }
 
 export interface TProduct {
-  id?: number;
+  id: number;
   cat_id: number; // ID danh mục (nếu cần)
   title: string;
   name: string;

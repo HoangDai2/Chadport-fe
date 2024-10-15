@@ -21,7 +21,7 @@ function ProductList() {
     fetchProducts();
   }, []);
 
-  const deleteProduct = async (id?: number) => {
+  const deleteProduct = async (id: number) => {
     if (id === undefined) return;
     try {
       await instance.delete(`/products/${id}`);
