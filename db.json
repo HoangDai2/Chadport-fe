@@ -352,6 +352,23 @@
       "status": "active",
       "date_create": "2024-10-15T06:21:23.158Z",
       "date_update": "2024-10-15T06:21:23.158Z"
+    },
+    {
+      "id": "3a1c",
+      "user_id": 7,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "tuanhung@gmail.com",
+      "password": "a",
+      "status": "active",
+      "date_create": "2024-10-15T14:53:44.186Z",
+      "date_update": "2024-10-15T14:53:44.191Z"
     }
   ]
 }

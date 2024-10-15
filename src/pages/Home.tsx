@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import TProduct from "../Types/TProduct";
+import { ToastContainer } from "react-toastify";
 
-const Home = () => {
+const Home = ({
+  addToCart,
+  addToWishlist,
+}: {
+  addToCart: (product: TProduct) => void;
+  addToWishlist: (product: TProduct) => void;
+}) => {
   const [products, setProducts] = useState<TProduct[]>([]);
   const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
 
@@ -15,20 +22,26 @@ const Home = () => {
   }, []);
 
   // Hàm để thêm sản phẩm vào giỏ hàng và lưu vào localStorage
-  const addToCart = (product: TProduct) => {
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    cart.push(product);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${product.name} has been added to your cart!`);
-  };
+  // const addToCart = (product: TProduct) => {
+  //   let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  //   cart.push(product);
+  //   localStorage.setItem("cart", JSON.stringify(cart));
+  //   alert(`${product.name} has been added to your cart!`);
+  // };
 
   // Hàm chuyển hướng đến trang chi tiết sản phẩm
-  const goToProductDetail = (id: number) => {
-    navigate(`/shop-details/${id}`);
-  };
 
   return (
     <section className="section section-padding">
+      <ToastContainer
+        theme="light"
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+        draggable={true}
+      />
       <div className="section-container">
         <div className="block block-products">
           <div className="block-title">
@@ -40,9 +53,12 @@ const Home = () => {
                 key={product.id}
                 className="group relative block overflow-hidden"
                 style={{ border: "1px solid #e1dbdb" }}
-                onClick={() => goToProductDetail(product.id)} // Thêm sự kiện onClick để điều hướng
+                // onClick={() => goToProductDetail(product.id)} // Thêm sự kiện onClick để điều hướng
               >
-                <button className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75">
+                <button
+                  onClick={() => addToWishlist(product)}
+                  className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75"
+                >
                   <span className="sr-only">Wishlist</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -61,11 +77,13 @@ const Home = () => {
                 </button>
 
                 <div className="h-64 w-full overflow-hidden sm:h-72">
-                  <img
-                    src={product.image_product}
-                    alt={product.name}
-                    className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
-                  />
+                  <Link to={`/shop-details/${product.id}`}>
+                    <img
+                      src={product.image_product}
+                      alt={product.name}
+                      className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
+                    />
+                  </Link>
                 </div>
 
                 <div className="relative bg-white p-6">
