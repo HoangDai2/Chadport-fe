@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Nike Revolution 7 EasyOn",
       "status": "available",
       "quantity": 100,
@@ -33,7 +33,7 @@
       ]
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Nike Air Force 1 '07",
       "status": "out of stock",
       "title": "Mens Casual Slim Fit",
@@ -64,7 +64,7 @@
       ]
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Nike P-6000",
       "status": "out of stock",
       "title": "John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet",
@@ -95,7 +95,7 @@
       ]
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Nike Court Vision Low Next Nature",
       "title": "Solid Gold Petite Micropave ",
       "status": "out of stock",
@@ -126,7 +126,7 @@
       ]
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "Air Jordan 1 Low",
       "status": "out of stock",
       "title": "White Gold Plated Princess",
@@ -157,7 +157,7 @@
       ]
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "Jordan One Take 5 PF",
       "status": "out of stock",
       "title": "WD 2TB Elements Portable External Hard Drive - USB 3.0 ",
@@ -188,7 +188,7 @@
       ]
     },
     {
-      "id": 7,
+      "id": "7",
       "name": "LeBron XXI EP",
       "status": "out of stock",
       "quantity": 0,
@@ -219,7 +219,7 @@
       ]
     },
     {
-      "id": 8,
+      "id": "8",
       "name": "Air Jordan Legacy 312 Low",
       "title": "WD 4TB Gaming Drive Works with Playstation 4 Portable External Hard Drive",
       "status": "out of stock",
@@ -250,88 +250,142 @@
       ]
     }
   ],
-
-    "users": [
-      {
-        "user_id": 1,
-        "role_id": 1,
-        "first_name": "John",
-        "last_name": "Doe",
-        "gender": "male",
-        "birthday": "1990-05-15",
-        "address": "123 Main St, New York, NY",
-        "img_user": "john_doe.png",
-        "phonenumber": "1234567890",
-        "email": "john.doe@example.com",
-        "password": "hashed_password_1",
-        "status": "active",
-        "date_create": "2024-01-01",
-        "date_update": "2024-01-10"
-      },
-      {
-        "user_id": 2,
-        "role_id": 2,
-        "first_name": "Jane",
-        "last_name": "Smith",
-        "gender": "female",
-        "birthday": "1985-07-22",
-        "address": "456 Elm St, Los Angeles, CA",
-        "img_user": "jane_smith.png",
-        "phonenumber": "0987654321",
-        "email": "jane.smith@example.com",
-        "password": "hashed_password_2",
-        "status": "inactive",
-        "date_create": "2023-12-01",
-        "date_update": "2024-01-05"
-      },
-      {
-        "user_id": 3,
-        "role_id": 3,
-        "first_name": "Alice",
-        "last_name": "Brown",
-        "gender": "female",
-        "birthday": "1992-03-10",
-        "address": "789 Oak St, Chicago, IL",
-        "img_user": "alice_brown.png",
-        "phonenumber": "5551234567",
-        "email": "alice.brown@example.com",
-        "password": "hashed_password_3",
-        "status": "active",
-        "date_create": "2024-01-03",
-        "date_update": "2024-01-10"
-      },
-      {
-        "user_id": 4,
-        "role_id": 2,
-        "first_name": "Bob",
-        "last_name": "White",
-        "gender": "male",
-        "birthday": "1988-12-15",
-        "address": "321 Pine St, Houston, TX",
-        "img_user": "bob_white.png",
-        "phonenumber": "4441234567",
-        "email": "bob.white@example.com",
-        "password": "hashed_password_4",
-        "status": "pending",
-        "date_create": "2023-11-15",
-        "date_update": "2024-01-08"
-      },
-      {
-        "user_id": 5,
-        "role_id": 1,
-        "first_name": "Charlie",
-        "last_name": "Green",
-        "gender": "male",
-        "birthday": "1995-09-05",
-        "address": "654 Maple St, Miami, FL",
-        "img_user": "charlie_green.png",
-        "phonenumber": "7771234567",
-        "email": "charlie.green@example.com",
-        "password": "hashed_password_5",
-        "status": "active",
-        "date_create": "2024-01-05",
-        "date_update": "2024-01-10"
-      }
-    ]
-  
+  "users": [
+    {
+      "user_id": 1,
+      "role_id": 1,
+      "first_name": "John",
+      "last_name": "Doe",
+      "gender": "male",
+      "birthday": "1990-05-15",
+      "address": "123 Main St, New York, NY",
+      "img_user": "john_doe.png",
+      "phonenumber": "1234567890",
+      "email": "john.doe@example.com",
+      "password": "hashed_password_1",
+      "status": "active",
+      "date_create": "2024-01-01",
+      "date_update": "2024-01-10",
+      "id": "a31d"
+    },
+    {
+      "user_id": 2,
+      "role_id": 2,
+      "first_name": "Jane",
+      "last_name": "Smith",
+      "gender": "female",
+      "birthday": "1985-07-22",
+      "address": "456 Elm St, Los Angeles, CA",
+      "img_user": "jane_smith.png",
+      "phonenumber": "0987654321",
+      "email": "jane.smith@example.com",
+      "password": "hashed_password_2",
+      "status": "inactive",
+      "date_create": "2023-12-01",
+      "date_update": "2024-01-05",
+      "id": "d2b7"
+    },
+    {
+      "user_id": 3,
+      "role_id": 3,
+      "first_name": "Alice",
+      "last_name": "Brown",
+      "gender": "female",
+      "birthday": "1992-03-10",
+      "address": "789 Oak St, Chicago, IL",
+      "img_user": "alice_brown.png",
+      "phonenumber": "5551234567",
+      "email": "alice.brown@example.com",
+      "password": "hashed_password_3",
+      "status": "active",
+      "date_create": "2024-01-03",
+      "date_update": "2024-01-10",
+      "id": "ef65"
+    },
+    {
+      "user_id": 4,
+      "role_id": 2,
+      "first_name": "Bob",
+      "last_name": "White",
+      "gender": "male",
+      "birthday": "1988-12-15",
+      "address": "321 Pine St, Houston, TX",
+      "img_user": "bob_white.png",
+      "phonenumber": "4441234567",
+      "email": "bob.white@example.com",
+      "password": "hashed_password_4",
+      "status": "pending",
+      "date_create": "2023-11-15",
+      "date_update": "2024-01-08",
+      "id": "349b"
+    },
+    {
+      "user_id": 5,
+      "role_id": 1,
+      "first_name": "Charlie",
+      "last_name": "Green",
+      "gender": "male",
+      "birthday": "1995-09-05",
+      "address": "654 Maple St, Miami, FL",
+      "img_user": "charlie_green.png",
+      "phonenumber": "7771234567",
+      "email": "charlie.green@example.com",
+      "password": "hashed_password_5",
+      "status": "active",
+      "date_create": "2024-01-05",
+      "date_update": "2024-01-10",
+      "id": "66c5"
+    },
+    {
+      "id": "4bc2",
+      "user_id": 6,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "phongduyxxx@gmail.com",
+      "password": "abcxyz",
+      "status": "active",
+      "date_create": "2024-10-15T06:21:23.158Z",
+      "date_update": "2024-10-15T06:21:23.158Z"
+    },
+    {
+      "id": "3a1c",
+      "user_id": 7,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "tuanhung@gmail.com",
+      "password": "a",
+      "status": "active",
+      "date_create": "2024-10-15T14:53:44.186Z",
+      "date_update": "2024-10-15T14:53:44.191Z"
+    },
+    {
+      "id": "b848",
+      "user_id": 8,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "quyendoan2k4@gmail.com",
+      "password": "123",
+      "status": "active",
+      "date_create": "2024-10-16T04:14:47.681Z",
+      "date_update": "2024-10-16T04:14:47.682Z"
+    }
+  ]
 }

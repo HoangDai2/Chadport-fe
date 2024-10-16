@@ -8,6 +8,9 @@ type Props = {};
 const Category = (props: Props) => {
   return (
     <>
+      <div className="block-title">
+        <h2>Category</h2>
+      </div>
       <section className="section section-padding m-b-60">
         <div className="section-container">
           <div className="block block-banners layout-1 banners-effect">

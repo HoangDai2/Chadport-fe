@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import logochartport from "../img/logochadport.png";
-
+import { useNavigate } from "react-router-dom";
 const Headerclient = () => {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [carCount, setCarCount] = useState(0);
+  const [userName, setUserName] = useState<string | null>(null);
+  const navigate = useNavigate();
   useEffect(() => {
     const updateWishlistCount = () => {
       const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
@@ -27,6 +29,23 @@ const Headerclient = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // Kiểm tra sessionStorage để lấy thông tin người dùng
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUserName(user.username || user.email); // Hiển thị tên hoặc email của người dùng
+    } else {
+      setUserName(null); // Đặt userName là null nếu không có thông tin
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Xóa thông tin người dùng khỏi sessionStorage
+    sessionStorage.removeItem("user");
+    setUserName(null); // Cập nhật state để hiển thị nút Login
+    navigate("/login"); // Điều hướng đến trang login sau khi đăng xuất
+  };
   return (
     <>
       <div
@@ -129,10 +148,22 @@ const Headerclient = () => {
                 </div>
 
                 <div className="col-xl-3 col-lg-4 col-md-12 col-sm-12 header-right mt-[28px]">
-                  <div className="flex items-center space-x-4 gap-[40px]">
-                    <a href="/login">
-                      <span className="text-lg tracking-wide">LOGIN</span>
-                    </a>
+                  <div className="flex items-center space-x-4 gap-[15px]">
+                    {userName ? (
+                      <>
+                        <span>{userName}</span>
+                        <button onClick={handleLogout} className="ml-4">
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      <a
+                        href="/login"
+                        className="text-black hover:text-gray-400"
+                      >
+                        Login
+                      </a>
+                    )}
                     <button>
                       <i
                         className="fas fa-search text-lg"
@@ -144,6 +175,19 @@ const Headerclient = () => {
                         <button>
                           <i
                             className="far fa-heart text-lg"
+                            style={{ fontSize: "25px" }}
+                          ></i>
+                        </button>
+                      </a>
+                      <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
+                        {wishlistCount}
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <a href="/profile">
+                        <button>
+                          <i
+                            className="fa-solid fa-user text-lg"
                             style={{ fontSize: "25px" }}
                           ></i>
                         </button>

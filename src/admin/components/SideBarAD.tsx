@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 type Props = {};
 
@@ -26,6 +27,18 @@ const SideBarAD = (props: Props) => {
               </a>
             </li>
             <li>
+              <Link to="/admin/products/add">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <title>plus-box</title>
+                  <path
+                    fill="black"
+                    d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5C3.9,3 3,3.9 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M12,3C12.55,3 13,3.45 13,4C13,4.55 12.55,5 12,5C11.45,5 11,4.55 11,4C11,3.45 11.45,3 12,3M17,17H7V15H17V17M17,13H7V11H17V13M17,9H7V7H17V9Z"
+                  />
+                </svg>
+                <span>Add Product</span>
+              </Link>
+            </li>
+            <li>
               <a href="/admin/listuser">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <title>card-account-mail</title>
@@ -34,7 +47,7 @@ const SideBarAD = (props: Props) => {
                     d="M21,8V7L18,9L15,7V8L18,10M22,3H2A2,2 0 0,0 0,5V19A2,2 0 0,0 2,21H22A2,2 0 0,0 24,19V5A2,2 0 0,0 22,3M8,6A3,3 0 0,1 11,9A3,3 0 0,1 8,12A3,3 0 0,1 5,9A3,3 0 0,1 8,6M14,18H2V17C2,15 6,13.9 8,13.9C10,13.9 14,15 14,17M22,12H14V6H22"
                   />
                 </svg>
-                <span>Danh Sách Uesr</span>
+                <span>Danh Sách User</span>
               </a>
             </li>
             <li>

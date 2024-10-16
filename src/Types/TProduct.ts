@@ -1,26 +1,30 @@
-type Category = {
-  id: number;
+export interface Category {
+  id?: number;
   name: string;
   parent_id: number | null;
   status: string;
   date_create: string;
   date_update: string;
-};
+}
 
-type TProduct = {
-  pro_id: number; // ID sản phẩm
-  cat_id: number; // ID danh mục
-  name: string; // Tên sản phẩm
-  status: string; // Trạng thái (e.g. "out of stock")
-  col_id: number; // ID màu sắc
-  size_id: number; // ID kích cỡ
-  brand_id: number; // ID thương hiệu
-  quantity: number; // Số lượng sản phẩm trong kho
-  image_product: string; // URL hình ảnh sản phẩm
-  price: number; // Giá gốc
-  price_sale: number; // Giá giảm (nếu có)
-  type: string; // Loại sản phẩm (e.g. "boots")
-  date_create: string; // Ngày tạo sản phẩm (ISO string format)
-};
+export interface TProduct {
+  id: number;
+  cat_id: number; // ID danh mục (nếu cần)
+  title: string;
+  name: string;
+  status: string;
+  col_id: number;
+  size_id: number;
+  brand_id: number;
+  description: string;
+  quantity: number;
+  image_product: string;
+  price: number;
+  price_sale: number;
+  type: string;
+  date_create: string;
+  date_update: string;
+  category: Category[]; // Chỉ định category là một mảng các đối tượng
+}
 
 export default TProduct;
