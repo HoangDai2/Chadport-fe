@@ -46,6 +46,8 @@ import { toast } from "react-toastify";
 import ProductList from "./admin/pages/ProductList"; // Correcting the import path
 import ProductAdd from "./admin/pages/ProductAdd";
 import Profile from "./pages/Profile";
+import Pay_done from "./pages/Pay_done";
+
 function App() {
   const addToCart = (product: TProduct) => {
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -173,6 +175,11 @@ function App() {
               </>
             }
           />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/pay_done" element={<Pay_done />} />
+          <Route path="/billorder" element={<BillOrder />} />
+          <Route path="/shopcart" element={<ShopCart />} />
+          <Route path="/login" element={<LoginRegister />} />
           <Route
             path="/wishlist"
             element={<Wishlist addToCart={addToCart} />}

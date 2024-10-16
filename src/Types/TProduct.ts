@@ -6,6 +6,22 @@ export interface Category {
   date_create: string;
   date_update: string;
 }
+export interface size {
+  id?: number;
+  name: string;
+  status: string;
+  date_create: string;
+  date_update: string;
+}
+
+export interface color {
+  id?: number;
+
+  name: string;
+  status: string;
+  date_create: string;
+  date_update: string;
+}
 
 export interface TProduct {
   id: number;
@@ -25,6 +41,10 @@ export interface TProduct {
   date_create: string;
   date_update: string;
   category: Category[]; // Chỉ định category là một mảng các đối tượng
+  // size?: [];
+  // color?: [];
+  size?: string; // Thay vì mảng, đây là chuỗi để lưu lựa chọn đã chọn
+  color?: string; // Tương tự, chuỗi để lưu màu đã chọn
 }
 
 export default TProduct;
