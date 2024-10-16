@@ -25,11 +25,11 @@ import "./libs/icomoon-font/css/icomoon.css";
 // import "./libs/font-awesome/css/font-awesome.css";
 import "./libs/wpbingofont/css/wpbingofont.css";
 import "./libs/elegant-icons/css/elegant.css";
-import "./libs/slick/css/slick.css";
-import "./libs/slick/css/slick-theme.css";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "slick-carousel";
+// import "./libs/slick/css/slick.css";
+// import "./libs/slick/css/slick-theme.css";
+// import "slick-carousel/slick/slick.css";
+// import "slick-carousel/slick/slick-theme.css";
+// import "slick-carousel";
 import "./libs/mmenu/css/mmenu.min.css";
 import LoginRegister from "./pages/Login";
 import ShopDetails from "./pages/ShopDetails";
@@ -44,7 +44,9 @@ import { toast } from "react-toastify";
 function App() {
   const addToCart = (product: TProduct) => {
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const isProductCart = cart.some((item: TProduct) => item.id === product.id);
+    const isProductCart = cart.some(
+      (item: TProduct) => item.pro_id === product.pro_id
+    );
 
     if (isProductCart) {
       toast.info(`${product.name} đã có trong giỏ hàng!`, {
@@ -74,7 +76,7 @@ function App() {
   const addToWishlist = (product: TProduct) => {
     let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
     const isProductInWishlist = wishlist.some(
-      (item: TProduct) => item.id === product.id
+      (item: TProduct) => item.pro_id === product.pro_id
     );
 
     if (isProductInWishlist) {

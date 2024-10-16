@@ -1,93 +1,337 @@
 {
   "products": [
     {
-      "pro_id": 1,
+      "id": 1,
       "name": "Nike Revolution 7 EasyOn",
       "status": "available",
       "quantity": 100,
+      "title": "Mens Cotton Jacket",
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/b14aba9a-f828-45d3-9607-b687b884aa7d/NIKE+REVOLUTION+7+EASYON.png",
       "price": 200,
+      "description": "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday",
       "price_sale": 150,
       "type": "sneakers",
       "date_create": "2024-09-01",
-      "date_update": "2024-09-05"
+      "date_update": "2024-09-05",
+      "category": [
+        {
+          "id": 1,
+          "name": "Sportswear",
+          "parent_id": null,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "id": 2,
+          "name": "Footwear",
+          "parent_id": 1,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ]
     },
     {
-      "pro_id": 2,
+      "id": 2,
       "name": "Nike Air Force 1 '07",
       "status": "out of stock",
+      "title": "Mens Casual Slim Fit",
       "quantity": 0,
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/4f37fca8-6bce-43e7-ad07-f57ae3c13142/AIR+FORCE+1+%2707.png",
+      "description": "Slim-fitting style, contrast raglan long sleeve, three-button henley placket, light weight & soft fabric for breathable and comfortable wearing. And Solid stitched shirts with round neck made for durability and a great fit for casual fashion wear and diehard baseball fans. The Henley style round neckline includes a three-button placket.",
       "price": 300,
       "price_sale": 250,
       "type": "boots",
-      "date_create": "2024-08-01"
+      "date_create": "2024-08-01",
+      "category": [
+        {
+          "id": 1,
+          "name": "Sportswear",
+          "parent_id": null,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "id": 2,
+          "name": "Footwear",
+          "parent_id": 1,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ]
     },
     {
-      "pro_id": 3,
+      "id": 3,
       "name": "Nike P-6000",
       "status": "out of stock",
+      "title": "John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet",
       "quantity": 0,
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/e3cc2305-65bb-4824-b4bd-9474386f6656/WMNS+NIKE+P-6000.png",
+      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
       "price": 300,
       "price_sale": 250,
       "type": "boots",
-      "date_create": "2024-08-01"
+      "date_create": "2024-08-01",
+      "category": [
+        {
+          "id": 1,
+          "name": "Sportswear",
+          "parent_id": null,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "id": 2,
+          "name": "Footwear",
+          "parent_id": 1,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ]
     },
     {
-      "pro_id": 4,
+      "id": 4,
       "name": "Nike Court Vision Low Next Nature",
+      "title": "Solid Gold Petite Micropave ",
       "status": "out of stock",
       "quantity": 0,
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/85057772-9c48-4c70-a4f5-75d110251e1d/NIKE+COURT+VISION+LO+NN+ESS.png",
+      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
       "price": 300,
       "price_sale": 250,
       "type": "boots",
-      "date_create": "2024-08-01"
+      "date_create": "2024-08-01",
+      "category": [
+        {
+          "id": 1,
+          "name": "Sportswear",
+          "parent_id": null,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "id": 2,
+          "name": "Footwear",
+          "parent_id": 1,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ]
     },
     {
-      "pro_id": 5,
+      "id": 5,
       "name": "Air Jordan 1 Low",
       "status": "out of stock",
+      "title": "White Gold Plated Princess",
       "quantity": 0,
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/86991b52-33a2-4e41-aace-c05510832f84/AIR+JORDAN+1+LOW.png",
+      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
       "price": 300,
       "price_sale": 250,
       "type": "boots",
-      "date_create": "2024-08-01"
+      "date_create": "2024-08-01",
+      "category": [
+        {
+          "id": 1,
+          "name": "Sportswear",
+          "parent_id": null,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "id": 2,
+          "name": "Footwear",
+          "parent_id": 1,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ]
     },
     {
-      "pro_id": 6,
+      "id": 6,
       "name": "Jordan One Take 5 PF",
       "status": "out of stock",
+      "title": "WD 2TB Elements Portable External Hard Drive - USB 3.0 ",
       "quantity": 0,
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/dac0b316-f106-4006-a41f-7b98cc523d1e/JORDAN+ONE+TAKE+5+PF.png",
+      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
       "price": 300,
       "price_sale": 250,
       "type": "boots",
-      "date_create": "2024-08-01"
+      "date_create": "2024-08-01",
+      "category": [
+        {
+          "id": 1,
+          "name": "Sportswear",
+          "parent_id": null,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "id": 2,
+          "name": "Footwear",
+          "parent_id": 1,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ]
     },
     {
-      "pro_id": 7,
+      "id": 7,
       "name": "LeBron XXI EP",
       "status": "out of stock",
       "quantity": 0,
+      "title": "SanDisk SSD PLUS 1TB Internal SSD - SATA III 6 Gb/s",
       "image_product": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/6eb361fd-b7d8-496d-9e44-ed48c94afd8a/LEBRON+XXI+EP.png",
+      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
       "price": 300,
       "price_sale": 250,
       "type": "Basketball Shoes",
-      "date_create": "2024-08-01"
+      "date_create": "2024-08-01",
+      "category": [
+        {
+          "id": 1,
+          "name": "Sportswear",
+          "parent_id": null,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "id": 2,
+          "name": "Footwear",
+          "parent_id": 1,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ]
     },
     {
-      "pro_id": 8,
+      "id": 8,
       "name": "Air Jordan Legacy 312 Low",
+      "title": "WD 4TB Gaming Drive Works with Playstation 4 Portable External Hard Drive",
       "status": "out of stock",
       "quantity": 0,
       "image_product": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/mvyo37amsfbmz2rwogi4/AIR+JORDAN+LEGACY+312+LOW.png",
+      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
       "price": 300,
       "price_sale": 250,
       "type": "sneaker",
-      "date_create": "2024-08-01"
+      "date_create": "2024-08-01",
+      "category": [
+        {
+          "id": 1,
+          "name": "Sportswear",
+          "parent_id": null,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "id": 2,
+          "name": "Footwear",
+          "parent_id": 1,
+          "status": "active",
+          "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ]
     }
-  ]
+  ],
+
+    "users": [
+      {
+        "user_id": 1,
+        "role_id": 1,
+        "first_name": "John",
+        "last_name": "Doe",
+        "gender": "male",
+        "birthday": "1990-05-15",
+        "address": "123 Main St, New York, NY",
+        "img_user": "john_doe.png",
+        "phonenumber": "1234567890",
+        "email": "john.doe@example.com",
+        "password": "hashed_password_1",
+        "status": "active",
+        "date_create": "2024-01-01",
+        "date_update": "2024-01-10"
+      },
+      {
+        "user_id": 2,
+        "role_id": 2,
+        "first_name": "Jane",
+        "last_name": "Smith",
+        "gender": "female",
+        "birthday": "1985-07-22",
+        "address": "456 Elm St, Los Angeles, CA",
+        "img_user": "jane_smith.png",
+        "phonenumber": "0987654321",
+        "email": "jane.smith@example.com",
+        "password": "hashed_password_2",
+        "status": "inactive",
+        "date_create": "2023-12-01",
+        "date_update": "2024-01-05"
+      },
+      {
+        "user_id": 3,
+        "role_id": 3,
+        "first_name": "Alice",
+        "last_name": "Brown",
+        "gender": "female",
+        "birthday": "1992-03-10",
+        "address": "789 Oak St, Chicago, IL",
+        "img_user": "alice_brown.png",
+        "phonenumber": "5551234567",
+        "email": "alice.brown@example.com",
+        "password": "hashed_password_3",
+        "status": "active",
+        "date_create": "2024-01-03",
+        "date_update": "2024-01-10"
+      },
+      {
+        "user_id": 4,
+        "role_id": 2,
+        "first_name": "Bob",
+        "last_name": "White",
+        "gender": "male",
+        "birthday": "1988-12-15",
+        "address": "321 Pine St, Houston, TX",
+        "img_user": "bob_white.png",
+        "phonenumber": "4441234567",
+        "email": "bob.white@example.com",
+        "password": "hashed_password_4",
+        "status": "pending",
+        "date_create": "2023-11-15",
+        "date_update": "2024-01-08"
+      },
+      {
+        "user_id": 5,
+        "role_id": 1,
+        "first_name": "Charlie",
+        "last_name": "Green",
+        "gender": "male",
+        "birthday": "1995-09-05",
+        "address": "654 Maple St, Miami, FL",
+        "img_user": "charlie_green.png",
+        "phonenumber": "7771234567",
+        "email": "charlie.green@example.com",
+        "password": "hashed_password_5",
+        "status": "active",
+        "date_create": "2024-01-05",
+        "date_update": "2024-01-10"
+      }
+    ]
+  
 }

@@ -604,7 +604,7 @@ const ShopDetails = ({
                                 {relatedProducts.map((relatedProduct) => (
                                   <div
                                     className="item-product slick-slider-item"
-                                    key={relatedProduct.id}
+                                    key={relatedProduct.pro_id}
                                   >
                                     <div className="items">
                                       <div className="products-entry clearfix product-wapper">
@@ -614,7 +614,7 @@ const ShopDetails = ({
                                           </div>
                                           <div className="product-thumb-hover">
                                             <a
-                                              href={`/shop-details/${relatedProduct.id}`}
+                                              href={`/shop-details/${relatedProduct.pro_id}`}
                                             >
                                               <img
                                                 width={600}

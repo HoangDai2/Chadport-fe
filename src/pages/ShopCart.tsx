@@ -1,262 +1,164 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import TProduct from "../Types/TProduct";
 
 const ShopCart = () => {
+  const [cartItems, setCartItems] = useState<TProduct[]>([]);
+  const [quantity, setQuantity] = useState<number[]>([]);
+
+  useEffect(() => {
+    const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartItems(storedCart);
+    setQuantity(storedCart.map(() => 1));
+  }, []);
+  const delOneCart = (productId: number) => {
+    const updatedCart = cartItems.filter((item) => item.id !== productId);
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event("storage"));
+  };
+  const handleUp = (index: number) => {
+    setQuantity((prevQuantity) => {
+      const newQuantity = [...prevQuantity];
+      newQuantity[index] = Math.min(newQuantity[index] + 1, 10);
+      return newQuantity;
+    });
+  };
+
+  const handleDown = (index: number) => {
+    setQuantity((prevQuantity) => {
+      const newQuantity = [...prevQuantity];
+      newQuantity[index] = Math.max(newQuantity[index] - 1, 1);
+      return newQuantity;
+    });
+  };
+  const getTotal = () => {
+    return cartItems.reduce(
+      (total, item, index) => total + item.price_sale * quantity[index],
+      0
+    );
+  };
+
   return (
-    <>
-      <div id="site-main" className="site-main">
-        <div id="main-content" className="main-content">
-          <div id="primary" className="content-area">
-            <div id="title" className="page-title">
-              <div className="section-container">
-                <div className="content-title-heading">
-                  <h1 className="text-title-heading">Shopping Cart</h1>
-                </div>
-                <div className="breadcrumbs">
-                  <a href="index.html">Home</a>
-                  <span className="delimiter" />
-                  <a href="shop-grid-left.html">Shop</a>
-                  <span className="delimiter" />
-                  Shopping Cart
-                </div>
-              </div>
-            </div>
-            <div id="content" className="site-content" role="main">
-              <div className="section-padding">
-                <div className="section-container p-l-r">
-                  <div className="shop-cart">
-                    <div className="row">
-                      <div className="col-xl-8 col-lg-12 col-md-12 col-12">
-                        <form className="cart-form" action="#" method="post">
-                          <div className="table-responsive">
-                            <table className="cart-items table" cellSpacing={0}>
-                              <thead>
-                                <tr>
-                                  <th className="product-thumbnail">Product</th>
-                                  <th className="product-price">Price</th>
-                                  <th className="product-quantity">Quantity</th>
-                                  <th className="product-subtotal">Subtotal</th>
-                                  <th className="product-remove">&nbsp;</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr className="cart-item">
-                                  <td className="product-thumbnail">
-                                    <a href="shop-details.html">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src="media/product/W+NIKE+ZOOM+VOMERO+1.png"
-                                        className="product-image"
-                                        alt=""
-                                      />
-                                    </a>
-                                    <div className="product-name">
-                                      <a href="shop-details.html">
-                                        W NIKE ZOOM VOMERO 2
-                                      </a>
-                                    </div>
+    <div id="site-main" className="site-main bg-gray-100 min-h-screen">
+      <div id="main-content" className="main-content">
+        <div id="primary" className="content-area mx-auto py-12">
+          <div id="title" className="page-title mb-6">
+            <h1 className="text-3xl font-bold text-center">Shopping Cart</h1>
+          </div>
+          <div id="content" className="site-content" role="main">
+            <div className="section-padding">
+              <div className="section-container p-4">
+                <div className="shop-cart bg-white shadow-lg rounded-lg overflow-hidden">
+                  <div className="row">
+                    <div className="col-xl-8 col-lg-12 col-md-12 col-12 p-4">
+                      <form className="cart-form">
+                        <div className="table-responsive">
+                          <table className="cart-items table w-full text-left border-collapse">
+                            <thead className="bg-gray-200">
+                              <tr>
+                                <th className="py-3 px-4">Product</th>
+                                <th className="py-3 px-4">Price</th>
+                                <th className="py-3 px-4">Quantity</th>
+                                <th className="py-3 px-4">Subtotal</th>
+                                <th className="py-3 px-4">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {cartItems.map((item, index) => (
+                                <tr
+                                  key={item.id}
+                                  className="border-b hover:bg-gray-50"
+                                >
+                                  <td className="py-3 px-4 flex items-center">
+                                    <img
+                                      src={item.image_product}
+                                      alt={item.name}
+                                      className="h-16 w-16 object-cover rounded"
+                                    />
+                                    <span className="ml-4">{item.name}</span>
                                   </td>
-                                  <td className="product-price">
-                                    <span className="price">$150.00</span>
+                                  <td className="py-3 px-4">
+                                    ${item.price_sale.toFixed(2)}
                                   </td>
-                                  <td className="product-quantity">
-                                    <div className="quantity">
-                                      <button type="button" className="minus">
-                                        -
-                                      </button>
-                                      <input
-                                        type="number"
-                                        className="qty"
-                                        step={1}
-                                        min={0}
-                                        max={10}
-                                        name="quantity"
-                                        defaultValue={2}
-                                        title="Qty"
-                                        size={4}
-                                        placeholder="1"
-                                        inputMode="numeric"
-                                        autoComplete="off"
-                                      />
-                                      <button type="button" className="plus">
-                                        +
-                                      </button>
-                                    </div>
-                                  </td>
-                                  <td className="product-subtotal">
-                                    <span>$300.00</span>
-                                  </td>
-                                  <td className="product-remove">
-                                    <a href="#" className="remove">
-                                      ×
-                                    </a>
-                                  </td>
-                                </tr>
-                                <tr className="cart-item">
-                                  <td className="product-thumbnail">
-                                    <a href="shop-details.html">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src="media/product/AIR+JORDAN+1+LOW+SE+1.jpg"
-                                        className="product-image"
-                                        alt=""
-                                      />
-                                    </a>
-                                    <div className="product-name">
-                                      <a href="shop-details.html">
-                                        AIR JORDAN 1 LOW SE
-                                      </a>
-                                    </div>
-                                  </td>
-                                  <td className="product-price">
-                                    <span>$180.00</span>
-                                  </td>
-                                  <td className="product-quantity">
-                                    <div className="quantity">
-                                      <button type="button" className="minus">
-                                        -
-                                      </button>
-                                      <input
-                                        type="number"
-                                        className="qty"
-                                        step={1}
-                                        min={0}
-                                        max={10}
-                                        name="quantity"
-                                        defaultValue={1}
-                                        title="Qty"
-                                        size={4}
-                                        placeholder={""}
-                                        inputMode="numeric"
-                                        autoComplete="off"
-                                      />
-                                      <button type="button" className="plus">
-                                        +
-                                      </button>
-                                    </div>
-                                  </td>
-                                  <td className="product-subtotal">
-                                    <span className="price">$180.00</span>
-                                  </td>
-                                  <td className="product-remove">
-                                    <a href="#" className="remove">
-                                      ×
-                                    </a>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td colSpan={6} className="actions">
-                                    <div className="bottom-cart">
-                                      <div className="coupon">
-                                        <input
-                                          type="text"
-                                          name="coupon_code"
-                                          className="input-text"
-                                          id="coupon-code"
-                                          defaultValue={" "}
-                                          placeholder="Coupon code"
-                                        />
-                                        <button
-                                          type="submit"
-                                          name="apply_coupon"
-                                          className="button"
-                                          value="Apply coupon"
-                                        >
-                                          Apply coupon
-                                        </button>
-                                      </div>
-                                      <h2>
-                                        <a href="shop-grid-left.html">
-                                          Continue Shopping
-                                        </a>
-                                      </h2>
+                                  <td className="py-3 px-4">
+                                    <div className="flex items-center justify-center">
                                       <button
-                                        type="submit"
-                                        name="update_cart"
-                                        className="button"
-                                        value="Update cart"
+                                        type="button"
+                                        onClick={() => handleDown(index)}
+                                        className="bg-gray-300 rounded px-2 hover:bg-gray-400"
                                       >
-                                        Update cart
+                                        -
+                                      </button>
+                                      <input
+                                        type="number"
+                                        value={quantity[index]}
+                                        readOnly
+                                        className="mx-2 w-12 text-center border rounded"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => handleUp(index)}
+                                        className="bg-gray-300 rounded px-2 hover:bg-gray-400"
+                                      >
+                                        +
                                       </button>
                                     </div>
                                   </td>
+                                  <td className="py-3 px-4">
+                                    $
+                                    {(
+                                      item.price_sale * quantity[index]
+                                    ).toFixed(2)}
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <button
+                                      onClick={() => delOneCart(item.id)}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      Remove
+                                    </button>
+                                  </td>
                                 </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </form>
-                      </div>
-                      <div className="col-xl-4 col-lg-12 col-md-12 col-12">
-                        <div className="cart-totals">
-                          <h2>Cart totals</h2>
-                          <div>
-                            <div className="cart-subtotal">
-                              <div className="title">Subtotal</div>
-                              <div>
-                                <span>$480.00</span>
-                              </div>
-                            </div>
-                            <div className="shipping-totals">
-                              <div className="title">Shipping</div>
-                              <div>
-                                <ul className="shipping-methods custom-radio">
-                                  <li>
-                                    <input
-                                      type="radio"
-                                      name="shipping_method"
-                                      data-index={0}
-                                      defaultValue="free_shipping"
-                                      className="shipping_method"
-                                    />
-                                    <label>Free shipping</label>
-                                  </li>
-                                  <li>
-                                    <input
-                                      type="radio"
-                                      name="shipping_method"
-                                      data-index={0}
-                                      defaultValue="flat_rate"
-                                      className="shipping_method"
-                                    />
-                                    <label>Flat rate</label>
-                                  </li>
-                                </ul>
-                                <p className="shipping-desc">
-                                  Shipping options will be updated during
-                                  checkout.
-                                </p>
-                              </div>
-                            </div>
-                            <div className="order-total">
-                              <div className="title">Total</div>
-                              <div>
-                                <span>$480.00</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="proceed-to-checkout">
-                            <a
-                              href="/checkout"
-                              className="checkout-button button"
-                            >
-                              Proceed to checkout
-                            </a>
-                          </div>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
+                      </form>
+                    </div>
+                    <div className="col-xl-4 col-lg-12 col-md-12 col-12 p-4">
+                      <div className="cart-totals bg-gray-100 p-4 rounded-lg shadow">
+                        <h2 className="text-xl font-bold mb-4">Cart Totals</h2>
+                        
+                        {/* Thông tin sơ lược các sản phẩm trong giỏ hàng */}
+                        <ul className="mb-4">
+                          {cartItems.map((item, index) => (
+                            <li key={index} className="flex justify-between mb-2">
+                              <span>{item.name} (x{quantity[index]})</span>
+                              <span>${(item.price_sale * quantity[index]).toFixed(2)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        
+                        <div className="flex justify-between mb-2">
+                          <span>Total:</span>
+                          <span>${getTotal().toFixed(2)}</span>
+                        </div>
+                        <a
+                          href="/checkout"
+                          className="block text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-700 transition"
+                        >
+                          Proceed to Checkout
+                        </a>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            {/* #content */}
           </div>
-          {/* #primary */}
         </div>
-        {/* #main-content */}
       </div>
-    </>
+    </div>
   );
 };
 

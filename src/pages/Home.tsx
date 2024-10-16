@@ -37,10 +37,10 @@ const Home = () => {
           <div className="products-grid">
             {products.map((product) => (
               <div
-                key={product.id}
+                key={product.pro_id}
                 className="group relative block overflow-hidden"
                 style={{ border: "1px solid #e1dbdb" }}
-                onClick={() => goToProductDetail(product.id)} // Thêm sự kiện onClick để điều hướng
+                onClick={() => goToProductDetail(product.pro_id)} // Thêm sự kiện onClick để điều hướng
               >
                 <button className="absolute end-4 top-4 z-10 rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75">
                   <span className="sr-only">Wishlist</span>
