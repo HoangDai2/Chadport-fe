@@ -30,6 +30,34 @@
           "date_create": "2023-08-01",
           "date_update": "2024-08-15"
         }
+      ],
+      "size": [
+        {
+          "name": "42",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "43",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "color": [
+        {
+          "name": "Red",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "Blue",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
       ]
     },
     {
@@ -61,7 +89,19 @@
           "date_create": "2023-08-01",
           "date_update": "2024-08-15"
         }
-      ]
+      ],
+      "color": {
+        "name": "Red",
+        "status": "active",
+        "date_create": "2024-08-01",
+        "date_update": "2024-08-15"
+      },
+      "size": {
+        "name": "42",
+        "status": "active",
+        "date_create": "2024-08-01",
+        "date_update": "2024-08-15"
+      }
     },
     {
       "id": "3",
@@ -92,7 +132,19 @@
           "date_create": "2023-08-01",
           "date_update": "2024-08-15"
         }
-      ]
+      ],
+      "color": {
+        "name": "Red",
+        "status": "active",
+        "date_create": "2024-08-01",
+        "date_update": "2024-08-15"
+      },
+      "size": {
+        "name": "42",
+        "status": "active",
+        "date_create": "2024-08-01",
+        "date_update": "2024-08-15"
+      }
     },
     {
       "id": "4",
@@ -121,6 +173,34 @@
           "parent_id": 1,
           "status": "active",
           "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "size": [
+        {
+          "name": "42",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "43",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "color": [
+        {
+          "name": "Red",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "Blue",
+          "status": "active",
+          "date_create": "2024-08-01",
           "date_update": "2024-08-15"
         }
       ]
@@ -154,6 +234,34 @@
           "date_create": "2023-08-01",
           "date_update": "2024-08-15"
         }
+      ],
+      "size": [
+        {
+          "name": "42",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "43",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "color": [
+        {
+          "name": "Red",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "Blue",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
       ]
     },
     {
@@ -183,6 +291,34 @@
           "parent_id": 1,
           "status": "active",
           "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "size": [
+        {
+          "name": "42",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "43",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "color": [
+        {
+          "name": "Red",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "Blue",
+          "status": "active",
+          "date_create": "2024-08-01",
           "date_update": "2024-08-15"
         }
       ]
@@ -216,6 +352,34 @@
           "date_create": "2023-08-01",
           "date_update": "2024-08-15"
         }
+      ],
+      "size": [
+        {
+          "name": "42",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "43",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "color": [
+        {
+          "name": "Red",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "Blue",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
       ]
     },
     {
@@ -245,6 +409,34 @@
           "parent_id": 1,
           "status": "active",
           "date_create": "2023-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "size": [
+        {
+          "name": "42",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "43",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        }
+      ],
+      "color": [
+        {
+          "name": "Red",
+          "status": "active",
+          "date_create": "2024-08-01",
+          "date_update": "2024-08-15"
+        },
+        {
+          "name": "Blue",
+          "status": "active",
+          "date_create": "2024-08-01",
           "date_update": "2024-08-15"
         }
       ]

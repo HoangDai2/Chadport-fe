@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import instance from "../Service";
 import { ToastContainer } from "react-toastify";
@@ -13,6 +13,38 @@ const ShopDetails = ({
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<TProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<TProduct[]>([]);
+
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size);
+  };
+  const navigate = useNavigate();
+  const handleBuyNow = () => {
+    if (!selectedSize || !selectedColor) {
+      alert("Please select size and color");
+      return;
+    }
+
+    if (!product?.id) {
+      console.error("Product ID is missing");
+      return;
+    }
+
+    const productDetails = {
+      ...product,
+      quantity,
+      size: selectedSize,
+      color: selectedColor,
+    };
+
+    addToCart(productDetails);
+    navigate("/checkout", { state: { product: productDetails } });
+  };
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
+  };
+
   // State để quản lý số lượng sản phẩm
   const [quantity, setQuantity] = useState(1);
 
@@ -206,15 +238,19 @@ const ShopDetails = ({
                                   <td className="label">Size</td>
                                   <td className="attributes">
                                     <ul className="text">
-                                      <li>
-                                        <span>L</span>
-                                      </li>
-                                      <li>
-                                        <span>M</span>
-                                      </li>
-                                      <li>
-                                        <span>S</span>
-                                      </li>
+                                      {["S", "M", "L"].map((size) => (
+                                        <li
+                                          key={size}
+                                          onClick={() => handleSizeChange(size)} // Gọi hàm khi người dùng chọn size
+                                          className={
+                                            selectedSize === size
+                                              ? "selected"
+                                              : ""
+                                          }
+                                        >
+                                          <span>{size}</span>
+                                        </li>
+                                      ))}
                                     </ul>
                                   </td>
                                 </tr>
@@ -222,15 +258,39 @@ const ShopDetails = ({
                                   <td className="label">Color</td>
                                   <td className="attributes">
                                     <ul className="colors">
-                                      <li>
-                                        <span className="color-1" />
-                                      </li>
-                                      <li>
-                                        <span className="color-2" />
-                                      </li>
-                                      <li>
-                                        <span className="color-3" />
-                                      </li>
+                                      {["black", "blue", "green"].map(
+                                        (color) => (
+                                          <li
+                                            key={color}
+                                            onClick={() => {
+                                              // console.log(
+                                              //   `Color selected: ${color}`
+                                              // );
+                                              handleColorChange(color); // Gọi hàm để thay đổi state
+                                            }}
+                                            className={
+                                              selectedColor === color
+                                                ? "selected-color"
+                                                : ""
+                                            }
+                                          >
+                                            <span
+                                              style={{
+                                                backgroundColor: color, // Cập nhật màu sắc cho mỗi phần tử
+                                                display: "inline-block",
+                                                width: "30px",
+                                                height: "30px",
+                                                borderRadius: "50%",
+                                                cursor: "pointer",
+                                                border:
+                                                  selectedColor === color
+                                                    ? "3px solid blue"
+                                                    : "2px solid #ccc", // Thêm viền khi được chọn
+                                              }}
+                                            />
+                                          </li>
+                                        )
+                                      )}
                                     </ul>
                                   </td>
                                 </tr>
@@ -251,20 +311,15 @@ const ShopDetails = ({
                                   type="number"
                                   className="qty"
                                   step={1}
-                                  min={0}
+                                  min={1}
                                   name="quantity"
-                                  defaultValue={1}
-                                  title="Qty"
-                                  size={4}
-                                  inputMode="numeric"
-                                  autoComplete="off"
                                   value={quantity}
                                   onChange={(e) => {
-                                    const value = parseInt(e.target.value); // Lấy giá trị từ input
-                                    console.log(value);
+                                    const value = parseInt(e.target.value);
                                     if (!isNaN(value) && value > 0) {
-                                      // Kiểm tra giá trị là số và lớn hơn 0
                                       setQuantity(value); // Cập nhật state quantity
+                                    } else {
+                                      setQuantity(1); // Đặt giá trị mặc định là 1 nếu người dùng nhập sai
                                     }
                                   }}
                                 />
@@ -279,7 +334,16 @@ const ShopDetails = ({
                               <div className="btn-add-to-cart">
                                 <a
                                   onClick={() => {
-                                    addToCart({ ...product, quantity });
+                                    if (!selectedSize || !selectedColor) {
+                                      alert("Please select size and color");
+                                      return;
+                                    }
+                                    addToCart({
+                                      ...product,
+                                      quantity,
+                                      size: selectedSize,
+                                      color: selectedColor,
+                                    });
                                   }}
                                   href="#"
                                   className="button"
@@ -293,7 +357,10 @@ const ShopDetails = ({
                               className="btn-quick-buy"
                               data-title="Wishlist"
                             >
-                              <button className="product-btn">
+                              <button
+                                className="product-btn"
+                                onClick={handleBuyNow}
+                              >
                                 Buy It Now
                               </button>
                             </div>

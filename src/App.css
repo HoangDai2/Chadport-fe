@@ -9,9 +9,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -20,6 +22,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -62,12 +65,14 @@
 .header h1 span {
   margin-left: 10px;
 }
+
 .search-bar {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
 }
+
 .search-bar input {
   padding: 10px 20px;
   border-radius: 25px;
@@ -156,11 +161,11 @@
   align-items: center;
 }
 
-.sidebar__logo > i {
+.sidebar__logo>i {
   font-size: 50px;
 }
 
-.sidebar__logo > p {
+.sidebar__logo>p {
   flex: 3;
   font-size: 1.5rem;
   margin-left: 0.5em;
@@ -173,28 +178,28 @@
   top: 1em;
 }
 
-.sidebar > .lists > ul {
+.sidebar>.lists>ul {
   margin-top: 2.5em;
 }
 
-.sidebar > .lists > ul > li > a {
+.sidebar>.lists>ul>li>a {
   display: flex;
   align-items: center;
   gap: 1em;
   cursor: pointer;
 }
 
-.sidebar .lists > ul > li > a > svg {
+.sidebar .lists>ul>li>a>svg {
   max-height: 25px;
   fill: var(--sdbr-svg-fill);
   width: 40px;
 }
 
-.sidebar .lists > ul > li > span {
+.sidebar .lists>ul>li>span {
   font-weight: 500;
 }
 
-.sidebar .lists > ul > li + li {
+.sidebar .lists>ul>li+li {
   margin-top: 1em;
 }
 
@@ -211,16 +216,17 @@
   align-items: center;
   gap: 1em;
 }
+
 .input_search i {
   position: absolute;
   margin-left: 15px;
 }
 
-.input_search > svg {
+.input_search>svg {
   max-width: 25px;
 }
 
-.input_search > input {
+.input_search>input {
   border: none;
   border-radius: 1em;
   background-color: var(--bg-clr-sec);
@@ -228,7 +234,7 @@
   padding: 0.5em;
 }
 
-.input_search > input::placeholder {
+.input_search>input::placeholder {
   visibility: hidden;
 }
 
@@ -242,6 +248,7 @@ main {
   color: #333;
   height: 1200px;
 }
+
 /* ================ */
 /* Ẩn thẻ div ban đầu */
 .hidden-div {
@@ -395,7 +402,13 @@ li a.active {
     width: 300px;
   }
 }
+
 .side-panel.show {
   left: 0;
   width: 35%;
+}
+
+li.selected {
+  color: #007bff;
+  cursor: pointer;
 }

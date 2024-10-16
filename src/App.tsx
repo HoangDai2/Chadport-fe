@@ -40,6 +40,7 @@ import MyAccountPage from "./pages/MyAccountPage";
 import { toast } from "react-toastify";
 import ProductList from "./admin/pages/ProductList"; // Correcting the import path
 import ProductAdd from "./admin/pages/ProductAdd";
+import Pay_done from "./pages/Pay_done";
 
 function App() {
   const addToCart = (product: TProduct) => {
@@ -127,22 +128,23 @@ function App() {
             }
           />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/pay_done" element={<Pay_done />} />
+          <Route path="/billorder" element={<BillOrder />} />
           <Route path="/shopcart" element={<ShopCart />} />
           <Route path="/login" element={<LoginRegister />} />
           <Route
             path="/wishlist"
             element={<Wishlist addToCart={addToCart} />}
           />
-         
         </Routes>
         <Routes>
-           {/* Router admin */}
-           <Route path="/admin" element={<Admin />}>
-          <Route index element={<div>Welcome to Admin Dashboard</div>} />
-          <Route path="listuser" element={<ListUser />} />
-          <Route path="products" element={<ProductList />} />
-          <Route path="products/add" element={<ProductAdd />} />
-          <Route path="products/edit" element={<ProductList />} />
+          {/* Router admin */}
+          <Route path="/admin" element={<Admin />}>
+            <Route index element={<div>Welcome to Admin Dashboard</div>} />
+            <Route path="listuser" element={<ListUser />} />
+            <Route path="products" element={<ProductList />} />
+            <Route path="products/add" element={<ProductAdd />} />
+            <Route path="products/edit" element={<ProductList />} />
           </Route>
         </Routes>
       </div>

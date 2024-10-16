@@ -1,370 +1,346 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const Checkout = () => {
+  const [qrCodeUrl, setQrCodeUrl] = useState(null); // URL của mã QR MoMo
+  const [orderId, setOrderId] = useState(Date.now().toString());
+
+  const location = useLocation();
+  const product = location.state?.product;
+  // State để lưu thông tin người dùng điền vào form
+  const [billingDetails, setBillingDetails] = useState({
+    firstName: "",
+    lastName: "",
+    country: "",
+    address1: "",
+    address2: "",
+    phone: "",
+    email: "",
+    paymentMethod: "momo",
+  });
+  // đang lỗi alert gtri don hàng nhỏ hơn 10000đ
+  // Tính tổng giá trị hóa đơn
+  const total = product ? product.price * product.quantity : 0;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBillingDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  // Hàm tạo yêu cầu thanh toán qua MoMo
+  const handlePayment = async () => {
+    try {
+      const orderInfo = "Thanh toán đơn hàng MoMo";
+      // console.log(billingDetails);
+      const paymentData = {
+        ...billingDetails, // Gửi toàn bộ thông tin người dùng
+        amount: total, // Tổng số tiền thanh toán
+        orderId, // Mã đơn hàng
+        productName: product.name, // Thông tin sản phẩm
+        productQuantity: product.quantity,
+        productPrice: product.price,
+      };
+      // console.log("Payment Data:", paymentData);
+      const response = await axios.post(
+        "http://localhost:5000/payment",
+        paymentData
+      );
+      if (response.data && response.data.payUrl) {
+        window.location.href = response.data.payUrl;
+      }
+    } catch (error) {
+      console.error("Error during payment creation:", error);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (total < 1000) {
+      alert("Tổng giá trị đơn hàng phải lớn hơn 1,000đ.");
+      return;
+    }
+    if (billingDetails.paymentMethod === "momo") {
+      handlePayment();
+    } else {
+      console.log("Order placed:", billingDetails, product);
+    }
+  };
+
+  if (!product) {
+    return <div>No product found.</div>;
+  }
+
   return (
-    <>
-      <div id="site-main" className="site-main">
-        <div id="main-content" className="main-content">
-          <div id="primary" className="content-area">
-            <div id="title" className="page-title">
-              <div className="section-container">
-                <div className="content-title-heading">
-                  <h1 className="text-title-heading">Checkout</h1>
-                </div>
-                <div className="breadcrumbs">
-                  <a href="index.html">Home</a>
-                  <span className="delimiter" />
-                  <a href="shop-grid-left.html">Shop</a>
-                  <span className="delimiter" />
-                  Shopping Cart
-                </div>
+    <div id="site-main" className="site-main">
+      <div id="main-content" className="main-content">
+        <div id="primary" className="content-area">
+          <div id="title" className="page-title">
+            <div className="section-container">
+              <div className="content-title-heading">
+                <h1 className="text-title-heading">Checkout</h1>
+              </div>
+              <div className="breadcrumbs">
+                <a href="index.html">Home</a>
+                <span className="delimiter" />
+                <a href="shop-grid-left.html">Shop</a>
+                <span className="delimiter" />
+                Shopping Cart
               </div>
             </div>
-            <div id="content" className="site-content" role="main">
-              <div className="section-padding">
-                <div className="section-container p-l-r">
-                  <div className="shop-checkout">
-                    <form
-                      name="checkout"
-                      method="post"
-                      className="checkout"
-                      action="#"
-                      autoComplete="off"
-                    >
-                      <div className="row">
-                        <div className="col-xl-8 col-lg-7 col-md-12 col-12">
-                          <div className="customer-details">
-                            <div className="billing-fields">
-                              <h3>Billing details</h3>
-                              <div className="billing-fields-wrapper">
-                                <p className="form-row form-row-first validate-required">
-                                  <label>
-                                    First name{" "}
-                                    <span className="required" title="required">
-                                      *
-                                    </span>
-                                  </label>
-                                  <span className="input-wrapper">
-                                    <input
-                                      type="text"
-                                      className="input-text"
-                                      name="billing_first_name"
-                                      defaultValue=""
-                                    />
-                                  </span>
-                                </p>
-                                <p className="form-row form-row-last validate-required">
-                                  <label>
-                                    Last name{" "}
-                                    <span className="required" title="required">
-                                      *
-                                    </span>
-                                  </label>
-                                  <span className="input-wrapper">
-                                    <input
-                                      type="text"
-                                      className="input-text"
-                                      name="billing_last_name"
-                                      defaultValue=""
-                                    />
-                                  </span>
-                                </p>
-                                <p className="form-row form-row-wide validate-required">
-                                  <label>
-                                    Country / Region{" "}
-                                    <span className="required" title="required">
-                                      *
-                                    </span>
-                                  </label>
-                                  <span className="input-wrapper">
-                                    <select
-                                      name="billing_country"
-                                      className="country-select custom-select"
-                                    >
-                                      <option value={""}>
-                                        Select a country / region…
-                                      </option>
-                                      <option value="AF">Afghanistan</option>
-                                      <option value="AX">Åland Islands</option>
-                                      <option value="AL">Albania</option>
-                                      <option value="DZ">Algeria</option>
-                                      <option value="AS">American Samoa</option>
-                                      <option value="AD">Andorra</option>
-                                    </select>
-                                  </span>
-                                </p>
-                                <p className="form-row address-field validate-required form-row-wide">
-                                  <label>
-                                    Street address{" "}
-                                    <span className="required" title="required">
-                                      *
-                                    </span>
-                                  </label>
-                                  <span className="input-wrapper">
-                                    <input
-                                      type="text"
-                                      className="input-text"
-                                      name="billing_address_1"
-                                      placeholder="House number and street name"
-                                      defaultValue=""
-                                    />
-                                  </span>
-                                </p>
-                                <p className="form-row address-field form-row-wide">
-                                  <label>
-                                    Ward &nbsp;
-                                    <span className="optional">(optional)</span>
-                                  </label>
-                                  <span className="input-wrapper">
-                                    <input
-                                      type="text"
-                                      className="input-text"
-                                      name="billing_address_2"
-                                      placeholder="Ward"
-                                      defaultValue=""
-                                    />
-                                  </span>
-                                </p>
-
-                                <p className="form-row form-row-wide validate-required validate-phone">
-                                  <label>
-                                    Phone{" "}
-                                    <span className="required" title="required">
-                                      *
-                                    </span>
-                                  </label>
-                                  <span className="input-wrapper">
-                                    <input
-                                      type="tel"
-                                      className="input-text"
-                                      name="billing_phone"
-                                      defaultValue=""
-                                    />
-                                  </span>
-                                </p>
-                                <p className="form-row form-row-wide validate-required validate-email">
-                                  <label>
-                                    Email address{" "}
-                                    <span className="required" title="required">
-                                      *
-                                    </span>
-                                  </label>
-                                  <span className="input-wrapper">
-                                    <input
-                                      type="email"
-                                      className="input-text"
-                                      name="billing_email"
-                                      defaultValue=""
-                                      autoComplete="off"
-                                    />
-                                  </span>
-                                </p>
-                              </div>
-                            </div>
-                            {/* <div className="account-fields">
-                              <p className="form-row form-row-wide">
-                                <label className="checkbox">
-                                  <input
-                                    className="input-checkbox"
-                                    type="checkbox"
-                                    name="createaccount"
-                                    defaultValue={1}
-                                  />
-                                  <span>Create an account?</span>
+          </div>
+          <div id="content" className="site-content" role="main">
+            <div className="section-padding">
+              <div className="section-container p-l-r">
+                <div className="shop-checkout">
+                  <form
+                    name="checkout"
+                    method="post"
+                    className="checkout"
+                    autoComplete="off"
+                    onSubmit={handleSubmit}
+                  >
+                    <div className="row">
+                      <div className="col-xl-8 col-lg-7 col-md-12 col-12">
+                        <div className="customer-details">
+                          <div className="billing-fields">
+                            <h3>Billing details</h3>
+                            <div className="billing-fields-wrapper">
+                              <p className="form-row form-row-first validate-required">
+                                <label>
+                                  First name <span className="required">*</span>
                                 </label>
+                                <span className="input-wrapper">
+                                  <input
+                                    type="text"
+                                    className="input-text"
+                                    name="firstName"
+                                    value={billingDetails.firstName}
+                                    onChange={handleInputChange}
+                                  />
+                                </span>
                               </p>
-                              <div className="create-account">
-                                <p className="form-row validate-required">
-                                  <label>
-                                    Create account password{" "}
-                                    <span className="required" title="required">
-                                      *
-                                    </span>
-                                  </label>
-                                  <span className="input-wrapper password-input">
-                                    <input
-                                      type="password"
-                                      className="input-text"
-                                      name="account_password"
-                                      defaultValue=""
-                                      autoComplete="off"
-                                    />
-                                    <span className="show-password-input" />
-                                  </span>
-                                </p>
-                                <div className="clear" />
-                              </div>
-                            </div> */}
-                          </div>
-
-                          <div className="additional-fields">
-                            <p className="form-row notes">
-                              <label>
-                                Order notes{" "}
-                                <span className="optional">(optional)</span>
-                              </label>
-                              <span className="input-wrapper">
-                                <textarea
-                                  name="order_comments"
-                                  className="input-text"
-                                  placeholder="Notes about your order, e.g. special notes for delivery."
-                                  rows={2}
-                                  cols={5}
-                                  defaultValue={""}
-                                />
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 col-lg-5 col-md-12 col-12">
-                          <div className="checkout-review-order">
-                            <div className="checkout-review-order-table">
-                              <div className="review-order-title">Product</div>
-                              <div className="cart-items">
-                                <div className="cart-item">
-                                  <div className="info-product">
-                                    <div className="product-thumbnail">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src="media/product/AIR+JORDAN+1+MID+SE+1.jpg"
-                                      />
-                                    </div>
-                                    <div className="product-name">
-                                      AIR JORDAN 1 MID SE
-                                      <strong className="product-quantity">
-                                        QTY : 2
-                                      </strong>
-                                    </div>
-                                  </div>
-                                  <div className="product-total">
-                                    <span>$300.00</span>
-                                  </div>
-                                </div>
-                                <div className="cart-item">
-                                  <div className="info-product">
-                                    <div className="product-thumbnail">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src="media/product/BLAZER+LOW+'77+VNTG+1.png"
-                                      />
-                                    </div>
-                                    <div className="product-name">
-                                      BLAZER LOW '77 VNTG
-                                      <strong className="product-quantity">
-                                        QTY : 1
-                                      </strong>
-                                    </div>
-                                  </div>
-                                  <div className="product-total">
-                                    <span>$180.00</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="cart-subtotal">
-                                <h2>Subtotal</h2>
-                                <div className="subtotal-price">
-                                  <span>$480.00</span>
-                                </div>
-                              </div>
-                              <div className="shipping-totals shipping">
-                                <h2>Shipping</h2>
-                                <div data-title="Shipping">
-                                  <ul className="shipping-methods custom-radio">
-                                    <li>
-                                      <input
-                                        type="radio"
-                                        name="shipping_method"
-                                        data-index={0}
-                                        defaultValue="free_shipping"
-                                        className="shipping_method"
-                                      />
-                                      <label>Free shipping</label>
-                                    </li>
-                                    <li>
-                                      <input
-                                        type="radio"
-                                        name="shipping_method"
-                                        data-index={0}
-                                        defaultValue="flat_rate"
-                                        className="shipping_method"
-                                      />
-                                      <label>Flat rate</label>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                              <div className="order-total">
-                                <h2>Total</h2>
-                                <div className="total-price">
-                                  <strong>
-                                    <span>$480.00</span>
-                                  </strong>
-                                </div>
-                              </div>
-                            </div>
-                            <div id="payment" className="checkout-payment">
-                              <ul className="payment-methods methods custom-radio">
-                                <li className="payment-method">
+                              <p className="form-row form-row-last validate-required">
+                                <label>
+                                  Last name <span className="required">*</span>
+                                </label>
+                                <span className="input-wrapper">
                                   <input
-                                    type="radio"
-                                    className="input-radio"
-                                    name="payment_method"
-                                    defaultValue="bacs"
-                                    defaultChecked="checked"
+                                    type="text"
+                                    className="input-text"
+                                    name="lastName"
+                                    value={billingDetails.lastName}
+                                    onChange={handleInputChange}
                                   />
-                                  <label htmlFor="payment_method_bacs">
-                                    MOMO
-                                  </label>
-                                  <div className="payment-box">
-                                    <p>
-                                      Make your payment directly into our bank
-                                      account. Please use your Order ID as the
-                                      payment reference. Your order will not be
-                                      shipped until the funds have cleared in
-                                      our account.
-                                    </p>
-                                  </div>
-                                </li>
-
-                                <li className="payment-method">
+                                </span>
+                              </p>
+                              <p className="form-row form-row-wide validate-required">
+                                <label>
+                                  Country / Region{" "}
+                                  <span className="required">*</span>
+                                </label>
+                                <span className="input-wrapper">
+                                  <select
+                                    name="country"
+                                    className="country-select custom-select"
+                                    value={billingDetails.country}
+                                    onChange={handleInputChange}
+                                  >
+                                    <option value={""}>
+                                      Select a country / region…
+                                    </option>
+                                    <option value="AF">Afghanistan</option>
+                                    <option value="AX">Åland Islands</option>
+                                    <option value="AL">Albania</option>
+                                    <option value="DZ">Algeria</option>
+                                  </select>
+                                </span>
+                              </p>
+                              <p className="form-row address-field validate-required form-row-wide">
+                                <label>
+                                  Street address{" "}
+                                  <span className="required">*</span>
+                                </label>
+                                <span className="input-wrapper">
                                   <input
-                                    type="radio"
-                                    className="input-radio"
-                                    name="payment_method"
-                                    defaultValue="cod"
+                                    type="text"
+                                    className="input-text"
+                                    name="address1"
+                                    placeholder="House number and street name"
+                                    value={billingDetails.address1}
+                                    onChange={handleInputChange}
                                   />
-                                  <label>Cash on delivery</label>
-                                  <div className="payment-box">
-                                    <p>Pay with cash upon delivery.</p>
-                                  </div>
-                                </li>
-                              </ul>
-                              <div className="form-row place-order">
-                                <div className="terms-and-conditions-wrapper">
-                                  <div className="privacy-policy-text" />
-                                </div>
-                                <button type="submit" className="button ">
-                                  Place order
-                                </button>
-                              </div>
+                                </span>
+                              </p>
+                              <p className="form-row address-field form-row-wide">
+                                <label>
+                                  Ward &nbsp;
+                                  <span className="optional">(optional)</span>
+                                </label>
+                                <span className="input-wrapper">
+                                  <input
+                                    type="text"
+                                    className="input-text"
+                                    name="address2"
+                                    placeholder="Ward"
+                                    value={billingDetails.address2}
+                                    onChange={handleInputChange}
+                                  />
+                                </span>
+                              </p>
+                              <p className="form-row form-row-wide validate-required validate-phone">
+                                <label>
+                                  Phone <span className="required">*</span>
+                                </label>
+                                <span className="input-wrapper">
+                                  <input
+                                    type="tel"
+                                    className="input-text"
+                                    name="phone"
+                                    value={billingDetails.phone}
+                                    onChange={handleInputChange}
+                                  />
+                                </span>
+                              </p>
+                              <p className="form-row form-row-wide validate-required validate-email">
+                                <label>
+                                  Email address{" "}
+                                  <span className="required">*</span>
+                                </label>
+                                <span className="input-wrapper">
+                                  <input
+                                    type="email"
+                                    className="input-text"
+                                    name="email"
+                                    value={billingDetails.email}
+                                    onChange={handleInputChange}
+                                    autoComplete="off"
+                                  />
+                                </span>
+                              </p>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </form>
-                  </div>
+                      <div className="col-xl-4 col-lg-5 col-md-12 col-12">
+                        <div className="checkout-review-order">
+                          <div className="checkout-review-order-table">
+                            <div className="review-order-title">Product</div>
+                            <div className="cart-items">
+                              <div className="cart-item">
+                                <div className="info-product">
+                                  <div className="product-thumbnail">
+                                    <img
+                                      width={600}
+                                      height={600}
+                                      src={product.image_product}
+                                    />
+                                  </div>
+                                  <div className="product-name">
+                                    {product.name}
+                                    <strong className="product-quantity">
+                                      QTY : {product.quantity}
+                                    </strong>
+                                    <div>Size: {product.size}</div>
+                                    <div>Color: {product.color}</div>
+                                  </div>
+                                </div>
+                                <div className="product-total">
+                                  <span>${product.price}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="cart-subtotal">
+                              <h2>Subtotal</h2>
+                              <div className="subtotal-price">
+                                <span>${product.price * product.quantity}</span>
+                              </div>
+                            </div>
+                            <div className="order-total">
+                              <h2>Total</h2>
+                              <div className="total-price">
+                                <strong>
+                                  <span>
+                                    ${product.price * product.quantity}
+                                  </span>
+                                </strong>
+                              </div>
+                            </div>
+                          </div>
+                          <div id="payment" className="checkout-payment">
+                            <ul className="payment-methods methods custom-radio">
+                              {/* Payment Method MoMo */}
+                              <li className="payment-method">
+                                <input
+                                  type="radio"
+                                  className="input-radio"
+                                  name="paymentMethod"
+                                  value="momo"
+                                  checked={
+                                    billingDetails.paymentMethod === "momo"
+                                  }
+                                  onChange={handleInputChange}
+                                />
+                                <label>MOMO</label>
+                                <div className="payment-box">
+                                  <p>
+                                    Make your payment directly into our bank
+                                    account. Please use your Order ID as the
+                                    payment reference. Your order will not be
+                                    shipped until the funds have cleared in our
+                                    account.
+                                  </p>
+                                </div>
+                              </li>
+
+                              {/* Payment Method COD */}
+                              <li className="payment-method">
+                                <input
+                                  type="radio"
+                                  className="input-radio"
+                                  name="paymentMethod"
+                                  value="cod"
+                                  checked={
+                                    billingDetails.paymentMethod === "cod"
+                                  }
+                                  onChange={handleInputChange}
+                                />
+                                <label>Cash on delivery</label>
+                                <div className="payment-box">
+                                  <p>Pay with cash upon delivery.</p>
+                                </div>
+                              </li>
+                            </ul>
+                            {/* Submit button */}
+                            <div className="form-row place-order">
+                              <button type="submit" className="button">
+                                Place order
+                              </button>
+                            </div>
+
+                            {/* Hiển thị mã QR MoMo nếu có */}
+                            {/* {qrCodeUrl && (
+                              <div className="qr-code">
+                                <h3>Scan to pay with MoMo</h3>
+                                <img src={qrCodeUrl} alt="MoMo QR Code" />
+                              </div>
+                            )} */}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
-            {/* #content */}
           </div>
-          {/* #primary */}
         </div>
-        {/* #main-content */}
       </div>
-    </>
+    </div>
   );
 };
+
 export default Checkout;
