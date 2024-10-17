@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import instance from '../../Service';
-import { TProduct } from '../../Types/TProduct'; 
+import { TProduct } from '../../Types/TProduct';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,25 +12,24 @@ function ProductList() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await instance.get<TProduct[]>('/products');
+        const response = await instance.get('/products');
         setProducts(response.data);
       } catch (error) {
         console.error('Error fetching products:', error);
+        toast.error('Error fetching products');
       }
     };
-
     fetchProducts();
   }, []);
 
-  const deleteProduct = async (id: number) => {
-    if (id === undefined) return;
+  const handleDelete = async (id: number) => {
     try {
       await instance.delete(`/products/${id}`);
-      setProducts(products.filter(product => product.id !== id));
+      setProducts(products.filter((product) => product.id !== id));
       toast.success('Product deleted successfully!');
     } catch (error) {
       console.error('Error deleting product:', error);
-      toast.error('Error deleting product!');
+      toast.error('Error deleting product');
     }
   };
 
@@ -51,9 +51,9 @@ function ProductList() {
           </tr>
         </thead>
         <tbody>
-          {products.map((product, i) => (
+          {products?.map((product, i) => (
             <tr key={product.id}>
-              <td>{i+1}</td>
+              <td>{i + 1}</td>
               <td>
                 <img src={product.image_product} alt={product.name} className="img-fluid" style={{ width: '100px' }} />
               </td>
@@ -64,13 +64,16 @@ function ProductList() {
               <td>{product.description}</td>
               <td>
                 <ul className="list-unstyled">
-                  {product.category.map(cat => (
+                  {product?.category?.map(cat => (
                     <li key={cat.id}>{cat.name}</li>
                   ))}
                 </ul>
               </td>
               <td>
-                <button className="btn btn-danger" onClick={() => deleteProduct(product.id)}>Delete</button>
+                <div className="d-flex flex-column">
+                  <button className="btn btn-danger mb-2" onClick={() => handleDelete(product.id)}>Delete</button>
+                  <Link to={`/admin/products/edit/${product.id}`} className="btn btn-warning">Update</Link>
+                </div>
               </td>
             </tr>
           ))}
