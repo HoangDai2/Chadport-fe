@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
+import axios from "axios";
 import "./App.css";
 import "./style/app.css";
 import "./style/responsive.css";
@@ -49,6 +50,7 @@ import Profile from "./pages/Profile";
 import Pay_done from "./pages/Pay_done";
 
 function App() {
+  const [user, setUser] = useState<[]>([]);
   const addToCart = (product: TProduct) => {
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
@@ -112,6 +114,18 @@ function App() {
       });
     }
   };
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const datauser = await axios.get("http://localhost:3000/users");
+        setUser(datauser.data);
+        console.log(datauser);
+      } catch (error) {
+        console.log("loi lay data user", error);
+      }
+    };
+    fetchUser();
+  }, []);
   return (
     <>
       <div className="content">
@@ -200,7 +214,7 @@ function App() {
           {/* Router admin */}
           <Route path="/admin" element={<Admin />}>
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
-            <Route path="listuser" element={<ListUser />} />
+            <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="products" element={<ProductList />} />
             <Route path="products/add" element={<ProductAdd />} />
             <Route path="products/edit" element={<ProductList />} />

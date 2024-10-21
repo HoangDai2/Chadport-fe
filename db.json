@@ -578,6 +578,23 @@
       "status": "active",
       "date_create": "2024-10-16T04:14:47.681Z",
       "date_update": "2024-10-16T04:14:47.682Z"
+    },
+    {
+      "id": "d71a",
+      "user_id": 9,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "quyendoan2004@gmail.com",
+      "password": "123",
+      "status": "active",
+      "date_create": "2024-10-18T01:46:14.599Z",
+      "date_update": "2024-10-18T01:46:14.599Z"
     }
   ]
 }
