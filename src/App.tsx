@@ -48,6 +48,7 @@ import ProductList from "./admin/pages/ProductList"; // Correcting the import pa
 import ProductAdd from "./admin/pages/ProductAdd";
 import Profile from "./pages/Profile";
 import Pay_done from "./pages/Pay_done";
+import ProductUpdate from "./admin/pages/ProductUpdate";
 
 function App() {
   const [user, setUser] = useState<[]>([]);
@@ -217,7 +218,7 @@ function App() {
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="products" element={<ProductList />} />
             <Route path="products/add" element={<ProductAdd />} />
-            <Route path="products/edit" element={<ProductList />} />
+            <Route path="products/edit/:id" element={<ProductUpdate />} />
           </Route>
         </Routes>
       </div>

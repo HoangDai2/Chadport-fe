@@ -4,6 +4,7 @@ import { TProduct } from '../../Types/TProduct';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const initialProductState: TProduct = {
   id: 0,
@@ -27,6 +28,7 @@ const initialProductState: TProduct = {
 
 function ProductAdd() {
   const [product, setProduct] = useState<TProduct>(initialProductState);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -45,6 +47,7 @@ function ProductAdd() {
     try {
       await instance.post('/products', productWithId);
       toast.success('Product added successfully!');
+      navigate('/admin/products');
     } catch (error) {
       console.error('Error adding product:', error);
       toast.error('Error adding product!');
