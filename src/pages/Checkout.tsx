@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const Checkout = () => {
-  const [qrCodeUrl, setQrCodeUrl] = useState(null); // URL của mã QR MoMo
   const [orderId, setOrderId] = useState(Date.now().toString());
 
   const location = useLocation();
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const product = location.state?.product;
-  // State để lưu thông tin người dùng điền vào form
   const [billingDetails, setBillingDetails] = useState({
     firstName: "",
     lastName: "",
@@ -19,8 +19,6 @@ const Checkout = () => {
     email: "",
     paymentMethod: "momo",
   });
-  // đang lỗi alert gtri don hàng nhỏ hơn 10000đ
-  // Tính tổng giá trị hóa đơn
   const total = product ? product.price * product.quantity : 0;
 
   const handleInputChange = (e) => {
@@ -31,24 +29,24 @@ const Checkout = () => {
     }));
   };
 
-  // Hàm tạo yêu cầu thanh toán qua MoMo
   const handlePayment = async () => {
     try {
-      const orderInfo = "Thanh toán đơn hàng MoMo";
-      // console.log(billingDetails);
+      // const orderInfo = "Thanh toán đơn hàng MoMo";
       const paymentData = {
-        ...billingDetails, // Gửi toàn bộ thông tin người dùng
-        amount: total, // Tổng số tiền thanh toán
-        orderId, // Mã đơn hàng
-        productName: product.name, // Thông tin sản phẩm
+        ...billingDetails,
+        amount: total,
+        orderId,
+        productName: product.name,
         productQuantity: product.quantity,
         productPrice: product.price,
+        productImage: product.image_product,
       };
-      // console.log("Payment Data:", paymentData);
+
       const response = await axios.post(
         "http://localhost:5000/payment",
         paymentData
       );
+
       if (response.data && response.data.payUrl) {
         window.location.href = response.data.payUrl;
       }
@@ -57,19 +55,26 @@ const Checkout = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isProcessing) return;
+    setIsProcessing(true);
+
     if (total < 1000) {
       alert("Tổng giá trị đơn hàng phải lớn hơn 1,000đ.");
+      setIsProcessing(false);
       return;
     }
+
     if (billingDetails.paymentMethod === "momo") {
-      handlePayment();
+      await handlePayment();
     } else {
       console.log("Order placed:", billingDetails, product);
     }
-  };
 
+    setIsProcessing(false);
+  };
   if (!product) {
     return <div>No product found.</div>;
   }

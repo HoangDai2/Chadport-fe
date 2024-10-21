@@ -50,14 +50,15 @@ import Profile from "./pages/Profile";
 import Pay_done from "./pages/Pay_done";
 import ProductUpdate from "./admin/pages/ProductUpdate";
 import DetailUser from "./admin/pages/DetailUser";
+import Headerclient from "./components/HeaderClient";
+import PaymentSuccess from "./pages/Pay_done";
+import DoneMomo from "./pages/Pay_done";
 function App() {
   const [user, setUser] = useState<[]>([]);
   const addToCart = (product: TProduct) => {
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-    const isProductCart = cart.some(
-      (item: TProduct) => item.pro_id === product.pro_id
-    );
+    const isProductCart = cart.some((item: TProduct) => item.id === product.id);
 
     if (isProductCart) {
       toast.info(`${product.name} đã có trong giỏ hàng!`, {
@@ -191,13 +192,41 @@ function App() {
             }
           />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/pay_done" element={<Pay_done />} />
-          <Route path="/billorder" element={<BillOrder />} />
+          <Route
+            path="/pay_done"
+            element={
+              <>
+                <Headerclient />
+                <div style={{ padding: "70px", marginTop: "80px" }}>
+                  <Pay_done />
+                </div>
+                <FooterClient />
+              </>
+            }
+          />
+          <Route
+            path="/billorder"
+            element={
+              <>
+                <Headerclient />
+                <div style={{ padding: "70px", marginTop: "80px" }}>
+                  <BillOrder />
+                </div>
+                <FooterClient />
+              </>
+            }
+          />
           <Route path="/shopcart" element={<ShopCart />} />
           <Route path="/login" element={<LoginRegister />} />
           <Route
             path="/wishlist"
-            element={<Wishlist addToCart={addToCart} />}
+            element={
+              <>
+                <Headerclient />
+                <Wishlist addToCart={addToCart} />
+                <FooterClient />
+              </>
+            }
           />
 
           <Route

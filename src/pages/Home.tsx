@@ -110,12 +110,13 @@ const Home = ({
                       Add to Cart
                     </button>
 
-                    <button
+                    <Link
+                      to={`/shop-details/${product.id}`}
                       type="button"
-                      className="block w-full rounded bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:scale-105"
+                      className="block w-full rounded bg-gray-900 px-4 py-4 text-sm font-medium text-white transition hover:scale-105"
                     >
                       Buy Now
-                    </button>
+                    </Link>
                   </form>
                 </div>
               </div>
