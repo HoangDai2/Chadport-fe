@@ -49,7 +49,7 @@ import ProductAdd from "./admin/pages/ProductAdd";
 import Profile from "./pages/Profile";
 import Pay_done from "./pages/Pay_done";
 import ProductUpdate from "./admin/pages/ProductUpdate";
-
+import DetailUser from "./admin/pages/DetailUser";
 function App() {
   const [user, setUser] = useState<[]>([]);
   const addToCart = (product: TProduct) => {
@@ -219,6 +219,7 @@ function App() {
             <Route path="products" element={<ProductList />} />
             <Route path="products/add" element={<ProductAdd />} />
             <Route path="products/edit/:id" element={<ProductUpdate />} />
+            <Route path="detailuser/:id" element={<DetailUser />} />
           </Route>
         </Routes>
       </div>

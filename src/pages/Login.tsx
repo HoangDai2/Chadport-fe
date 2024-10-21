@@ -33,6 +33,14 @@ const LoginRegister: React.FC = () => {
       );
 
       if (user) {
+        // Kiểm tra trạng thái tài khoản
+        if (user.status === "inactive") {
+          setFormError(
+            "Tài khoản của bạn đã bị khóa Vui lòng liên hệ với bộ phận hỗ trợ"
+          );
+          return;
+        }
+
         setLoginSuccess(true);
         setFormError("");
 

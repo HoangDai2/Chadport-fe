@@ -161,11 +161,11 @@
   align-items: center;
 }
 
-.sidebar__logo>i {
+.sidebar__logo > i {
   font-size: 50px;
 }
 
-.sidebar__logo>p {
+.sidebar__logo > p {
   flex: 3;
   font-size: 1.5rem;
   margin-left: 0.5em;
@@ -178,28 +178,28 @@
   top: 1em;
 }
 
-.sidebar>.lists>ul {
+.sidebar > .lists > ul {
   margin-top: 2.5em;
 }
 
-.sidebar>.lists>ul>li>a {
+.sidebar > .lists > ul > li > a {
   display: flex;
   align-items: center;
   gap: 1em;
   cursor: pointer;
 }
 
-.sidebar .lists>ul>li>a>svg {
+.sidebar .lists > ul > li > a > svg {
   max-height: 25px;
   fill: var(--sdbr-svg-fill);
   width: 40px;
 }
 
-.sidebar .lists>ul>li>span {
+.sidebar .lists > ul > li > span {
   font-weight: 500;
 }
 
-.sidebar .lists>ul>li+li {
+.sidebar .lists > ul > li + li {
   margin-top: 1em;
 }
 
@@ -222,11 +222,11 @@
   margin-left: 15px;
 }
 
-.input_search>svg {
+.input_search > svg {
   max-width: 25px;
 }
 
-.input_search>input {
+.input_search > input {
   border: none;
   border-radius: 1em;
   background-color: var(--bg-clr-sec);
@@ -234,7 +234,7 @@
   padding: 0.5em;
 }
 
-.input_search>input::placeholder {
+.input_search > input::placeholder {
   visibility: hidden;
 }
 
@@ -411,4 +411,18 @@ li a.active {
 li.selected {
   color: #007bff;
   cursor: pointer;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out forwards;
 }

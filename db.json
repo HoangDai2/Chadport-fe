@@ -489,7 +489,7 @@
       "phonenumber": "5551234567",
       "email": "alice.brown@example.com",
       "password": "hashed_password_3",
-      "status": "active",
+      "status": "inactive",
       "date_create": "2024-01-03",
       "date_update": "2024-01-10",
       "id": "ef65"
@@ -506,7 +506,7 @@
       "phonenumber": "4441234567",
       "email": "bob.white@example.com",
       "password": "hashed_password_4",
-      "status": "pending",
+      "status": "inactive",
       "date_create": "2023-11-15",
       "date_update": "2024-01-08",
       "id": "349b"
@@ -592,9 +592,26 @@
       "phonenumber": "",
       "email": "quyendoan2004@gmail.com",
       "password": "123",
-      "status": "active",
+      "status": "inactive",
       "date_create": "2024-10-18T01:46:14.599Z",
       "date_update": "2024-10-18T01:46:14.599Z"
+    },
+    {
+      "id": "d9a8",
+      "user_id": 10,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "quyendoan2k4@gmail1.com",
+      "password": "123",
+      "status": "inactive",
+      "date_create": "2024-10-21T07:15:50.195Z",
+      "date_update": "2024-10-21T07:15:50.195Z"
     }
   ]
 }
