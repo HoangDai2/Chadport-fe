@@ -41,7 +41,7 @@ import ShopCart from "./pages/ShopCart";
 import CartList from "./function/CartList";
 import About from "./pages/About";
 import Checkout from "./pages/Checkout";
-import BillOrder from "./pages/BillOrder";
+// import BillOrder from "./pages/BillOrder";
 import MyAccountPage from "./pages/MyAccountPage";
 import { toast } from "react-toastify";
 import ProductList from "./admin/pages/ProductList"; // Correcting the import path
@@ -210,7 +210,7 @@ function App() {
               <>
                 <Headerclient />
                 <div style={{ padding: "70px", marginTop: "80px" }}>
-                  <BillOrder />
+                  {/* <BillOrder /> */}
                 </div>
                 <FooterClient />
               </>
