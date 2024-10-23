@@ -1,11 +1,4 @@
-export interface Category {
-  id?: number;
-  name: string;
-  parent_id: number | null;
-  status: string;
-  date_create: string;
-  date_update: string;
-}
+import Tcategory from "./TCategories";
 export interface size {
   id?: number;
   name: string;
@@ -40,7 +33,8 @@ export interface TProduct {
   type: string;
   date_create: string;
   date_update: string;
-  category: Category[]; // Chỉ định category là một mảng các đối tượng
+  category?: Tcategory[];
+
   // size?: [];
   // color?: [];
   size?: string; // Thay vì mảng, đây là chuỗi để lưu lựa chọn đã chọn

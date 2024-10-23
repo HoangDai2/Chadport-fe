@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import TUser from "../../Types/TUsers";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import quyen from "../../img/quyen.jpg";
 type Props = {
   listuser: TUser[];
 };
@@ -13,7 +14,8 @@ const ListUser = ({ listuser }: Props) => {
   const [currentAction, setCurrentAction] = useState<
     "active" | "inactive" | null
   >(null); // Trạng thái hành động hiện tại
-
+  const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleLockUnlock = async (
     userId: number,
     action: "active" | "inactive"
@@ -56,7 +58,15 @@ const ListUser = ({ listuser }: Props) => {
       setIsLoading(false); // Dừng trạng thái chờ
     }
   };
+  const openModal = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
 
+  const closeModal = () => {
+    setSelectedUser(null);
+    setIsModalOpen(false);
+  };
   return (
     <>
       <section className="conten_admin">
@@ -110,7 +120,12 @@ const ListUser = ({ listuser }: Props) => {
                 {listuser.map((user) => (
                   <tr key={user.id}>
                     <td className="px-2 py-2 text-gray-900">
-                      <Link to={`detailuser/${user.id}`}>{user.id}</Link>
+                      <button
+                        onClick={() => openModal(user)} // Mở chi tiết người dùng khi nhấn vào
+                        className="text-blue-600 underline"
+                      >
+                        {user.id}
+                      </button>
                     </td>
                     <td className="px-2 py-2 text-gray-700">{user.role_id}</td>
                     <td className="px-2 py-2 text-gray-700">
@@ -119,7 +134,15 @@ const ListUser = ({ listuser }: Props) => {
                     <td className="px-2 py-2 text-gray-700">{user.img_user}</td>
                     <td className="px-2 py-2 text-gray-700">{user.email}</td>
                     {/* Hiển thị trạng thái từ state 'users' */}
-                    <td className="px-2 py-2 text-gray-700">{user.status}</td>
+                    <td
+                      className={`px-2 py-2 ${
+                        user.status === "active"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {user.status}
+                    </td>
                     <td className="px-2 py-2 text-gray-700">
                       {user.date_create}
                     </td>
@@ -150,6 +173,112 @@ const ListUser = ({ listuser }: Props) => {
             </table>
           </div>
         </div>
+
+        {/*  hiển thị thông tin người dùng chi tiết */}
+        {isModalOpen && selectedUser && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="absolute inset-0 bg-black opacity-75 transition-opacity duration-300"></div>
+
+            <div className="bg-white p-10 rounded-2xl shadow-2xl relative z-10 max-w-[60rem] w-full">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 text-left">
+                  Chi tiết người dùng
+                </h2>
+              </div>
+
+              <div className="flex space-x-8">
+                {/* Hình ảnh người dùng */}
+                <div className="w-1/3">
+                  <img
+                    src={quyen}
+                    alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
+                    className="rounded-full shadow-lg w-full object-cover"
+                  />
+                </div>
+
+                {/* Thông tin chi tiết người dùng */}
+                <div className="w-2/3">
+                  <div className="grid grid-cols-2 gap-6 ">
+                    <div className="text-left">
+                      <h3 className="text-lg font-semibold text-gray-700 text-left">
+                        Thông tin cá nhân
+                      </h3>
+                      <p className="text-gray-600 mt-2">
+                        <strong>Họ tên:</strong> {selectedUser.first_name}{" "}
+                        {selectedUser.last_name}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Email:</strong> {selectedUser.email}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Số điện thoại:</strong>{" "}
+                        {selectedUser.phonenumber}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Giới tính:</strong>{" "}
+                        {selectedUser.gender === "male"
+                          ? "Nam"
+                          : selectedUser.gender === "female"
+                          ? "Nữ"
+                          : "Khác"}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Ngày sinh:</strong> {selectedUser.birthday}
+                      </p>
+                    </div>
+
+                    <div className="text-left">
+                      <h3 className="text-lg font-semibold text-gray-700 text-left">
+                        Thông tin tài khoản
+                      </h3>
+                      <p className="text-gray-600 mt-2">
+                        <strong>Trạng thái:</strong>
+                        <span
+                          className={`${
+                            selectedUser.status === "active"
+                              ? "text-green-600"
+                              : selectedUser.status === "inactive"
+                              ? "text-red-600"
+                              : "text-yellow-600"
+                          } font-semibold`}
+                        >
+                          {selectedUser.status === "active"
+                            ? "Hoạt động"
+                            : selectedUser.status === "inactive"
+                            ? "Không hoạt động"
+                            : "Đình chỉ"}
+                        </span>
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Role ID:</strong> {selectedUser.role_id}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Ngày tạo:</strong> {selectedUser.date_create}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Cập nhật lần cuối:</strong>{" "}
+                        {selectedUser.date_update}
+                      </p>
+                      <p className="text-gray-600">
+                        <strong>Địa chỉ:</strong> {selectedUser.address}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Nút đóng */}
+              <div className="mt-8 flex justify-end">
+                <button
+                  onClick={closeModal}
+                  className="px-6 py-3 bg-red-500 text-white rounded-full font-semibold shadow-lg hover:bg-red-600 transition duration-300 focus:outline-none"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </>
   );

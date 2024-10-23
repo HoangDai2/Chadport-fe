@@ -49,12 +49,21 @@ import ProductAdd from "./admin/pages/ProductAdd";
 import Profile from "./pages/Profile";
 import Pay_done from "./pages/Pay_done";
 import ProductUpdate from "./admin/pages/ProductUpdate";
-import DetailUser from "./admin/pages/DetailUser";
 import Headerclient from "./components/HeaderClient";
 import PaymentSuccess from "./pages/Pay_done";
 import DoneMomo from "./pages/Pay_done";
+import CategoriesAdd from "./admin/pages/CategoriesAdd";
+import CategoriesList from "./admin/pages/CategoriesList";
+import CategoriesUpadate from "./admin/pages/CategoriesUpadate";
+import Tcategory from "./Types/TCategories";
+import createCategory from "./Service/categories";
+import createProduct from "./Service/Product";
+import { useNavigate } from "react-router-dom";
 function App() {
+  const navigate = useNavigate();
+  const [product, setProduct] = useState<TProduct[]>([]);
   const [user, setUser] = useState<[]>([]);
+  const [category, setCategory] = useState<Tcategory[]>([]);
   const addToCart = (product: TProduct) => {
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
@@ -89,7 +98,7 @@ function App() {
   const addToWishlist = (product: TProduct) => {
     let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
     const isProductInWishlist = wishlist.some(
-      (item: TProduct) => item.pro_id === product.pro_id
+      (item: TProduct) => item.id === product.id
     );
     if (isProductInWishlist) {
       toast.info(`${product.name} đã có trong wishlist!`, {
@@ -121,13 +130,98 @@ function App() {
       try {
         const datauser = await axios.get("http://localhost:3000/users");
         setUser(datauser.data);
-        console.log(datauser);
+        // console.log(datauser);
       } catch (error) {
         console.log("loi lay data user", error);
       }
     };
     fetchUser();
   }, []);
+
+  // hàm này sử lý thêm sản phẩm
+  const handleAddProduct = (newShoe: TProduct) => {
+    (async () => {
+      const newProduct = await createProduct(newShoe);
+      setProduct([...product, newProduct]);
+      navigate("/admin/products");
+      window.location.reload();
+    })();
+  };
+
+  // hàm này sẽ xử lí sửa sản phẩm
+  const handleEditProduct = async (product: TProduct) => {
+    try {
+      const { data } = await instance.put(`/products/${product.id}`, product);
+
+      if (data && data.id) {
+        setProduct((prevProducts) =>
+          prevProducts.map((item) => (item.id === data.id ? data : item))
+        );
+        navigate("/admin/products");
+      } else {
+        console.error("Dữ liệu trả về không hợp lệ:", data);
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật sản phẩm:", error);
+    }
+  };
+
+  // phần này là CRUD danh mục admin
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const responses = await axios.get("http://localhost:3000/categories");
+        setCategory(responses.data);
+      } catch (error) {
+        console.error("Error fetching shoes:", error);
+      }
+    };
+    fetchCategory();
+  }, []);
+  const handleAddCategory = async (newCategory: Tcategory): Promise<void> => {
+    try {
+      const addedCategory = await createCategory(newCategory);
+      setCategory([...category, addedCategory]); // Cập nhật danh mục
+      toast.success("Thêm danh mục sản phẩm thành công!");
+    } catch (error) {
+      toast.error("Lỗi khi thêm danh mục!");
+      console.error("Lỗi khi thêm danh mục:", error);
+    }
+  };
+
+  const handleEditCategory = async (categoryss: Tcategory) => {
+    // console.log(categoryss);
+
+    try {
+      // Kiểm tra xem id của danh mục có hợp lệ không
+      if (!categoryss.id) {
+        console.error("ID danh mục không hợp lệ");
+        return;
+      }
+
+      // Gửi yêu cầu PUT để chỉnh sửa danh mục
+      const { data } = await instance.put(
+        `/categories/${categoryss.id}`,
+        {
+          name: categoryss.name,
+          status: categoryss.status,
+          imageURL: categoryss.imageURL,
+        } // Đảm bảo gửi đúng dữ liệu
+      );
+
+      // Kiểm tra dữ liệu trả về
+      if (data && data.data && data.data._id) {
+        toast.success("Danh mục đã được cập nhật thành công!");
+        setCategory(data.data);
+        navigate("/admin/categorieslist", { replace: true });
+      } else {
+        console.error("Dữ liệu trả về không hợp lệ:", data);
+      }
+    } catch (error) {
+      console.error("Lỗi khi chỉnh sửa danh mục:", error);
+    }
+  };
+
   return (
     <>
       <div className="content">
@@ -246,9 +340,36 @@ function App() {
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="products" element={<ProductList />} />
-            <Route path="products/add" element={<ProductAdd />} />
-            <Route path="products/edit/:id" element={<ProductUpdate />} />
-            <Route path="detailuser/:id" element={<DetailUser />} />
+            <Route
+              path="products/add"
+              element={
+                <ProductAdd onAdd={handleAddProduct} categories={category} />
+              }
+            />
+            <Route
+              path="products/edit/:id"
+              element={
+                <ProductUpdate
+                  onEdit={handleEditProduct}
+                  categories={category}
+                />
+              }
+            />
+
+            <Route
+              path="categorieslist"
+              element={<CategoriesList listcategories={category} />}
+            />
+            <Route
+              path="categories/add"
+              element={<CategoriesAdd onAddCategory={handleAddCategory} />}
+            />
+            <Route
+              path="categories/edit/:id"
+              element={
+                <CategoriesUpadate onEditCategory={handleEditCategory} />
+              }
+            />
           </Route>
         </Routes>
       </div>

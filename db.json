@@ -1,299 +1,82 @@
 {
   "products": [
     {
-      "id": "4",
       "name": "Nike Court Vision Low Next Nature",
-      "title": "Solid Gold Petite Micropave ",
-      "status": "out of stock",
-      "quantity": 0,
-      "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/85057772-9c48-4c70-a4f5-75d110251e1d/NIKE+COURT+VISION+LO+NN+ESS.png",
-      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
+      "title": "Solid Gold Petite Micropave",
       "price": 300,
       "price_sale": 250,
+      "status": "out of stock",
+      "quantity": 0,
+      "description": "Great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm-hearted love to Father, husband or son in this Thanksgiving or Christmas Day.",
       "type": "boots",
-      "date_create": "2024-08-01",
-      "category": [
-        {
-          "id": 1,
-          "name": "Sportswear",
-          "parent_id": null,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "id": 2,
-          "name": "Footwear",
-          "parent_id": 1,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "size": [
-        {
-          "name": "42",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "43",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "color": [
-        {
-          "name": "Red",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "Blue",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ]
+      "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/85057772-9c48-4c70-a4f5-75d110251e1d/NIKE+COURT+VISION+LO+NN+ESS.png",
+      "cat_id": "44aa",
+      "id": "4"
     },
     {
-      "id": "5",
       "name": "Air Jordan 1 Low",
-      "status": "out of stock",
       "title": "White Gold Plated Princess",
+      "price": 300,
+      "price_sale": 250,
+      "status": "out of stock",
       "quantity": 0,
+      "description": "Great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm-hearted love to Father, husband or son in this Thanksgiving or Christmas Day.",
+      "type": "boots",
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/86991b52-33a2-4e41-aace-c05510832f84/AIR+JORDAN+1+LOW.png",
-      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
-      "price": 300,
-      "price_sale": 250,
-      "type": "boots",
-      "date_create": "2024-08-01",
-      "category": [
-        {
-          "id": 1,
-          "name": "Sportswear",
-          "parent_id": null,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "id": 2,
-          "name": "Footwear",
-          "parent_id": 1,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "size": [
-        {
-          "name": "42",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "43",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "color": [
-        {
-          "name": "Red",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "Blue",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ]
+      "cat_id": "9f8e",
+      "id": "5"
     },
     {
-      "id": "6",
       "name": "Jordan One Take 5 PF",
+      "title": "WD 2TB Elements Portable External Hard Drive - USB 3.0",
+      "price": 300,
+      "price_sale": 250,
       "status": "out of stock",
-      "title": "WD 2TB Elements Portable External Hard Drive - USB 3.0 ",
       "quantity": 0,
+      "description": "Great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm-hearted love to Father, husband or son in this Thanksgiving or Christmas Day.",
+      "type": "boots",
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/dac0b316-f106-4006-a41f-7b98cc523d1e/JORDAN+ONE+TAKE+5+PF.png",
-      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
-      "price": 300,
-      "price_sale": 250,
-      "type": "boots",
-      "date_create": "2024-08-01",
-      "category": [
-        {
-          "id": 1,
-          "name": "Sportswear",
-          "parent_id": null,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "id": 2,
-          "name": "Footwear",
-          "parent_id": 1,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "size": [
-        {
-          "name": "42",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "43",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "color": [
-        {
-          "name": "Red",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "Blue",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ]
+      "cat_id": "f4bf",
+      "id": "6"
     },
     {
-      "id": "7",
       "name": "LeBron XXI EP",
-      "status": "out of stock",
-      "quantity": 0,
       "title": "SanDisk SSD PLUS 1TB Internal SSD - SATA III 6 Gb/s",
-      "image_product": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/6eb361fd-b7d8-496d-9e44-ed48c94afd8a/LEBRON+XXI+EP.png",
-      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
       "price": 300,
       "price_sale": 250,
+      "status": "out of stock",
+      "quantity": 0,
+      "description": "Great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm-hearted love to Father, husband or son in this Thanksgiving or Christmas Day.",
       "type": "Basketball Shoes",
-      "date_create": "2024-08-01",
-      "category": [
-        {
-          "id": 1,
-          "name": "Sportswear",
-          "parent_id": null,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "id": 2,
-          "name": "Footwear",
-          "parent_id": 1,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "size": [
-        {
-          "name": "42",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "43",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "color": [
-        {
-          "name": "Red",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "Blue",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ]
+      "image_product": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/6eb361fd-b7d8-496d-9e44-ed48c94afd8a/LEBRON+XXI+EP.png",
+      "cat_id": "9f8e",
+      "id": "7"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Nike",
+      "status": "active",
+      "imageURL": "https://static.nike.com/a/images/f_jpg,q_auto:eco/61b4738b-e1e1-4786-8f6c-26aa0008e80b/swoosh-logo-black.png",
+      "id": "9f8e"
     },
     {
-      "id": "4",
-      "name": "Nike Court Vision Low Next Nature",
-      "title": "Solid Gold Petite Micropave ",
-      "status": "out of stock",
-      "quantity": 0,
-      "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/85057772-9c48-4c70-a4f5-75d110251e1d/NIKE+COURT+VISION+LO+NN+ESS.png",
-      "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
-      "price": 300,
-      "price_sale": 250,
-      "type": "boots",
-      "date_create": "2024-08-01",
-      "category": [
-        {
-          "id": 1,
-          "name": "Sportswear",
-          "parent_id": null,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "id": 2,
-          "name": "Footwear",
-          "parent_id": 1,
-          "status": "active",
-          "date_create": "2023-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "size": [
-        {
-          "name": "42",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "43",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ],
-      "color": [
-        {
-          "name": "Red",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        },
-        {
-          "name": "Blue",
-          "status": "active",
-          "date_create": "2024-08-01",
-          "date_update": "2024-08-15"
-        }
-      ]
+      "id": "44aa",
+      "name": "Jordan",
+      "status": "active",
+      "imageURL": "https://wallpapercave.com/wp/eP7vrAj.jpg"
+    },
+    {
+      "id": "f4bf",
+      "name": "Adidas",
+      "status": "active",
+      "imageURL": "https://logos-world.net/wp-content/uploads/2020/04/Adidas-Logo.png"
+    },
+    {
+      "name": "Puma",
+      "status": "inactive",
+      "imageURL": "https://static.vecteezy.com/system/resources/previews/021/963/704/original/puma-logo-illustration-free-vector.jpg",
+      "id": "946d"
     }
   ],
   "users": [
@@ -309,7 +92,7 @@
       "phonenumber": "1234567890",
       "email": "john.doe@example.com",
       "password": "hashed_password_1",
-      "status": "inactive",
+      "status": "active",
       "date_create": "2024-01-01",
       "date_update": "2024-01-10",
       "id": "a31d"

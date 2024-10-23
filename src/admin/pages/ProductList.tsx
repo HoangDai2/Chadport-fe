@@ -5,9 +5,10 @@ import { TProduct } from "../../Types/TProduct";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Tcategory from "../../Types/TCategories";
 function ProductList() {
   const [products, setProducts] = useState<TProduct[]>([]);
+  const [categories, setCategories] = useState<Tcategory[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [currentAction, setCurrentAction] = useState<"Delete" | null>(null);
   useEffect(() => {
@@ -20,9 +21,24 @@ function ProductList() {
         toast.error("Error fetching products");
       }
     };
+    const fetchCategories = async () => {
+      try {
+        const response = await instance.get("/categories");
+        setCategories(response.data);
+      } catch (error) {
+        console.error("lỗi danh mục:", error);
+        toast.error("lỗi danh mục");
+      }
+    };
+    fetchCategories();
     fetchProducts();
   }, []);
 
+  // hàm này sẽ lấy tên danh mục theo id
+  const getCategoryName = (cat_id: number) => {
+    const category = categories.find((cat) => cat.id === cat_id);
+    return category ? category.name : "Unknown Category";
+  };
   const handleDelete = async (id: number) => {
     try {
       await instance.delete(`/products/${id}`);
@@ -89,31 +105,32 @@ function ProductList() {
                 <th className="px-2 py-2 font-medium text-gray-900">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 ">
               {products.map((product) => (
-                <tr key={product.id}>
-                  <td className="px-2 py-2 text-gray-900">{product.id}</td>
-                  <img
-                    src={product.image_product}
-                    alt=""
-                    style={{ width: "150px" }}
-                  />
-                  <td className="px-2 py-2 text-gray-700">{product.name}</td>
+                <tr key={product.id} className="border-b">
+                  <td className="px-2 py-2 text-gray-900 truncate max-w-xs">
+                    {product.id}
+                  </td>
+                  <td className="px-2 py-2">
+                    <img
+                      src={product.image_product}
+                      alt=""
+                      style={{ width: "150px" }}
+                    />
+                  </td>
+                  <td className="px-2 py-2 text-gray-700 truncate max-w-xs">
+                    {product.name}
+                  </td>
                   <td className="px-2 py-2 text-gray-700">{product.price}</td>
-
                   <td className="px-2 py-2 text-gray-700">{product.status}</td>
                   <td className="px-2 py-2 text-gray-700">
                     {product.quantity}
                   </td>
-                  <td className="px-2 py-2 text-gray-700">
+                  <td className="px-2 py-2 text-gray-700 truncate max-w-xs">
                     {product.description}
                   </td>
-                  <td>
-                    <ul className="list-unstyled">
-                      {product?.category?.map((cat) => (
-                        <li key={cat.id}>{cat.name}</li>
-                      ))}
-                    </ul>
+                  <td className="px-2 py-2 text-gray-700">
+                    {getCategoryName(product.cat_id)}
                   </td>
                   <td className="px-2 py-2 text-gray-700">
                     <div className="flex space-x-4">
