@@ -43,7 +43,7 @@ const Checkout = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:5000/payment",
+        "http://localhost:3000/payment",
         paymentData
       );
 
