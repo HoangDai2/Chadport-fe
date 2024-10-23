@@ -466,6 +466,40 @@
       "status": "inactive",
       "date_create": "2024-10-21T07:15:50.195Z",
       "date_update": "2024-10-21T07:15:50.195Z"
+    },
+    {
+      "id": "df7b",
+      "user_id": 11,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "phongduyabc@gmail.com",
+      "password": "123123",
+      "status": "active",
+      "date_create": "2024-10-23T03:26:39.031Z",
+      "date_update": "2024-10-23T03:26:39.031Z"
+    },
+    {
+      "id": "914c",
+      "user_id": 12,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "phongduyxyz@gmail.com",
+      "password": "abcxyz",
+      "status": "active",
+      "date_create": "2024-10-23T03:32:41.800Z",
+      "date_update": "2024-10-23T03:32:41.800Z"
     }
   ],
   "orders": [
@@ -484,7 +518,8 @@
       "ward": "Ward 1",
       "status": "pending",
       "date_create": "2024-10-21T10:00:00Z",
-      "date_update": "2024-10-21T10:00:00Z"
+      "date_update": "2024-10-21T10:00:00Z",
+      "id": "dbe3"
     },
     {
       "order_id": "2",
@@ -501,7 +536,8 @@
       "ward": "Ward 2",
       "status": "shipped",
       "date_create": "2024-10-22T14:30:00Z",
-      "date_update": "2024-10-23T09:00:00Z"
+      "date_update": "2024-10-23T09:00:00Z",
+      "id": "32ae"
     },
     {
       "order_id": "3",
@@ -518,7 +554,8 @@
       "ward": "Ward 3",
       "status": "delivered",
       "date_create": "2024-10-20T08:45:00Z",
-      "date_update": "2024-10-23T12:00:00Z"
+      "date_update": "2024-10-23T12:00:00Z",
+      "id": "f3b1"
     }
   ]
 }

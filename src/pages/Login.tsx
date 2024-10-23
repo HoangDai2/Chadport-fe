@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 const LoginRegister: React.FC = () => {
   const [loginData, setLoginData] = useState({
     username: "",
@@ -10,6 +11,7 @@ const LoginRegister: React.FC = () => {
   const [formError, setFormError] = useState("");
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(""); // New state for success message
 
   const navigate = useNavigate();
 
@@ -33,10 +35,10 @@ const LoginRegister: React.FC = () => {
       );
 
       if (user) {
-        // Kiểm tra trạng thái tài khoản
+        // Check account status
         if (user.status === "inactive") {
           setFormError(
-            "Tài khoản của bạn đã bị khóa Vui lòng liên hệ với bộ phận hỗ trợ"
+            "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với bộ phận hỗ trợ."
           );
           return;
         }
@@ -44,13 +46,16 @@ const LoginRegister: React.FC = () => {
         setLoginSuccess(true);
         setFormError("");
 
-        // Lưu thông tin người dùng vào sessionStorage
+        // Store user info in sessionStorage
         sessionStorage.setItem("user", JSON.stringify(user));
 
-        // Reload lại trang để cập nhật header
-        window.location.reload();
+        // Set success message
+        setSuccessMessage("Login successful! Redirecting to home...");
 
-        navigate("/");
+        // Navigate to home after 2 seconds
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       } else {
         setFormError("Invalid username or password.");
       }
@@ -154,17 +159,13 @@ const LoginRegister: React.FC = () => {
                         <h2>Login</h2>
                         <div className="box-content">
                           <div className="form-login">
-                            <form
-                              method="post"
-                              className="login"
-                              onSubmit={handleLoginSubmit}
-                            >
+                            <form method="post" className="login" onSubmit={handleLoginSubmit}>
                               {formError && (
                                 <div className="error-message">{formError}</div>
                               )}
-                              {loginSuccess && (
+                              {loginSuccess && successMessage && (
                                 <div className="success-message">
-                                  Login successful!
+                                  {successMessage}
                                 </div>
                               )}
                               <div className="username">
@@ -224,11 +225,7 @@ const LoginRegister: React.FC = () => {
                         <h2 className="register">Register</h2>
                         <div className="box-content">
                           <div className="form-register">
-                            <form
-                              method="post"
-                              className="register"
-                              onSubmit={handleRegisterSubmit}
-                            >
+                            <form method="post" className="register" onSubmit={handleRegisterSubmit}>
                               {formError && (
                                 <div className="error-message">{formError}</div>
                               )}
