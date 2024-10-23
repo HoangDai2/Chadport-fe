@@ -10,7 +10,7 @@
       "description": "Great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm-hearted love to Father, husband or son in this Thanksgiving or Christmas Day.",
       "type": "boots",
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/85057772-9c48-4c70-a4f5-75d110251e1d/NIKE+COURT+VISION+LO+NN+ESS.png",
-      "cat_id": "44aa",
+      "cat_id": "9f8e",
       "id": "4"
     },
     {
@@ -36,21 +36,32 @@
       "description": "Great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm-hearted love to Father, husband or son in this Thanksgiving or Christmas Day.",
       "type": "boots",
       "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/dac0b316-f106-4006-a41f-7b98cc523d1e/JORDAN+ONE+TAKE+5+PF.png",
-      "cat_id": "f4bf",
+      "cat_id": "44aa",
       "id": "6"
     },
     {
-      "name": "LeBron XXI EP",
-      "title": "SanDisk SSD PLUS 1TB Internal SSD - SATA III 6 Gb/s",
-      "price": 300,
-      "price_sale": 250,
+      "id": "99ec",
+      "name": "Giày Thể Thao Nike Air Jordan 1 High OG UNC University Blue 555088-134 575441-134 Màu Xanh",
+      "title": "Giày Nike",
+      "price": "990.000",
+      "price_sale": "989.000",
       "status": "out of stock",
-      "quantity": 0,
-      "description": "Great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm-hearted love to Father, husband or son in this Thanksgiving or Christmas Day.",
-      "type": "Basketball Shoes",
-      "image_product": "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/6eb361fd-b7d8-496d-9e44-ed48c94afd8a/LEBRON+XXI+EP.png",
-      "cat_id": "9f8e",
-      "id": "7"
+      "quantity": "9",
+      "description": "Giày Thể Thao Nike Air Jordan 1 High OG UNC University Blue 555088-134 575441-134 Màu Xanh Trắng là đôi giày thời trang có thiết kế trẻ trung, năng động đến từ thương hiệu Nike nổi tiếng của Mỹ. Nike Air Jordan 1 High OG UNC University Blue 555088-134 575441-134 được làm từ chất liệu cao cấp mang lại cảm giác thoải mái khi đi lên chân.",
+      "image_product": "https://cdn.vuahanghieu.com/unsafe/0x900/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/product/2024/08/giay-the-thao-nike-air-jordan-1-high-og-unc-university-blue-555088-134-575441-134-mau-xanh-trang-size-41-66cc40036ed2c-26082024154243.jpg",
+      "cat_id": "9f8e"
+    },
+    {
+      "id": "9ef6",
+      "name": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen",
+      "title": "Adidas",
+      "price": "490.000",
+      "price_sale": "489.000",
+      "status": "out of stock",
+      "quantity": "6",
+      "description": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen được thiết kế hiện đại đến từ thương hiệu Adidas nổi tiếng. Với gam màu năng động và khỏe khoắn, đôi giày mang đến cho bạn vẻ ngoài cá tính và cuốn hút.",
+      "image_product": "https://cdn.vuahanghieu.com/unsafe/0x0/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/news/content/2023/01/giay-the-thao-adidas-galaxy-6-black-gw3848-mau-den-size-43-anh-5-jpg-1672802769-04012023102609.jpg",
+      "cat_id": "f4bf"
     }
   ],
   "categories": [
@@ -283,6 +294,23 @@
       "status": "active",
       "date_create": "2024-10-23T03:32:41.800Z",
       "date_update": "2024-10-23T03:32:41.800Z"
+    },
+    {
+      "id": "07d7",
+      "user_id": 13,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "quyendoan2k41@gmail.com",
+      "password": "123",
+      "status": "inactive",
+      "date_create": "2024-10-23T10:51:30.785Z",
+      "date_update": "2024-10-23T10:51:30.785Z"
     }
   ],
   "orders": [

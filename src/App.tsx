@@ -59,6 +59,7 @@ import Tcategory from "./Types/TCategories";
 import createCategory from "./Service/categories";
 import createProduct from "./Service/Product";
 import { useNavigate } from "react-router-dom";
+import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -241,7 +242,16 @@ function App() {
               </>
             }
           />
-          <Route path="/shoplist" element={<ShopList />} />
+          <Route
+            path="/shoplist"
+            element={
+              <>
+                <HeaderClient />
+                <ShopList />
+                <FooterClient />
+              </>
+            }
+          />
           <Route
             path="/shop-details/:id"
             element={
@@ -333,7 +343,30 @@ function App() {
               </>
             }
           />
+
+          <Route
+            path="/about"
+            element={
+              <>
+                <HeaderClient />
+                <About />
+                <FooterClient />
+              </>
+            }
+          />
+
+          <Route
+            path="/categoriesnike/:id"
+            element={
+              <>
+                <HeaderClient />
+                <CategoriesClient />
+                <FooterClient />
+              </>
+            }
+          />
         </Routes>
+
         <Routes>
           {/* Router admin */}
           <Route path="/admin" element={<Admin />}>

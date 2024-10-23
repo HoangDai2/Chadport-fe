@@ -85,7 +85,7 @@ const ShopList = () => {
                     </div>
 
                     {/* Block Products */}
-                    <div className="block block-products" >
+                    <div className="block block-products">
                       <div className="block-title">
                         <h2>Feature Product</h2>
                       </div>
@@ -93,12 +93,22 @@ const ShopList = () => {
                         <ul className="products-list">
                           {products.slice(0, 3).map((product) => (
                             <li key={product.id} className="product-item">
-                              <a onClick={() => goToProductDetail(product.id)} className="product-image">
-                                <img src={product.image_product} alt={product.name} />
+                              <a
+                                onClick={() => goToProductDetail(product.id)}
+                                className="product-image"
+                              >
+                                <img
+                                  src={product.image_product}
+                                  alt={product.name}
+                                />
                               </a>
                               <div className="product-content">
                                 <h2 className="product-title">
-                                  <a onClick={() => goToProductDetail(product.id)}>
+                                  <a
+                                    onClick={() =>
+                                      goToProductDetail(product.id)
+                                    }
+                                  >
                                     {product.name}
                                   </a>
                                 </h2>
@@ -127,60 +137,106 @@ const ShopList = () => {
                       </div>
                       <div className="products-topbar-right">
                         <div className="products-sort dropdown">
-                          <span className="sort-toggle dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                          <span
+                            className="sort-toggle dropdown-toggle"
+                            data-toggle="dropdown"
+                            aria-expanded="true"
+                          >
                             Default sorting
                           </span>
-                          <ul className="sort-list dropdown-menu" x-placement="bottom-start">
-                            <li className="active"><a href="#">Default sorting</a></li>
-                            <li><a href="#">Sort by popularity</a></li>
-                            <li><a href="#">Sort by average rating</a></li>
-                            <li><a href="#">Sort by latest</a></li>
-                            <li><a href="#">Sort by price: low to high</a></li>
-                            <li><a href="#">Sort by price: high to low</a></li>
+                          <ul
+                            className="sort-list dropdown-menu"
+                            x-placement="bottom-start"
+                          >
+                            <li className="active">
+                              <a href="#">Default sorting</a>
+                            </li>
+                            <li>
+                              <a href="#">Sort by popularity</a>
+                            </li>
+                            <li>
+                              <a href="#">Sort by average rating</a>
+                            </li>
+                            <li>
+                              <a href="#">Sort by latest</a>
+                            </li>
+                            <li>
+                              <a href="#">Sort by price: low to high</a>
+                            </li>
+                            <li>
+                              <a href="#">Sort by price: high to low</a>
+                            </li>
                           </ul>
                         </div>
                       </div>
                     </div>
 
-                    <div className="tab-content" >
-                      <div className="tab-pane fade show active" id="layout-grid" role="tabpanel">
+                    <div className="tab-content">
+                      <div
+                        className="tab-pane fade show active"
+                        id="layout-grid"
+                        role="tabpanel"
+                      >
                         <div className="products-list grid">
                           <div className="row">
-                            {products.map((product) => (
-                              <div key={product.id} className="col-xl-4 col-lg-4 col-md-4 col-sm-6">
-                                <div className="product-item">
-                                  <div className="product-image">
-                                    <a onClick={() => goToProductDetail(product.id)}>
-                                      <img src={product.image_product} alt={product.name} />
-                                    </a>
-                                  </div>
-                                  <div className="products-content">
-                                    <h2 className="product-title">
-                                      <a onClick={() => goToProductDetail(product.id)}>
-                                        {product.name}
+                            {products.map((product) => {
+                              // Giới hạn độ dài tên sản phẩm
+                              const maxLength = 25;
+                              const productName =
+                                product.name.length > maxLength
+                                  ? product.name.substring(0, maxLength) + "..."
+                                  : product.name;
+
+                              return (
+                                <div
+                                  key={product.id}
+                                  className="col-xl-4 col-lg-4 col-md-4 col-sm-6"
+                                >
+                                  <div className="product-item">
+                                    <div className="product-image">
+                                      <a
+                                        onClick={() =>
+                                          goToProductDetail(product.id)
+                                        }
+                                      >
+                                        <img
+                                          src={product.image_product}
+                                          alt={product.name}
+                                        />
                                       </a>
-                                    </h2>
-                                    <span className="price">
-                                      <del aria-hidden="true">
-                                        <span>${product.price}</span>
-                                      </del>
-                                      <ins>
-                                        <span>${product.price_sale}</span>
-                                      </ins>
-                                    </span>
-                                    <div className="product-action">
-                                      <a href="#" className="add-to-cart">
-                                        <span className="icon-cart"></span>
-                                      </a>
-                                      
-                                      <a href="#" className="add-to-compare">
-                                        <span className="icon-shuffle"></span>
-                                      </a>
+                                    </div>
+                                    <div className="products-content">
+                                      <h2 className="product-title">
+                                        <a
+                                          onClick={() =>
+                                            goToProductDetail(product.id)
+                                          }
+                                        >
+                                          {productName}
+                                        </a>
+                                      </h2>
+                                      <span className="price">
+                                        <del aria-hidden="true">
+                                          <span>${product.price}</span>
+                                        </del>
+                                        <ins>
+                                          <span>${product.price_sale}</span>
+                                        </ins>
+                                      </span>
+                                      <div className="product-action">
+                                        <a href="#" className="add-to-cart">
+                                          <span className="icon-cart"></span>
+                                        </a>
+
+                                        <a href="#" className="add-to-compare">
+                                          <span className="icon-shuffle"></span>
+                                        </a>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
@@ -189,12 +245,27 @@ const ShopList = () => {
                     <div className="pagination-wrapper clearfix">
                       <nav className="navigation pagination">
                         <div className="nav-links">
-                          <a className="page-numbers prev" href="#">«</a>
-                          <a className="page-numbers" href="#">1</a>
-                          <span aria-current="page" className="page-numbers current">2</span>
-                          <a className="page-numbers" href="#">3</a>
-                          <a className="page-numbers" href="#">4</a>
-                          <a className="page-numbers next" href="#">»</a>
+                          <a className="page-numbers prev" href="#">
+                            «
+                          </a>
+                          <a className="page-numbers" href="#">
+                            1
+                          </a>
+                          <span
+                            aria-current="page"
+                            className="page-numbers current"
+                          >
+                            2
+                          </span>
+                          <a className="page-numbers" href="#">
+                            3
+                          </a>
+                          <a className="page-numbers" href="#">
+                            4
+                          </a>
+                          <a className="page-numbers next" href="#">
+                            »
+                          </a>
                         </div>
                       </nav>
                     </div>

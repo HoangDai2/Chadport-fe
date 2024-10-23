@@ -103,7 +103,12 @@ const ShopDetails = ({
             <div id="title" className="page-title">
               <div className="section-container">
                 <div className="content-title-heading">
-                  <h1 className="text-title-heading">{product.name}</h1>
+                  <h1
+                    className="text-title-heading"
+                    style={{ fontSize: "26px", fontWeight: "bold" }}
+                  >
+                    {product.name}
+                  </h1>
                 </div>
                 <div className="breadcrumbs">
                   <a href="index.html">Home</a>

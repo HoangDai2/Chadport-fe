@@ -1,169 +1,65 @@
-import React from "react";
-import imgCategory1 from "../img/JORDAN+LUKA+3+PF.png";
-import imgCategory2 from "../img/W+AIR+JORDAN+1+LOW+SE.png";
-import imgCategory3 from "../img/AIR+JORDAN+1+ZM+AIR+CMFT+2.jpg";
-import imgCategory4 from "../img/ACG+WATERCAT+.png";
-type Props = {};
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Tcategory from "../Types/TCategories"; // Giả sử bạn có định nghĩa type cho danh mục
 
-const Category = (props: Props) => {
+const Category = () => {
+  const [categories, setCategories] = useState<Tcategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Gọi API khi component được mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const responses = await axios.get("http://localhost:3000/categories"); // Thay URL bằng endpoint API của bạn
+        setCategories(responses.data); // Gán dữ liệu danh mục vào state
+      } catch (error) {
+        console.error("Lỗi khi gọi API danh mục:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) {
+    return <p>Đang tải dữ liệu danh mục...</p>;
+  }
+
   return (
     <>
       <div className="block-title">
-        <h2>Category</h2>
+        <h2>CATEGORIES</h2>
       </div>
-      <section className="section section-padding m-b-60">
-        <div className="section-container">
-          <div className="block block-banners layout-1 banners-effect">
-            <div className="section-row">
-              <div className="section-column left sm-m-b">
-                <div className="section-column-wrap">
-                  <div className="block-widget-wrap">
-                    <div className="block-widget-banner layout-1">
-                      <div className="bg-banner">
-                        <div className="banner-wrapper banners">
-                          <div className="banner-image">
-                            <a href="shop-grid-left.html">
-                              <img
-                                width="571"
-                                height="622"
-                                src={imgCategory1}
-                                alt="Banner Image"
-                              />
-                            </a>
-                          </div>
-                          <div className="banner-wrapper-infor">
-                            <div className="info">
-                              <div className="content">
-                                <a
-                                  className="button button-white"
-                                  href="shop-grid-left.html"
-                                >
-                                  Nike Sneaker
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+      <section className="section section-padding m-b-60 ">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-3 gap-4">
+            {categories.map((category, index) => (
+              <div
+                key={category.id}
+                className={`${
+                  index === 0
+                    ? "col-span-1 row-span-2 h-70"
+                    : index === 1 || index === 2
+                    ? "col-span-1 h-60"
+                    : "col-span-2 h-64"
+                } border border-gray-300 rounded-md bg-white p-4 relative group`}
+              >
+                <a href={`categoriesnike/${category.id}`}>
+                  <img
+                    src={category.imageURL}
+                    alt={category.name}
+                    className="w-full h-full object-contain"
+                  />
+                </a>
+                <a
+                  href={`categoriesnike/${category.id}`}
+                  className="hidden group-hover:flex absolute inset-0 justify-center items-center bg-black bg-opacity-50 text-white text-lg font-medium transition-opacity duration-300"
+                >
+                  {category.name} →
+                </a>
               </div>
-              <div className="section-column right">
-                <div className="section-column-wrap">
-                  <div className="block-widget-wrap p-0">
-                    <div className="block-section m-b-15">
-                      <div className="section-container">
-                        <div className="section-row">
-                          <div className="section-column column-50 sm-m-b">
-                            <div className="block-widget-wrap">
-                              <div className="block-widget-banner layout-1">
-                                <div className="bg-banner">
-                                  <div className="banner-wrapper banners">
-                                    <div className="banner-image">
-                                      <a href="shop-grid-left.html">
-                                        <img
-                                          width="406"
-                                          height="304"
-                                          src={imgCategory2}
-                                          alt="Banner Image"
-                                        />
-                                      </a>
-                                    </div>
-                                    <div className="banner-wrapper-infor">
-                                      <div className="info">
-                                        <div className="content">
-                                          <a
-                                            className="button button-white"
-                                            href="shop-grid-left.html"
-                                          >
-                                            Jordan Low Top
-                                          </a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="section-column column-50">
-                            <div className="block-widget-wrap">
-                              <div className="block-widget-banner layout-1">
-                                <div className="bg-banner">
-                                  <div className="banner-wrapper banners">
-                                    <div className="banner-image">
-                                      <a href="shop-grid-left.html">
-                                        <img
-                                          width="406"
-                                          height="304"
-                                          src={imgCategory3}
-                                          alt="Banner Image"
-                                        />
-                                      </a>
-                                    </div>
-                                    <div className="banner-wrapper-infor">
-                                      <div className="info">
-                                        <div className="content">
-                                          <a
-                                            className="button button-white"
-                                            href="shop-grid-left.html"
-                                          >
-                                            Jordan High Top
-                                          </a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="block-section">
-                      <div className="section-container">
-                        <div className="section-row">
-                          <div className="section-column">
-                            <div className="block-widget-wrap">
-                              <div className="block-widget-banner layout-1">
-                                <div className="bg-banner">
-                                  <div className="banner-wrapper banners">
-                                    <div className="banner-image">
-                                      <a href="shop-grid-left.html">
-                                        <img
-                                          width="406"
-                                          height="304"
-                                          src={imgCategory4}
-                                          alt="Banner Image"
-                                        />
-                                      </a>
-                                    </div>
-                                    <div className="banner-wrapper-infor">
-                                      <div className="info">
-                                        <div className="content">
-                                          <a
-                                            className="button button-white"
-                                            href="shop-grid-left.html"
-                                          >
-                                            Nike Lab
-                                          </a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

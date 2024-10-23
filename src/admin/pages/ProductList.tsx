@@ -118,7 +118,7 @@ function ProductList() {
                       style={{ width: "150px" }}
                     />
                   </td>
-                  <td className="px-2 py-2 text-gray-700 truncate max-w-xs">
+                  <td className="px-2 py-2 text-gray-700 truncate max-w-[100px]">
                     {product.name}
                   </td>
                   <td className="px-2 py-2 text-gray-700">{product.price}</td>
