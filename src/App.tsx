@@ -52,7 +52,6 @@ import ProductUpdate from "./admin/pages/ProductUpdate";
 import Headerclient from "./components/HeaderClient";
 import PaymentSuccess from "./pages/Pay_done";
 import DoneMomo from "./pages/Pay_done";
-<<<<<<< HEAD
 import CategoriesAdd from "./admin/pages/CategoriesAdd";
 import CategoriesList from "./admin/pages/CategoriesList";
 import CategoriesUpadate from "./admin/pages/CategoriesUpadate";
@@ -60,9 +59,6 @@ import Tcategory from "./Types/TCategories";
 import createCategory from "./Service/categories";
 import createProduct from "./Service/Product";
 import { useNavigate } from "react-router-dom";
-=======
-import OrderManagement from "./admin/pages/ListBill";
->>>>>>> b05f13b863145f7354d823633b8ea77fdbc035ed
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -344,7 +340,6 @@ function App() {
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="products" element={<ProductList />} />
-<<<<<<< HEAD
             <Route
               path="products/add"
               element={
@@ -375,12 +370,6 @@ function App() {
                 <CategoriesUpadate onEditCategory={handleEditCategory} />
               }
             />
-=======
-            <Route path="products/add" element={<ProductAdd />} />
-            <Route path="products/edit/:id" element={<ProductUpdate />} />
-            <Route path="detailuser/:id" element={<DetailUser />} />
-            <Route path="orders" element={<OrderManagement />} />
->>>>>>> b05f13b863145f7354d823633b8ea77fdbc035ed
           </Route>
         </Routes>
       </div>
