@@ -53,6 +53,7 @@ import DetailUser from "./admin/pages/DetailUser";
 import Headerclient from "./components/HeaderClient";
 import PaymentSuccess from "./pages/Pay_done";
 import DoneMomo from "./pages/Pay_done";
+import OrderManagement from "./admin/pages/ListBill";
 function App() {
   const [user, setUser] = useState<[]>([]);
   const addToCart = (product: TProduct) => {
@@ -249,6 +250,7 @@ function App() {
             <Route path="products/add" element={<ProductAdd />} />
             <Route path="products/edit/:id" element={<ProductUpdate />} />
             <Route path="detailuser/:id" element={<DetailUser />} />
+            <Route path="orders" element={<OrderManagement />} />
           </Route>
         </Routes>
       </div>
