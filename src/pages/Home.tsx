@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import TProduct from "../Types/TProduct";
 import { ToastContainer } from "react-toastify";
-
+// import { addToCart } from "../Types/cartUtils";
+// import { useDispatch } from 'react-redux';
+// const dispatch = useDispatch();
+// const handleAddToCart = (product: TProduct) => {
+//   addToCart(product, dispatch);
+// };
 const Home = ({
   addToCart,
   addToWishlist,
