@@ -60,6 +60,7 @@ import createCategory from "./Service/categories";
 import createProduct from "./Service/Product";
 import { useNavigate } from "react-router-dom";
 import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
+import Orders from "./admin/pages/ListBill";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -372,6 +373,7 @@ function App() {
           <Route path="/admin" element={<Admin />}>
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
+            <Route path="orders" element={<Orders/>} />
             <Route path="products" element={<ProductList />} />
             <Route
               path="products/add"
