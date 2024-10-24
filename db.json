@@ -368,5 +368,39 @@
       "date_update": "2024-10-23T12:00:00Z",
       "id": "f3b1"
     }
-  ]
-}
+  ], 
+    "carts": [
+      {
+        "cart_id": "C001",
+        "pro_id": 4,
+        "total_money": 600,
+        "description": "Cart contains two Nike Court Vision Low Next Nature shoes.",
+        "date_create": "2024-10-21T09:30:00Z",
+        "date_update": "2024-10-21T10:00:00Z"
+      },
+      {
+        "cart_id": "C002",
+        "pro_id": 5,
+        "total_money": 250,
+        "description": "Cart contains one Air Jordan 1 Low shoe.",
+        "date_create": "2024-10-22T14:00:00Z",
+        "date_update": "2024-10-22T14:30:00Z"
+      },
+      {
+        "cart_id": "C003",
+        "pro_id": 6,
+        "total_money": 900,
+        "description": "Cart contains three Jordan One Take 5 PF shoes.",
+        "date_create": "2024-10-20T08:30:00Z",
+        "date_update": "2024-10-20T08:45:00Z"
+      },
+      {
+        "cart_id": "C004",
+        "pro_id": 99,
+        "total_money": 990000,
+        "description": "Giày Thể Thao Nike Air Jordan 1 High OG UNC University Blue.",
+        "date_create": "2024-10-24T08:30:00Z",
+        "date_update": "2024-10-24T08:45:00Z"
+      }
+    ]
+  }
