@@ -311,6 +311,23 @@
       "status": "inactive",
       "date_create": "2024-10-23T10:51:30.785Z",
       "date_update": "2024-10-23T10:51:30.785Z"
+    },
+    {
+      "id": "f2e0",
+      "user_id": 14,
+      "role_id": 2,
+      "first_name": "",
+      "last_name": "",
+      "gender": "",
+      "birthday": "",
+      "address": "",
+      "img_user": "",
+      "phonenumber": "",
+      "email": "quyendoan2k411@gmail.com",
+      "password": "123",
+      "status": "active",
+      "date_create": "2024-10-24T20:39:26.029Z",
+      "date_update": "2024-10-24T20:39:26.029Z"
     }
   ],
   "orders": [
