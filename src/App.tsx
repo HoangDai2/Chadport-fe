@@ -61,6 +61,7 @@ import createProduct from "./Service/Product";
 import { useNavigate } from "react-router-dom";
 import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
+import SearchResults from "./pages/SearchResults";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -362,6 +363,16 @@ function App() {
               <>
                 <HeaderClient />
                 <CategoriesClient />
+                <FooterClient />
+              </>
+            }
+          />
+          <Route
+            path="/searchresults"
+            element={
+              <>
+                <HeaderClient />
+                <SearchResults />
                 <FooterClient />
               </>
             }

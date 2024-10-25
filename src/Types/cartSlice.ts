@@ -25,10 +25,13 @@ const initialState: CartState = {
 };
 
 // Async thunk for fetching cart items
-export const fetchCartItems = createAsyncThunk("cart/fetchCartItems", async () => {
-  const response = await axios.get("http://localhost:3000/cart");
-  return response.data;
-});
+export const fetchCartItems = createAsyncThunk(
+  "cart/fetchCartItems",
+  async () => {
+    const response = await axios.get("http://localhost:3000/cart");
+    return response.data;
+  }
+);
 
 // Cart slice
 const cartSlice = createSlice({
@@ -36,7 +39,9 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     removeItem: (state, action) => {
-      state.items = state.items.filter((item) => item.pro_id !== action.payload);
+      state.items = state.items.filter(
+        (item) => item.pro_id !== action.payload
+      );
     },
     // Additional reducers if needed
   },

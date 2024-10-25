@@ -6,6 +6,7 @@ import axios from "axios";
 import Tcategory from "../Types/TCategories";
 
 const Headerclient = () => {
+  const [loading, setLoading] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [carCount, setCarCount] = useState(0);
   const [userName, setUserName] = useState<string | null>(null);
@@ -14,6 +15,7 @@ const Headerclient = () => {
   const [products, setProducts] = useState<TProduct[]>([]); // Khai báo kiểu dữ liệu cho sản phẩm
   const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
   const [categories, setCategories] = useState<Tcategory[]>([]); // Khai báo kiểu dữ liệu cho sản phẩm đã lọc
+  const [recentSearches, setRecentSearches] = useState<string[]>([]); // Lưu các từ khóa vừa tìm
   const navigate = useNavigate();
 
   // Lấy dữ liệu sản phẩm từ API để làm chức năng tìm kiếm sản phẩm theo từ khóa
@@ -107,8 +109,73 @@ const Headerclient = () => {
   const goToProductDetail = (id: number) => {
     navigate(`/shop-details/${id}`);
   };
+
+  // Hàm này xử lý khi nhấn Enter
+  const handleSearchKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === "Enter" && searchTerm) {
+      // Cập nhật trạng thái loading
+      setLoading(true);
+
+      // quản lí thanh tìm kiếm khi tìm kiếm được kết quả rồi thì sẽ ẩn thanh tìm kiếm đi
+      setIsSearchOpen(false);
+
+      // Lưu từ khóa vào localStorage
+      saveSearchTerm(searchTerm);
+
+      // tim kiếm xong thì sau 1s sẽ hiện ra kết quả
+      setTimeout(() => {
+        setLoading(false);
+        navigate(`/searchresults?query=${searchTerm}`);
+      }, 1000);
+    }
+  };
+
+  // Hàm lưu từ khóa vào localStorage
+  const saveSearchTerm = (term: string) => {
+    const storedHistory = JSON.parse(
+      localStorage.getItem("recentSearches") || "[]"
+    );
+    if (!storedHistory.includes(term)) {
+      const updatedHistory = [...storedHistory, term];
+      localStorage.setItem("recentSearches", JSON.stringify(updatedHistory));
+      setRecentSearches(updatedHistory);
+    }
+  };
+
+  // Lấy danh sách các từ khóa vừa tìm từ localStorage khi component được tải
+  useEffect(() => {
+    const storedHistory = JSON.parse(
+      localStorage.getItem("recentSearches") || "[]"
+    );
+    setRecentSearches(storedHistory);
+  }, []);
+
+  // Hàm xóa từ khóa tìm kiếm
+  const handleDeleteSearchTerm = (term: string) => {
+    const storedHistory = JSON.parse(
+      localStorage.getItem("recentSearches") || "[]"
+    );
+    const updatedHistory = storedHistory.filter(
+      (item: string) => item !== term
+    );
+    localStorage.setItem("recentSearches", JSON.stringify(updatedHistory)); // Lưu lại vào localStorage
+    setRecentSearches(updatedHistory);
+  };
   return (
     <>
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-70 z-50">
+          <div className="flex flex-col items-center animate-pulse">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-black-400 mb-4"></div>
+            <p className="text-white text-lg font-semibold">
+              Đang tải kết quả...
+            </p>
+          </div>
+        </div>
+      )}
+
       <div
         className="header-desktop p-4 border-b"
         style={{
@@ -313,6 +380,7 @@ const Headerclient = () => {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                   placeholder="Search"
                   className="bg-transparent outline-none text-gray-600 ml-4 w-full"
                   style={{ border: "none" }}
@@ -329,50 +397,98 @@ const Headerclient = () => {
             </div>
 
             {/* Danh sách sản phẩm tìm kiếm */}
-            <div className="w-full mt-4 grid grid-cols-5 grid-rows-5 gap-4">
-              <div className="row-span-4 col-span-1 flex flex-col">
-                <p className="text-lg font-bold mb-2">Categories Suggestions</p>
-                {/* show dữ liệu danh mục  */}
+            <div className="grid grid-cols-5 grid-rows-5 gap-4">
+              <div className="row-span-4">
+                <p className="text-lg font-bold mb-2">Categories </p>
+                {/* Hiển thị dữ liệu danh mục */}
                 {categories.map((cates) => (
-                  <a href={`/categoriesnike/${cates.id}`}>
+                  <a href={`/categoriesnike/${cates.id}`} key={cates.id}>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="flex justify-center items-center h-[90px]">
+                      <div className="h-[90px] flex justify-center items-center">
                         <img
                           src={cates.imageURL}
                           alt=""
                           className="w-[80px] h-[80px] rounded-full object-contain border-2 border-gray-300"
                         />
                       </div>
-                      <div className="flex justify-center items-center h-[100px]">
-                        {cates.name}
+                      <div className="h-[100px] flex items-center">
+                        <span className="text-left">{cates.name}</span>
                       </div>
                     </div>
                   </a>
                 ))}
               </div>
 
-              <div className="col-span-4 row-span-4 flex flex-wrap gap-[6.5rem]">
-                {/* show dữ liệu sản phẩm mà người dùng tìm kiếm */}
+              <div className="col-span-4 row-span-4 flex">
+                {/* Hiển thị dữ liệu sản phẩm mà người dùng tìm kiếm */}
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product, index) => (
-                    <a href="" onClick={() => goToProductDetail(product.id)}>
-                      <div key={index} className="flex flex-col items-center">
-                        <img
-                          src={product.image_product}
-                          alt={product.name}
-                          className="w-32 h-32 object-cover"
-                        />
-                        <p className="text-black mt-2 text-sm w-32 overflow-hidden whitespace-nowrap text-ellipsis">
-                          {product.name}
-                        </p>
-                        <p className="text-black mt-1 text-sm">
-                          ₫{product.price}
-                        </p>
-                      </div>
-                    </a>
+                    <div
+                      className="row-span-3 col-start-2 row-start-1 "
+                      style={{
+                        padding: "30px",
+                        width: "210px",
+                        height: "180px",
+                      }}
+                    >
+                      <a
+                        href="#"
+                        onClick={() => goToProductDetail(product.id)}
+                        key={index}
+                      >
+                        <div className="flex flex-col">
+                          <img
+                            src={product.image_product}
+                            alt={product.name}
+                            className="w-full h-32 object-cover"
+                          />
+                          <p className="text-black mt-2 text-sm w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                            {product.name}
+                          </p>
+                          <p className="text-black mt-1 text-sm">
+                            ₫{product.price}
+                          </p>
+                        </div>
+                      </a>
+                    </div>
                   ))
                 ) : (
-                  <p className="text-gray-500">No products found</p>
+                  <p className="text-lg font-bold mb-2 col-span-4 text-center">
+                    {recentSearches.length === 0 ? "No products found" : ""}
+                  </p>
+                )}
+
+                {/* Hiển thị danh sách các từ khóa vừa tìm */}
+                {recentSearches.length > 0 && filteredProducts.length === 0 && (
+                  <div className="recent-searches mt-4 w-[100%]">
+                    <p className="text-lg font-bold mb-2 mt-[-20px]">
+                      Kết quả tìm kiếm gần đây
+                    </p>
+                    <ul>
+                      {recentSearches.map((term, index) => (
+                        <li
+                          key={index}
+                          className="mt-2 text-gray-500 flex justify-between items-center"
+                        >
+                          <span
+                            className="cursor-pointer"
+                            onClick={() => {
+                              navigate(`/searchresults?query=${term}`);
+                              setIsSearchOpen(false); // Ẩn thanh tìm kiếm sau khi nhấn
+                            }}
+                          >
+                            {term}
+                          </span>
+                          <button
+                            onClick={() => handleDeleteSearchTerm(term)}
+                            className="text-black-500 hover:text-red-700 ml-4"
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
             </div>
