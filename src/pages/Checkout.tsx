@@ -61,8 +61,8 @@ const Checkout = () => {
     if (isProcessing) return;
     setIsProcessing(true);
 
-    if (total < 1000) {
-      alert("Tổng giá trị đơn hàng phải lớn hơn 1,000đ.");
+    if (total < 50) {
+      alert("Tổng giá trị đơn hàng phải lớn hơn 50$.");
       setIsProcessing(false);
       return;
     }
