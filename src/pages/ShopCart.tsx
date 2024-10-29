@@ -1,21 +1,34 @@
 import React, { useEffect, useState } from "react";
-import TProduct from "../Types/TProduct";
+
+type CartItem = {
+  cart_id: string;
+  pro_id: number;
+  total_money: number;
+  description: string;
+  date_create: string;
+  date_update: string;
+};
 
 const ShopCart = () => {
-  const [cartItems, setCartItems] = useState<TProduct[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [quantity, setQuantity] = useState<number[]>([]);
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCartItems(storedCart);
-    setQuantity(storedCart.map(() => 1));
+    // Fetch data from db.json
+    fetch("http://localhost:3000/carts")
+      .then((response) => response.json())
+      .then((data) => {
+        setCartItems(data);
+        setQuantity(data.map(() => 1)); // Default quantity to 1 for each item
+      })
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
-  const delOneCart = (productId: number) => {
-    const updatedCart = cartItems.filter((item) => item.id !== productId);
+
+  const delOneCart = (cartId: string) => {
+    const updatedCart = cartItems.filter((item) => item.cart_id !== cartId);
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    window.dispatchEvent(new Event("storage"));
   };
+
   const handleUp = (index: number) => {
     setQuantity((prevQuantity) => {
       const newQuantity = [...prevQuantity];
@@ -31,9 +44,10 @@ const ShopCart = () => {
       return newQuantity;
     });
   };
+
   const getTotal = () => {
     return cartItems.reduce(
-      (total, item, index) => total + item.price_sale * quantity[index],
+      (total, item, index) => total + item.total_money * quantity[index],
       0
     );
   };
@@ -56,7 +70,7 @@ const ShopCart = () => {
                           <table className="cart-items table w-full text-left border-collapse">
                             <thead className="bg-gray-200">
                               <tr>
-                                <th className="py-3 px-4">Product</th>
+                                <th className="py-3 px-4">Description</th>
                                 <th className="py-3 px-4">Price</th>
                                 <th className="py-3 px-4">Quantity</th>
                                 <th className="py-3 px-4">Subtotal</th>
@@ -66,19 +80,12 @@ const ShopCart = () => {
                             <tbody>
                               {cartItems.map((item, index) => (
                                 <tr
-                                  key={item.id}
+                                  key={item.cart_id}
                                   className="border-b hover:bg-gray-50"
                                 >
-                                  <td className="py-3 px-4 flex items-center">
-                                    <img
-                                      src={item.image_product}
-                                      alt={item.name}
-                                      className="h-16 w-16 object-cover rounded"
-                                    />
-                                    <span className="ml-4">{item.name}</span>
-                                  </td>
+                                  <td className="py-3 px-4">{item.description}</td>
                                   <td className="py-3 px-4">
-                                    ${Number(item.price_sale || 0).toFixed(2)}
+                                    ${Number(item.total_money || 0).toFixed(2)}
                                   </td>
 
                                   <td className="py-3 px-4">
@@ -108,12 +115,12 @@ const ShopCart = () => {
                                   <td className="py-3 px-4">
                                     $
                                     {(
-                                      item.price_sale * quantity[index]
+                                      item.total_money * quantity[index]
                                     ).toFixed(2)}
                                   </td>
                                   <td className="py-3 px-4">
                                     <button
-                                      onClick={() => delOneCart(item.id)}
+                                      onClick={() => delOneCart(item.cart_id)}
                                       className="text-red-500 hover:text-red-700"
                                     >
                                       Remove
@@ -129,8 +136,6 @@ const ShopCart = () => {
                     <div className="col-xl-4 col-lg-12 col-md-12 col-12 p-4">
                       <div className="cart-totals bg-gray-100 p-4 rounded-lg shadow">
                         <h2 className="text-xl font-bold mb-4">Cart Totals</h2>
-
-                        {/* Thông tin sơ lược các sản phẩm trong giỏ hàng */}
                         <ul className="mb-4">
                           {cartItems.map((item, index) => (
                             <li
@@ -138,16 +143,15 @@ const ShopCart = () => {
                               className="flex justify-between mb-2"
                             >
                               <span>
-                                {item.name} (x{quantity[index]})
+                                {item.description} (x{quantity[index]})
                               </span>
                               <span>
                                 $
-                                {(item.price_sale * quantity[index]).toFixed(2)}
+                                {(item.total_money * quantity[index]).toFixed(2)}
                               </span>
                             </li>
                           ))}
                         </ul>
-
                         <div className="flex justify-between mb-2">
                           <span>Total:</span>
                           <span>${getTotal().toFixed(2)}</span>
