@@ -388,36 +388,37 @@
   ],
   "carts": [
     {
-      "cart_id": "C001",
-      "pro_id": 4,
-      "total_money": 600,
-      "description": "Cart contains two Nike Court Vision Low Next Nature shoes.",
-      "date_create": "2024-10-21T09:30:00Z",
-      "date_update": "2024-10-21T10:00:00Z"
+      "id": "5fdc",
+      "product": {
+        "name": "Jordan One Take 5 PF",
+        "title": "WD 2TB Elements Portable External Hard Drive - USB 3.0",
+        "price": 300,
+        "price_sale": 250,
+        "status": "out of stock",
+        "quantity": 1,
+        "description": "Great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm-hearted love to Father, husband or son in this Thanksgiving or Christmas Day.",
+        "type": "boots",
+        "image_product": "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/dac0b316-f106-4006-a41f-7b98cc523d1e/JORDAN+ONE+TAKE+5+PF.png",
+        "cat_id": "44aa",
+        "id": "6",
+        "size": "M",
+        "color": "green"
+      }
     },
     {
-      "cart_id": "C002",
-      "pro_id": 5,
-      "total_money": 250,
-      "description": "Cart contains one Air Jordan 1 Low shoe.",
-      "date_create": "2024-10-22T14:00:00Z",
-      "date_update": "2024-10-22T14:30:00Z"
-    },
-    {
-      "cart_id": "C003",
-      "pro_id": 6,
-      "total_money": 900,
-      "description": "Cart contains three Jordan One Take 5 PF shoes.",
-      "date_create": "2024-10-20T08:30:00Z",
-      "date_update": "2024-10-20T08:45:00Z"
-    },
-    {
-      "cart_id": "C004",
-      "pro_id": 99,
-      "total_money": 990000,
-      "description": "Giày Thể Thao Nike Air Jordan 1 High OG UNC University Blue.",
-      "date_create": "2024-10-24T08:30:00Z",
-      "date_update": "2024-10-24T08:45:00Z"
+      "id": "9b62",
+      "product": {
+        "id": "99ec",
+        "name": "Giày Thể Thao Nike Air Jordan 1 High OG UNC University Blue 555088-134 575441-134 Màu Xanh",
+        "title": "Giày Nike",
+        "price": "990.000",
+        "price_sale": "989.000",
+        "status": "out of stock",
+        "quantity": "9",
+        "description": "Giày Thể Thao Nike Air Jordan 1 High OG UNC University Blue 555088-134 575441-134 Màu Xanh Trắng là đôi giày thời trang có thiết kế trẻ trung, năng động đến từ thương hiệu Nike nổi tiếng của Mỹ. Nike Air Jordan 1 High OG UNC University Blue 555088-134 575441-134 được làm từ chất liệu cao cấp mang lại cảm giác thoải mái khi đi lên chân.",
+        "image_product": "https://cdn.vuahanghieu.com/unsafe/0x900/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/product/2024/08/giay-the-thao-nike-air-jordan-1-high-og-unc-university-blue-555088-134-575441-134-mau-xanh-trang-size-41-66cc40036ed2c-26082024154243.jpg",
+        "cat_id": "9f8e"
+      }
     }
   ]
 }

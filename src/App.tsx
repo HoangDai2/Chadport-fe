@@ -67,37 +67,72 @@ function App() {
   const [product, setProduct] = useState<TProduct[]>([]);
   const [user, setUser] = useState<[]>([]);
   const [category, setCategory] = useState<Tcategory[]>([]);
-  const addToCart = (product: TProduct) => {
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-    const isProductCart = cart.some((item: TProduct) => item.id === product.id);
-
-    if (isProductCart) {
-      toast.info(`${product.name} đã có trong giỏ hàng!`, {
-        position: "top-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } else {
-      cart.push(product);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("storage"));
-      toast.success(`${product.name} đã được thêm vào giỏ hàng!`, {
-        position: "top-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+  const [carCount, setCarCount] = useState(0);
+  const fetchCartCount = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/carts");
+      const cartItems = await response.json();
+      setCarCount(cartItems.length);
+    } catch (error) {
+      console.error("Error fetching cart count:", error);
     }
   };
+  useEffect(() => {
+    fetchCartCount();
+  }, []);
+  const addToCart = async (product: TProduct) => {
+    try {
+      const cartResponse = await fetch("http://localhost:3000/carts");
+      const cartItems = await cartResponse.json();
+      const isProductInCart = cartItems.some(
+        (item: { product: TProduct }) => item.product.id === product.id
+      );
+      if (isProductInCart) {
+        toast.info(`${product.name} đã có trong giỏ hàng!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return;
+      }
 
+      const response = await fetch("http://localhost:3000/carts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product }),
+      });
+
+      if (response.ok) {
+        setCarCount((prevCount) => prevCount + 1);
+        toast.success(`${product.name} đã được thêm vào giỏ hàng!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      toast.error("Không thể kết nối đến server.", {
+        position: "top-right",
+        autoClose: 1000,
+      });
+      console.error("Error:", error);
+    }
+  };
   const addToWishlist = (product: TProduct) => {
     let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
     const isProductInWishlist = wishlist.some(
@@ -233,7 +268,7 @@ function App() {
             path="/"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <Banner />
                 <div style={{ padding: "70px", marginTop: "80px" }}>
                   <Category />
@@ -248,7 +283,7 @@ function App() {
             path="/shoplist"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <ShopList />
                 <FooterClient />
               </>
@@ -258,7 +293,7 @@ function App() {
             path="/shop-details/:id"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <ShopDetails
                   addToCart={addToCart}
                   addToWishlist={addToWishlist}
@@ -271,7 +306,7 @@ function App() {
             path="/checkout"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <Checkout />
                 <FooterClient />
               </>
@@ -281,7 +316,7 @@ function App() {
             path="/shopcart"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <ShopCart />
                 <FooterClient />
               </>
@@ -291,7 +326,7 @@ function App() {
             path="/login"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <LoginRegister />
                 <FooterClient />
               </>
@@ -302,7 +337,7 @@ function App() {
             path="/pay_done"
             element={
               <>
-                <Headerclient />
+                <Headerclient carCount={carCount} />
                 <div style={{ padding: "70px", marginTop: "80px" }}>
                   <Pay_done />
                 </div>
@@ -314,7 +349,7 @@ function App() {
             path="/billorder"
             element={
               <>
-                <Headerclient />
+                <Headerclient carCount={carCount} />
                 <div style={{ padding: "70px", marginTop: "80px" }}>
                   <BillOrder />
                 </div>
@@ -328,7 +363,7 @@ function App() {
             path="/wishlist"
             element={
               <>
-                <Headerclient />
+                <Headerclient carCount={carCount} />
                 <Wishlist addToCart={addToCart} />
                 <FooterClient />
               </>
@@ -339,7 +374,7 @@ function App() {
             path="/profile"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <Profile />
                 <FooterClient />
               </>
@@ -350,7 +385,7 @@ function App() {
             path="/about"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <About />
                 <FooterClient />
               </>
@@ -361,7 +396,7 @@ function App() {
             path="/categoriesnike/:id"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <CategoriesClient />
                 <FooterClient />
               </>
@@ -371,7 +406,7 @@ function App() {
             path="/searchresults"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient carCount={carCount} />
                 <SearchResults />
                 <FooterClient />
               </>
