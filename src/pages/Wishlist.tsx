@@ -1,22 +1,60 @@
 import React, { useEffect, useState } from "react";
 import TProduct from "../Types/TProduct";
 import { ToastContainer } from "react-toastify";
-
+type wishlistItem = {
+  id: string;
+  product: {
+    title: string;
+    name: string;
+    status: string;
+    col_id: number;
+    size_id: number;
+    brand_id: number;
+    description: string;
+    quantity: number;
+    image_product: string;
+    price: number;
+    price_sale: number;
+    type: string;
+    date_create: string;
+    date_update: string;
+  };
+};
 const Wishlist = ({
   addToCart,
 }: {
   addToCart: (product: TProduct) => void;
 }) => {
-  const [wishlist, setWishlist] = useState<TProduct[]>([]);
+  const [wishlist, setWishlist] = useState<wishlistItem[]>([]);
+  // const [quantity, setQuantity] = useState<number[]>([]);
+
   useEffect(() => {
-    const savedWishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-    setWishlist(savedWishlist);
+    fetch("http://localhost:3000/wishlist")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch cart data");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setWishlist(data);
+        // setQuantity(data.map(() => 1));
+      })
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
-  const removeFromWishlist = (productId: number) => {
-    const updatedWishlist = wishlist.filter((item) => item.id !== productId);
-    setWishlist(updatedWishlist);
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-    window.dispatchEvent(new Event("storage"));
+
+  const removeFromWishlist = (productId: string) => {
+    fetch(`http://localhost:3000/wishlist/${productId}`, { method: "DELETE" })
+      .then((response) => {
+        if (response.ok) {
+          setWishlist((wishlistItem) =>
+            wishlistItem.filter((item) => item.id !== productId)
+          );
+        } else {
+          console.error("Error deleting item from wishlist");
+        }
+      })
+      .catch((error) => console.error("Error deleting item:", error));
   };
 
   return (
@@ -55,6 +93,7 @@ const Wishlist = ({
                       <table className="wishlist-items">
                         <tbody>
                           {wishlist.map((product) => (
+                            // console.log(product),
                             <tr key={product.id} className="wishlist-item">
                               <td className="wishlist-item-remove">
                                 <button
@@ -70,23 +109,23 @@ const Wishlist = ({
                                   <img
                                     width={600}
                                     height={600}
-                                    src={product.image_product}
-                                    alt={product.name}
+                                    src={product.product.image_product}
+                                    alt={product.product.name}
                                   />
                                 </a>
                               </td>
                               <td className="wishlist-item-info">
                                 <div className="wishlist-item-name">
                                   <a href={`shop-details/${product.id}`}>
-                                    {product.name}
+                                    {product.product.name}
                                   </a>
                                 </div>
                                 <div className="wishlist-item-price">
                                   <del aria-hidden="true">
-                                    <span>${product.price}</span>
+                                    <span>${product.product.price}</span>
                                   </del>
                                   <ins>
-                                    <span>${product.price_sale}</span>
+                                    <span>${product.product.price_sale}</span>
                                   </ins>
                                 </div>
                               </td>

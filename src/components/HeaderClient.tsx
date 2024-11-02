@@ -5,7 +5,7 @@ import TProduct from "../Types/TProduct";
 import axios from "axios";
 import Tcategory from "../Types/TCategories";
 
-const Headerclient = ({ carCount }: { carCount: number }) => {
+const Headerclient = ({ carCount, wishlisCount }: { carCount: number, wishlisCount: number }) => {
   const [loading, setLoading] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   // const [carCount, setCarCount] = useState(0);
@@ -47,17 +47,17 @@ const Headerclient = ({ carCount }: { carCount: number }) => {
   }, []);
 
   // chức năng thích sản phẩm
-  useEffect(() => {
-    const updateWishlistCount = () => {
-      const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-      setWishlistCount(wishlist.length);
-    };
-    updateWishlistCount();
-    window.addEventListener("storage", updateWishlistCount);
-    return () => {
-      window.removeEventListener("storage", updateWishlistCount);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const updateWishlistCount = () => {
+  //     const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+  //     setWishlistCount(wishlist.length);
+  //   };
+  //   updateWishlistCount();
+  //   window.addEventListener("storage", updateWishlistCount);
+  //   return () => {
+  //     window.removeEventListener("storage", updateWishlistCount);
+  //   };
+  // }, []);
 
   // Hàm lấy và cập nhật số lượng sản phẩm trong giỏ hàng từ cơ sở dữ liệu
   // useEffect(() => {
@@ -330,7 +330,7 @@ const Headerclient = ({ carCount }: { carCount: number }) => {
                         </button>
                       </a>
                       <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
-                        {wishlistCount}
+                        {wishlisCount}
                       </span>
                     </div>
                     <div className="relative">

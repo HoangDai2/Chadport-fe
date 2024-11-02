@@ -16,25 +16,13 @@ const Home = ({
   addToWishlist: (product: TProduct) => void;
 }) => {
   const [products, setProducts] = useState<TProduct[]>([]);
-  const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
-
-  // Lấy danh sách sản phẩm từ API
+  const navigate = useNavigate();
   useEffect(() => {
     fetch("http://localhost:3000/products")
       .then((res) => res.json())
       .then((data: TProduct[]) => setProducts(data))
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
-
-  // Hàm để thêm sản phẩm vào giỏ hàng và lưu vào localStorage
-  // const addToCart = (product: TProduct) => {
-  //   let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-  //   cart.push(product);
-  //   localStorage.setItem("cart", JSON.stringify(cart));
-  //   alert(`${product.name} has been added to your cart!`);
-  // };
-
-  // Hàm chuyển hướng đến trang chi tiết sản phẩm
 
   return (
     <section className="section section-padding">
@@ -54,6 +42,7 @@ const Home = ({
         <div className="block block-products">
           <div className="products-grid">
             {products.map((product) => (
+              // console.log(product),
               <div
                 key={product.id}
                 className="group relative block overflow-hidden"
