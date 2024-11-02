@@ -68,67 +68,139 @@ function App() {
   const [product, setProduct] = useState<TProduct[]>([]);
   const [user, setUser] = useState<[]>([]);
   const [category, setCategory] = useState<Tcategory[]>([]);
-  const addToCart = (product: TProduct) => {
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const [carCount, setCarCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const fetchCartCount = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/carts");
+      const cartItems = await res.json();
+      setCarCount(cartItems.length);
+    } catch (error) {
+      console.error("Error fetching cart count:", error);
+    }
+  };
+  useEffect(() => {
+    fetchCartCount();
+  }, []);
+  const fetchWihsListCount = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/wishlist");
+      const wishlist = await res.json();
+      setWishlistCount(wishlist.length);
+    } catch (error) {
+      console.error("Error fetching cart count:", error);
+    }
+  };
+  useEffect(() => {
+    fetchWihsListCount();
+  }, []);
+  const addToCart = async (product: TProduct) => {
+    try {
+      const cartResponse = await fetch("http://localhost:3000/carts");
+      const cartItems = await cartResponse.json();
+      const isProductInCart = cartItems.some(
+        (item: { product: TProduct }) => item.product.id === product.id
+      );
+      if (isProductInCart) {
+        toast.info(`${product.name} đã có trong giỏ hàng!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return;
+      }
 
-    const isProductCart = cart.some((item: TProduct) => item.id === product.id);
+      const response = await fetch("http://localhost:3000/carts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product }),
+      });
 
-    if (isProductCart) {
-      toast.info(`${product.name} đã có trong giỏ hàng!`, {
+      if (response.ok) {
+        setCarCount((prevCount) => prevCount + 1);
+        toast.success(`${product.name} đã được thêm vào giỏ hàng!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      toast.error("Không thể kết nối đến server.", {
         position: "top-right",
         autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
       });
-    } else {
-      cart.push(product);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("storage"));
-      toast.success(`${product.name} đã được thêm vào giỏ hàng!`, {
+      console.error("Error:", error);
+    }
+  };
+  const addToWishlist = async (product: TProduct) => {
+    try {
+      const wishlistResponse = await fetch("http://localhost:3000/wishlist");
+      const wishlistItems = await wishlistResponse.json();
+      const isProductInwishlist = wishlistItems.some(
+        (item: { product: TProduct }) => item.product.id === product.id
+      );
+      if (isProductInwishlist) {
+        toast.info(`${product.name} đã có trong giỏ wishlist!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return;
+      }
+
+      const response = await fetch("http://localhost:3000/wishlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product }),
+      });
+
+      if (response.ok) {
+        setWishlistCount((prevCount) => prevCount + 1);
+        toast.success(`${product.name} đã được thêm vào wishlist!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error("Có lỗi xảy ra khi thêm sản phẩm vào wishlist.", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      toast.error("Không thể kết nối đến server.", {
         position: "top-right",
         autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
       });
+      console.error("Error:", error);
     }
   };
 
-  const addToWishlist = (product: TProduct) => {
-    let wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-    const isProductInWishlist = wishlist.some(
-      (item: TProduct) => item.id === product.id
-    );
-    if (isProductInWishlist) {
-      toast.info(`${product.name} đã có trong wishlist!`, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } else {
-      wishlist.push(product);
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
-      window.dispatchEvent(new Event("storage"));
-      toast.success(`${product.name} đã được thêm vào wishlist!`, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  };
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -245,7 +317,10 @@ function App() {
             path="/"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  carCount={carCount}
+                  wishlisCount={wishlistCount}
+                />
                 <Banner />
                 <div style={{ padding: "70px", marginTop: "80px" }}>
                   <Category />
@@ -260,7 +335,10 @@ function App() {
             path="/shoplist"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <ShopList />
                 <FooterClient />
               </>
@@ -270,7 +348,10 @@ function App() {
             path="/shop-details/:id"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <ShopDetails
                   addToCart={addToCart}
                   addToWishlist={addToWishlist}
@@ -283,7 +364,10 @@ function App() {
             path="/checkout"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <Checkout />
                 <FooterClient />
               </>
@@ -293,7 +377,10 @@ function App() {
             path="/shopcart"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <ShopCart />
                 <FooterClient />
               </>
@@ -303,7 +390,10 @@ function App() {
             path="/login"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <LoginRegister />
                 <FooterClient />
               </>
@@ -314,7 +404,10 @@ function App() {
             path="/pay_done"
             element={
               <>
-                <Headerclient />
+                <Headerclient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <div style={{ padding: "70px", marginTop: "80px" }}>
                   <Pay_done />
                 </div>
@@ -326,7 +419,10 @@ function App() {
             path="/billorder"
             element={
               <>
-                <Headerclient />
+                <Headerclient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <div style={{ padding: "70px", marginTop: "80px" }}>
                   <BillOrder />
                 </div>
@@ -340,7 +436,10 @@ function App() {
             path="/wishlist"
             element={
               <>
-                <Headerclient />
+                <Headerclient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <Wishlist addToCart={addToCart} />
                 <FooterClient />
               </>
@@ -351,7 +450,10 @@ function App() {
             path="/profile"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <Profile />
                 <FooterClient />
               </>
@@ -362,7 +464,10 @@ function App() {
             path="/about"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <About />
                 <FooterClient />
               </>
@@ -373,7 +478,10 @@ function App() {
             path="/categoriesnike/:id"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <CategoriesClient />
                 <FooterClient />
               </>
@@ -383,7 +491,10 @@ function App() {
             path="/searchresults"
             element={
               <>
-                <HeaderClient />
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
                 <SearchResults />
                 <FooterClient />
               </>

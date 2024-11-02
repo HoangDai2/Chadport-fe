@@ -1,21 +1,56 @@
 import React, { useEffect, useState } from "react";
-import TProduct from "../Types/TProduct";
-
+type CartItem = {
+  id: string;
+  product: {
+    title: string;
+    name: string;
+    status: string;
+    col_id: number;
+    size_id: number;
+    brand_id: number;
+    description: string;
+    quantity: number;
+    image_product: string;
+    price: number;
+    price_sale: number;
+    type: string;
+    date_create: string;
+    date_update: string;
+  };
+};
 const ShopCart = () => {
-  const [cartItems, setCartItems] = useState<TProduct[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [quantity, setQuantity] = useState<number[]>([]);
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCartItems(storedCart);
-    setQuantity(storedCart.map(() => 1));
+    fetch("http://localhost:3000/carts")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch cart data");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setCartItems(data);
+        setQuantity(data.map(() => 1));
+      })
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
-  const delOneCart = (productId: number) => {
-    const updatedCart = cartItems.filter((item) => item.id !== productId);
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    window.dispatchEvent(new Event("storage"));
+
+  const delOneCart = (cartId: string) => {
+    fetch(`http://localhost:3000/carts/${cartId}`, { method: "DELETE" })
+      .then((response) => {
+        if (response.ok) {
+          setCartItems((prevCartItems) =>
+            prevCartItems.filter((item) => item.id !== cartId)
+          );
+        } else {
+          console.error("Error deleting item from cart");
+        }
+      })
+      .catch((error) => console.error("Error deleting item:", error));
   };
+
   const handleUp = (index: number) => {
     setQuantity((prevQuantity) => {
       const newQuantity = [...prevQuantity];
@@ -31,9 +66,11 @@ const ShopCart = () => {
       return newQuantity;
     });
   };
+
   const getTotal = () => {
     return cartItems.reduce(
-      (total, item, index) => total + item.price_sale * quantity[index],
+      (total, item, index) =>
+        total + (item.product.price || 0) * quantity[index],
       0
     );
   };
@@ -56,7 +93,7 @@ const ShopCart = () => {
                           <table className="cart-items table w-full text-left border-collapse">
                             <thead className="bg-gray-200">
                               <tr>
-                                <th className="py-3 px-4">Product</th>
+                                <th className="py-3 px-4">Description</th>
                                 <th className="py-3 px-4">Price</th>
                                 <th className="py-3 px-4">Quantity</th>
                                 <th className="py-3 px-4">Subtotal</th>
@@ -69,16 +106,16 @@ const ShopCart = () => {
                                   key={item.id}
                                   className="border-b hover:bg-gray-50"
                                 >
-                                  <td className="py-3 px-4 flex items-center">
+                                  <td className="py-3 px-4">
                                     <img
-                                      src={item.image_product}
-                                      alt={item.name}
-                                      className="h-16 w-16 object-cover rounded"
+                                      src={item.product.image_product}
+                                      alt=""
+                                      className="w-16 h-16 object-cover"
                                     />
-                                    <span className="ml-4">{item.name}</span>
                                   </td>
                                   <td className="py-3 px-4">
-                                    ${Number(item.price_sale || 0).toFixed(2)}
+                                    $
+                                    {Number(item.product.price || 0).toFixed(2)}
                                   </td>
 
                                   <td className="py-3 px-4">
@@ -108,7 +145,7 @@ const ShopCart = () => {
                                   <td className="py-3 px-4">
                                     $
                                     {(
-                                      item.price_sale * quantity[index]
+                                      item.product.price * quantity[index]
                                     ).toFixed(2)}
                                   </td>
                                   <td className="py-3 px-4">
@@ -129,8 +166,6 @@ const ShopCart = () => {
                     <div className="col-xl-4 col-lg-12 col-md-12 col-12 p-4">
                       <div className="cart-totals bg-gray-100 p-4 rounded-lg shadow">
                         <h2 className="text-xl font-bold mb-4">Cart Totals</h2>
-
-                        {/* Thông tin sơ lược các sản phẩm trong giỏ hàng */}
                         <ul className="mb-4">
                           {cartItems.map((item, index) => (
                             <li
@@ -138,16 +173,17 @@ const ShopCart = () => {
                               className="flex justify-between mb-2"
                             >
                               <span>
-                                {item.name} (x{quantity[index]})
+                                {item.product.name} (x{quantity[index]})
                               </span>
                               <span>
                                 $
-                                {(item.price_sale * quantity[index]).toFixed(2)}
+                                {(item.product.price * quantity[index]).toFixed(
+                                  2
+                                )}
                               </span>
                             </li>
                           ))}
                         </ul>
-
                         <div className="flex justify-between mb-2">
                           <span>Total:</span>
                           <span>${getTotal().toFixed(2)}</span>
@@ -172,175 +208,3 @@ const ShopCart = () => {
 };
 
 export default ShopCart;
-
-
-
-// import React, { useEffect, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import { fetchCartItems, removeItem } from "../Types/cartSlice";
-// import { RootState, AppDispatch } from "../Types/store";
-
-// const ShopCart: React.FC = () => {
-//   const dispatch = useDispatch<AppDispatch>();
-//   const { items: cartItems, status, error } = useSelector((state: RootState) => state.cart);
-//   const [quantity, setQuantity] = useState<number[]>([]);
-
-//   useEffect(() => {
-//     if (status === "idle") {
-//       dispatch(fetchCartItems());
-//     }
-//   }, [dispatch, status]);
-
-//   useEffect(() => {
-//     setQuantity(cartItems.map(() => 1));
-//   }, [cartItems]);
-
-//   const delOneCart = (productId: number) => {
-//     dispatch(removeItem(productId));
-//   };
-
-//   const handleUp = (index: number) => {
-//     setQuantity((prevQuantity) => {
-//       const newQuantity = [...prevQuantity];
-//       newQuantity[index] = Math.min(newQuantity[index] + 1, 10);
-//       return newQuantity;
-//     });
-//   };
-
-//   const handleDown = (index: number) => {
-//     setQuantity((prevQuantity) => {
-//       const newQuantity = [...prevQuantity];
-//       newQuantity[index] = Math.max(newQuantity[index] - 1, 1);
-//       return newQuantity;
-//     });
-//   };
-
-//   const getTotal = () => {
-//     return cartItems.reduce(
-//       (total, item, index) => total + item.total_money * quantity[index],
-//       0
-//     );
-//   };
-
-//   if (status === "loading") {
-//     return <p>Loading...</p>;
-//   }
-
-//   if (status === "failed") {
-//     return <p>Error: {error}</p>;
-//   }
-
-//   return (
-//     <div id="site-main" className="site-main bg-gray-100 min-h-screen">
-//       <div id="main-content" className="main-content">
-//         <div id="primary" className="content-area mx-auto py-12">
-//           <div id="title" className="page-title mb-6">
-//             <h1 className="text-3xl font-bold text-center">Shopping Cart</h1>
-//           </div>
-//           <div id="content" className="site-content" role="main">
-//             <div className="section-padding">
-//               <div className="section-container p-4">
-//                 <div className="shop-cart bg-white shadow-lg rounded-lg overflow-hidden">
-//                   <div className="row">
-//                     <div className="col-xl-8 col-lg-12 col-md-12 col-12 p-4">
-//                       <form className="cart-form">
-//                         <div className="table-responsive">
-//                           <table className="cart-items table w-full text-left border-collapse">
-//                             <thead className="bg-gray-200">
-//                               <tr>
-//                                 <th className="py-3 px-4">Description</th>
-//                                 <th className="py-3 px-4">Price</th>
-//                                 <th className="py-3 px-4">Quantity</th>
-//                                 <th className="py-3 px-4">Subtotal</th>
-//                                 <th className="py-3 px-4">Action</th>
-//                               </tr>
-//                             </thead>
-//                             <tbody>
-//                               {cartItems.map((item, index) => (
-//                                 <tr
-//                                   key={item.pro_id}
-//                                   className="border-b hover:bg-gray-50"
-//                                 >
-//                                   <td className="py-3 px-4">
-//                                     <span>{item.description}</span>
-//                                   </td>
-//                                   <td className="py-3 px-4">
-//                                     ${(item.total_money / quantity[index]).toFixed(2)}
-//                                   </td>
-//                                   <td className="py-3 px-4">
-//                                     <div className="flex items-center justify-center">
-//                                       <button
-//                                         type="button"
-//                                         onClick={() => handleDown(index)}
-//                                         className="bg-gray-300 rounded px-2 hover:bg-gray-400"
-//                                       >
-//                                         -
-//                                       </button>
-//                                       <input
-//                                         type="number"
-//                                         value={quantity[index]}
-//                                         readOnly
-//                                         className="mx-2 w-12 text-center border rounded"
-//                                       />
-//                                       <button
-//                                         type="button"
-//                                         onClick={() => handleUp(index)}
-//                                         className="bg-gray-300 rounded px-2 hover:bg-gray-400"
-//                                       >
-//                                         +
-//                                       </button>
-//                                     </div>
-//                                   </td>
-//                                   <td className="py-3 px-4">
-//                                     ${(item.total_money).toFixed(2)}
-//                                   </td>
-//                                   <td className="py-3 px-4">
-//                                     <button
-//                                       onClick={() => delOneCart(item.pro_id)}
-//                                       className="text-red-500 hover:text-red-700"
-//                                     >
-//                                       Remove
-//                                     </button>
-//                                   </td>
-//                                 </tr>
-//                               ))}
-//                             </tbody>
-//                           </table>
-//                         </div>
-//                       </form>
-//                     </div>
-//                     <div className="col-xl-4 col-lg-12 col-md-12 col-12 p-4">
-//                       <div className="cart-totals bg-gray-100 p-4 rounded-lg shadow">
-//                         <h2 className="text-xl font-bold mb-4">Cart Totals</h2>
-//                         <ul className="mb-4">
-//                           {cartItems.map((item, index) => (
-//                             <li key={index} className="flex justify-between mb-2">
-//                               <span>{item.description} (x{quantity[index]})</span>
-//                               <span>${(item.total_money).toFixed(2)}</span>
-//                             </li>
-//                           ))}
-//                         </ul>
-//                         <div className="flex justify-between mb-2">
-//                           <span>Total:</span>
-//                           <span>${getTotal().toFixed(2)}</span>
-//                         </div>
-//                         <a
-//                           href="/checkout"
-//                           className="block text-center bg-gray-900 text-white py-2 rounded hover:bg-gray-700 transition"
-//                         >
-//                           Proceed to Checkout
-//                         </a>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ShopCart;

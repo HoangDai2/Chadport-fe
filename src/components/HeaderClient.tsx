@@ -5,10 +5,10 @@ import TProduct from "../Types/TProduct";
 import axios from "axios";
 import Tcategory from "../Types/TCategories";
 
-const Headerclient = () => {
+const Headerclient = ({ carCount, wishlisCount }: { carCount: number, wishlisCount: number }) => {
   const [loading, setLoading] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const [carCount, setCarCount] = useState(0);
+  // const [carCount, setCarCount] = useState(0);
   const [userName, setUserName] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,30 +47,41 @@ const Headerclient = () => {
   }, []);
 
   // chức năng thích sản phẩm
-  useEffect(() => {
-    const updateWishlistCount = () => {
-      const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-      setWishlistCount(wishlist.length);
-    };
-    updateWishlistCount();
-    window.addEventListener("storage", updateWishlistCount);
-    return () => {
-      window.removeEventListener("storage", updateWishlistCount);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const updateWishlistCount = () => {
+  //     const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+  //     setWishlistCount(wishlist.length);
+  //   };
+  //   updateWishlistCount();
+  //   window.addEventListener("storage", updateWishlistCount);
+  //   return () => {
+  //     window.removeEventListener("storage", updateWishlistCount);
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    const updatedCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      setCarCount(cart.length);
-    };
-    updatedCartCount();
-    window.addEventListener("storage", updatedCartCount);
-    return () => {
-      window.removeEventListener("storage", updatedCartCount);
-    };
-  }, []);
+  // Hàm lấy và cập nhật số lượng sản phẩm trong giỏ hàng từ cơ sở dữ liệu
+  // useEffect(() => {
+  //   const fetchCartCount = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:3000/carts");
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch cart data");
+  //       }
+  //       const cartItems = await response.json();
+  //       setCarCount(cartItems.length); // Đếm số lượng sản phẩm trong giỏ hàng
+  //     } catch (error) {
+  //       console.error("Error fetching cart count:", error);
+  //     }
+  //   };
 
+  //   fetchCartCount();
+
+  //   // Cập nhật số lượng sản phẩm mỗi khi có sự kiện thay đổi trong giỏ hàng
+  //   window.addEventListener("storage", fetchCartCount);
+  //   return () => {
+  //     window.removeEventListener("storage", fetchCartCount);
+  //   };
+  // }, []);
   // hàm này để show tên người dùng sau khi đăng nhập và được lưu và sessionStoeage
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
@@ -319,7 +330,7 @@ const Headerclient = () => {
                         </button>
                       </a>
                       <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
-                        {wishlistCount}
+                        {wishlisCount}
                       </span>
                     </div>
                     <div className="relative">
