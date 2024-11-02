@@ -419,7 +419,7 @@ const Headerclient = () => {
                 ))}
               </div>
 
-              <div className="col-span-4 row-span-4 flex">
+              <div className="col-span-4 row-span-4 flex justify-center">
                 {/* Hiển thị dữ liệu sản phẩm mà người dùng tìm kiếm */}
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product, index) => (

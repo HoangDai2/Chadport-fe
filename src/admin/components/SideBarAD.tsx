@@ -1,9 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 type Props = {};
 
 const SideBarAD = (props: Props) => {
+  // Khai báo trạng thái mở rộng cho các mục quản lý trong menu
+  const [openSections, setOpenSections] = useState<{
+    orderManagement: boolean;
+    productManagement: boolean;
+    categoryManagement: boolean;
+    userManagement: boolean;
+  }>({
+    // mặc định đóng cho 4 lựa chọn
+    orderManagement: false,
+    productManagement: false,
+    categoryManagement: false,
+    userManagement: false,
+  });
+
+  // Khai báo trạng thái cho đường dẫn đang được chọn
+  const [activeLink, setActiveLink] = useState<string>("");
+
+  // Hàm toggleSection để bật/tắt phần mở rộng của mục quản lý khi người dùng nhấn vào
+  const toggleSection = (
+    section:
+      | "orderManagement"
+      | "productManagement"
+      | "categoryManagement"
+      | "userManagement"
+  ) => {
+    setOpenSections((prevState) => ({
+      ...prevState, // Sao chép lại trạng thái trước đó
+      [section]: !prevState[section], // Đảo ngược trạng thái mở hoặc đóng cho mục được chọn
+    }));
+  };
+
+  // Hàm handleLinkClick để cập nhật đường dẫn đang được chọn khi người dùng nhấn vào một liên kết
+  const handleLinkClick = (link: string) => {
+    setActiveLink(link);
+  };
+
   return (
     <>
       <aside className="sidebar">
@@ -13,7 +49,7 @@ const SideBarAD = (props: Props) => {
         </div>
 
         <div className="lists">
-          <ul>
+          <ul className="space-y-2">
             <li>
               <a href="/admin">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -26,91 +62,321 @@ const SideBarAD = (props: Props) => {
                 <span>Home</span>
               </a>
             </li>
+
+            {/* Quản lí người dùng  */}
             <li>
-              <Link to="/admin/products">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <title>view-list</title>
+              <a href="#" className="flex items-center justify-between">
+                <svg
+                  viewBox="0 0 640 512"
+                  fill="currentColor"
+                  width="30px"
+                  {...props}
+                >
+                  <path d="M96 0C43 0 0 43 0 96v320c0 53 43 96 96 96h448c53 0 96-43 96-96V96c0-53-43-96-96-96H96zM64 96c0-17.7 14.3-32 32-32h448c17.7 0 32 14.3 32 32v320c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V96zm159.8 80c0-26.5-21.5-48-48-48s-48 21.5-48 48 21.5 48 48 48 48-21.5 48-48zM96 309.3c0 14.7 11.9 26.7 26.7 26.7h56.1c8-34.1 32.8-61.7 65.2-73.6-7.5-4.1-16.2-6.4-25.3-6.4h-69.4c-29.4 0-53.3 23.9-53.3 53.3zM461.2 336h56.1c14.7 0 26.7-11.9 26.7-26.7 0-29.5-23.9-53.3-53.3-53.3h-69.4c-9.2 0-17.8 2.3-25.3 6.4 32.4 11.9 57.2 39.5 65.2 73.6zM372 289c-3.9-.7-7.9-1-12-1h-80c-4.1 0-8.1.3-12 1-26 4.4-47.3 22.7-55.9 47-2.7 7.5-4.1 15.6-4.1 24 0 13.3 10.7 24 24 24h176c13.3 0 24-10.7 24-24 0-8.4-1.4-16.5-4.1-24-8.6-24.3-29.9-42.6-55.9-47zm140-113c0-26.5-21.5-48-48-48s-48 21.5-48 48 21.5 48 48 48 48-21.5 48-48zm-192 80c35.3 0 64-28.7 64-64s-28.7-64-64-64-64 28.7-64 64 28.7 64 64 64z" />
+                </svg>
+                <button
+                  onClick={() => toggleSection("userManagement")}
+                  className="w-full text-left font-semibold"
+                >
+                  User Management
+                </button>
+                <svg
+                  className={`transition-transform ${
+                    openSections.userManagement ? "rotate-90" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
-                    fill="black"
-                    d="M3,13H21V11H3M3,18H21V16H3M3,8H21V6H3V8Z"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
                   />
                 </svg>
-                <span>Danh Sách sản phẩm</span>
-              </Link>
+              </a>
+
+              {openSections.userManagement && (
+                <ul className="cursor-pointer mt-[10px] pl-[52px] space-y-1 text-sm text-gray-700 text-left">
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <Link
+                      to="/admin/listuser"
+                      onClick={() => handleLinkClick("/admin/listuser")}
+                      className={`text-[13px] ${
+                        activeLink === "/admin/listuser"
+                          ? "text-blue-500"
+                          : "text-black"
+                      }`}
+                    >
+                      List of users
+                    </Link>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <Link
+                      to="/admin/listuser1"
+                      onClick={() => handleLinkClick("/admin/listuser1")}
+                      style={{
+                        fontSize: "13px",
+                        color:
+                          activeLink === "/admin/listuser1" ? "blue" : "black",
+                      }}
+                    >
+                      User feedback
+                    </Link>
+                  </li>
+                </ul>
+              )}
             </li>
 
+            {/* quản lí sản phẩm  */}
             <li>
-              <a href="/admin/listuser">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <title>card-account-mail</title>
+              <a href="#" className="flex items-center justify-between">
+                <svg
+                  viewBox="0 0 1024 1024"
+                  fill="currentColor"
+                  width="30px"
+                  {...props}
+                >
+                  <defs>
+                    <style />
+                  </defs>
+                  <path d="M464 144H160c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V160c0-8.8-7.2-16-16-16zm-52 268H212V212h200v200zm452-268H560c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V160c0-8.8-7.2-16-16-16zm-52 268H612V212h200v200zm52 132H560c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V560c0-8.8-7.2-16-16-16zm-52 268H612V612h200v200zM424 712H296V584c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v128H104c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h128v128c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V776h128c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8z" />
+                </svg>
+                <button
+                  onClick={() => toggleSection("productManagement")}
+                  className="w-full text-left font-semibold"
+                >
+                  Product Management
+                </button>
+                <svg
+                  className={`transition-transform ${
+                    openSections.productManagement ? "rotate-90" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
-                    fill="black"
-                    d="M21,8V7L18,9L15,7V8L18,10M22,3H2A2,2 0 0,0 0,5V19A2,2 0 0,0 2,21H22A2,2 0 0,0 24,19V5A2,2 0 0,0 22,3M8,6A3,3 0 0,1 11,9A3,3 0 0,1 8,12A3,3 0 0,1 5,9A3,3 0 0,1 8,6M14,18H2V17C2,15 6,13.9 8,13.9C10,13.9 14,15 14,17M22,12H14V6H22"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
                   />
                 </svg>
-                <span>Danh Sách User</span>
               </a>
+
+              {openSections.productManagement && (
+                <ul className="cursor-pointer mt-[10px] pl-[52px] space-y-1 text-sm text-gray-700 text-left">
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <Link
+                      to="/admin/products"
+                      onClick={() => handleLinkClick("/admin/products")}
+                      className={`text-[13px] ${
+                        activeLink === "/admin/products"
+                          ? "text-blue-500"
+                          : "text-black"
+                      }`}
+                    >
+                      All Products
+                    </Link>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <Link
+                      to="/admin/products/add"
+                      onClick={() => handleLinkClick("/admin/products/add")}
+                      style={{
+                        fontSize: "13px",
+                        color:
+                          activeLink === "/admin/products/add"
+                            ? "blue"
+                            : "black",
+                      }}
+                    >
+                      Add Products
+                    </Link>
+                  </li>
+                </ul>
+              )}
             </li>
+
+            {/* quản lí danh mục */}
             <li>
-              <a href="/admin/categorieslist">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <title>Danh sách Danh Mục</title>
+              <a href="#" className="flex items-center justify-between">
+                <svg fill="none" viewBox="0 0 24 24" width="30px" {...props}>
                   <path
-                    fill="black"
-                    d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z"
+                    fill="currentColor"
+                    fillRule="evenodd"
+                    d="M9 1H1v8h8V6h2v14h4v3h8v-8h-8v3h-2V6h2v3h8V1h-8v3H9V1zm12 2h-4v4h4V3zm-4 14h4v4h-4v-4z"
+                    clipRule="evenodd"
                   />
                 </svg>
-                <span>Danh sách Danh Mục</span>
+                <button
+                  onClick={() => toggleSection("categoryManagement")}
+                  className="w-full text-left font-semibold"
+                >
+                  Portfolio Management
+                </button>
+                <svg
+                  className={`transition-transform ${
+                    openSections.categoryManagement ? "rotate-90" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
               </a>
+
+              {openSections.categoryManagement && (
+                <ul className="cursor-pointer mt-[10px] pl-[52px] space-y-1 text-sm text-gray-700 text-left">
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <Link
+                      to="/admin/categorieslist"
+                      onClick={() => handleLinkClick("/admin/categorieslist")}
+                      className={`text-[13px] ${
+                        activeLink === "/admin/categorieslist"
+                          ? "text-blue-500"
+                          : "text-black"
+                      }`}
+                    >
+                      All Categories
+                    </Link>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <Link
+                      to="/admin/categories/add"
+                      onClick={() => handleLinkClick("/admin/categories/add")}
+                      style={{
+                        fontSize: "13px",
+                        color:
+                          activeLink === "/admin/categories/add"
+                            ? "blue"
+                            : "black",
+                      }}
+                    >
+                      Add Categories
+                    </Link>
+                  </li>
+                </ul>
+              )}
             </li>
+
+            {/* quản lí đơn hàng  */}
             <li>
-              <Link to="/admin/products/add">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <title>plus-box</title>
+              <a href="#" className="flex items-center justify-between">
+                <svg width="30px" viewBox="0 0 512 512" fill="currentColor">
+                  <path d="M470.7 9.4c3 3.1 5.3 6.6 6.9 10.3s2.4 7.8 2.4 12.2V128c0 17.7-14.3 32-32 32s-32-14.3-32-32v-18.7L310.6 214.6c-11.8 11.8-30.8 12.6-43.5 1.7L176 138.1l-91.2 78.2c-13.4 11.5-33.6 9.9-45.1-3.5s-9.9-33.6 3.5-45.1l112-96c12-10.3 29.7-10.3 41.7 0l89.5 76.7L370.7 64H352c-17.7 0-32-14.3-32-32s14.3-32 32-32h96c8.8 0 16.8 3.6 22.6 9.3l.1.1zM0 304c0-26.5 21.5-48 48-48h416c26.5 0 48 21.5 48 48v160c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V304zm48 112v48h48c0-26.5-21.5-48-48-48zm48-112H48v48c26.5 0 48-21.5 48-48zm368 112c-26.5 0-48 21.5-48 48h48v-48zm-48-112c0 26.5 21.5 48 48 48v-48h-48zm-96 80c0-35.3-28.7-64-64-64s-64 28.7-64 64 28.7 64 64 64 64-28.7 64-64z" />
+                </svg>
+                <button
+                  onClick={() => toggleSection("orderManagement")}
+                  className="w-full text-left font-semibold"
+                >
+                  Order Management
+                </button>
+                {/* Arrow icon that rotates when submenu is open */}
+                <svg
+                  className={`transition-transform ${
+                    openSections.orderManagement ? "rotate-90" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
-                    fill="black"
-                    d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5C3.9,3 3,3.9 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M12,3C12.55,3 13,3.45 13,4C13,4.55 12.55,5 12,5C11.45,5 11,4.55 11,4C11,3.45 11.45,3 12,3M17,17H7V15H17V17M17,13H7V11H17V13M17,9H7V7H17V9Z"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
                   />
                 </svg>
-                <span>Thêm Sản Phẩm</span>
-              </Link>
-            </li>
-            <li>
-              <a href="/admin/categories/add">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <title>Thêm Danh Mục</title>
-                  <path
-                    fill="black"
-                    d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z"
-                  />
-                </svg>
-                <span>Thêm Danh Mục</span>
               </a>
+
+              {/* Submenu Items with Bullet Points */}
+              {openSections.orderManagement && (
+                <ul className="cursor-pointer mt-[10px] pl-[52px] space-y-1 text-sm text-gray-700 text-left">
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <Link
+                      to="/admin/orders"
+                      onClick={() => handleLinkClick("/admin/orders")}
+                      className={`text-[13px] ${
+                        activeLink === "/admin/orders"
+                          ? "text-blue-500"
+                          : "text-black"
+                      }`}
+                    >
+                      All orders
+                    </Link>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <a
+                      href="/admin/cancel-orders"
+                      onClick={() => handleLinkClick("/admin/cancel-orders")}
+                      style={{
+                        fontSize: "13px",
+                        color:
+                          activeLink === "/admin/cancel-orders"
+                            ? "blue"
+                            : "black",
+                      }}
+                    >
+                      Cancellation
+                    </a>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <a
+                      href="/admin/returns"
+                      onClick={() => handleLinkClick("/admin/returns")}
+                      style={{
+                        fontSize: "13px",
+                        color:
+                          activeLink === "/admin/returns" ? "blue" : "black",
+                      }}
+                    >
+                      Returns/Refunds
+                    </a>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
+                    <a
+                      href="/admin/shipping-settings"
+                      onClick={() =>
+                        handleLinkClick("/admin/shipping-settings")
+                      }
+                      style={{
+                        fontSize: "13px",
+                        color:
+                          activeLink === "/admin/shipping-settings"
+                            ? "blue"
+                            : "black",
+                      }}
+                    >
+                      Shipping Settings
+                    </a>
+                  </li>
+                </ul>
+              )}
             </li>
-            <li>
-              <a href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <title>clock-time-three</title>
-                  <path
-                    fill="black"
-                    d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12S17.5 2 12 2M17 13H11V7H12.5V11.5H17V13Z"
-                  />
-                </svg>
-                <span>History</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/orders">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <title>file-multiple</title>
-                  <path
-                    fill="black"
-                    d="M15,7H20.5L15,1.5V7M8,0H16L22,6V18A2,2 0 0,1 20,20H8C6.89,20 6,19.1 6,18V2A2,2 0 0,1 8,0M4,4V22H20V24H4A2,2 0 0,1 2,22V4H4Z"
-                  />
-                </svg>
-                <span>Orders Management</span>
-              </a>
-            </li>
+
             <li>
               <a href="#">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

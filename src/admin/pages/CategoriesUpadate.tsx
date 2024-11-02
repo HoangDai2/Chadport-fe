@@ -5,6 +5,7 @@ import Tcategory from "../../Types/TCategories";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import instance from "../../Service";
+import apisphp from "../../Service/api";
 type Props = {
   onEditCategory: (category: Tcategory) => void;
 };
@@ -25,13 +26,13 @@ const CategoriesUpadate = ({ onEditCategory }: Props) => {
     if (id) {
       const fetchData = async () => {
         try {
-          const { data } = await instance.get(`/categories/${id}`);
+          const { data } = await apisphp.get(`/categories/${id}`);
 
           if (data) {
             setCategory(data);
-            setValue("name", data.name);
-            setValue("status", data.status);
-            setValue("imageURL", data.imageURL);
+            setValue("name", data.data.name);
+            setValue("status", data.data.status);
+            setValue("imageURL", data.data.imageURL);
           } else {
             console.error("Không tìm thấy danh mục với ID này.");
           }

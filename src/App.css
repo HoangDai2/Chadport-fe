@@ -192,7 +192,6 @@
 .sidebar .lists > ul > li > a > svg {
   max-height: 25px;
   fill: var(--sdbr-svg-fill);
-  width: 40px;
 }
 
 .sidebar .lists > ul > li > span {
@@ -359,7 +358,7 @@ ul {
 }
 
 li {
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
   font-weight: bold;
 }
 

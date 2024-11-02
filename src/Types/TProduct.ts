@@ -18,7 +18,7 @@ export interface color {
 
 export interface TProduct {
   id: number;
-  cat_id: number; // ID danh mục (nếu cần)
+  cat_id: number;
   title: string;
   name: string;
   status: string;
@@ -28,6 +28,7 @@ export interface TProduct {
   description: string;
   quantity: number;
   image_product: string;
+  image_description: File[];
   price: number;
   price_sale: number;
   type: string;

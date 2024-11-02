@@ -3,20 +3,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Tcategory from "../../Types/TCategories";
 import { ToastContainer, toast } from "react-toastify";
-import instance from "../../Service";
+import apisphp from "../../Service/api";
 type Props = {
   listcategories: Tcategory[];
 };
 
 const CategoriesList = ({ listcategories }: Props) => {
   const [categories, setCategories] = useState<Tcategory[]>([]);
+
   const [message, setMessage] = useState<string | null>(null);
   const [currentAction, setCurrentAction] = useState<"Delete" | null>(null);
   // console.log("listcategories:", listcategories);
 
   const handleDelete = async (id: number) => {
     try {
-      await instance.delete(`/categories/${id}`);
+      await apisphp.delete(`/categories/${id}`);
       setCategories(categories.filter((categori) => categori.id !== id));
       // Cập nhật thông báo và trạng thái hành động
       setMessage("Danh mục đã được xóa thành công!");
@@ -76,49 +77,50 @@ const CategoriesList = ({ listcategories }: Props) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 ">
-                {listcategories.map((categori) => (
-                  <tr key={categori.id} className="border-b">
-                    <td className="px-2 py-2 text-gray-900 truncate max-w-xs">
-                      {categori.id}
-                    </td>
-                    <td className="px-2 py-2 flex justify-center">
-                      <img
-                        src={categori.imageURL}
-                        alt=""
-                        style={{ width: "150px" }}
-                      />
-                    </td>
-                    <td className="px-2 py-2 text-gray-700 truncate max-w-xs">
-                      {categori.name}
-                    </td>
-                    <td
-                      className={`px-2 py-2 ${
-                        categori.status === "active"
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {categori.status}
-                    </td>
+                {Array.isArray(listcategories) &&
+                  listcategories.map((categori) => (
+                    <tr key={categori.id} className="border-b">
+                      <td className="px-2 py-2 text-gray-900 truncate max-w-xs">
+                        {categori.id}
+                      </td>
+                      <td className="px-2 py-2 flex justify-center">
+                        <img
+                          src={categori.imageURL}
+                          alt=""
+                          style={{ width: "150px" }}
+                        />
+                      </td>
+                      <td className="px-2 py-2 text-gray-700 truncate max-w-xs">
+                        {categori.name}
+                      </td>
+                      <td
+                        className={`px-2 py-2 ${
+                          categori.status === "active"
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {categori.status}
+                      </td>
 
-                    <td className="px-2 py-2 text-gray-700">
-                      <div className="flex space-x-4 justify-center">
-                        <Link
-                          to={`/admin/categories/edit/${categori.id}`}
-                          className="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
-                        >
-                          Update
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(categori.id)}
-                          className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      <td className="px-2 py-2 text-gray-700">
+                        <div className="flex space-x-4 justify-center">
+                          <Link
+                            to={`/admin/categories/edit/${categori.id}`}
+                            className="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
+                          >
+                            Update
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(categori.id)}
+                            className="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

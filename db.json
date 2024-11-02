@@ -62,6 +62,21 @@
       "description": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen được thiết kế hiện đại đến từ thương hiệu Adidas nổi tiếng. Với gam màu năng động và khỏe khoắn, đôi giày mang đến cho bạn vẻ ngoài cá tính và cuốn hút.",
       "image_product": "https://cdn.vuahanghieu.com/unsafe/0x0/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/news/content/2023/01/giay-the-thao-adidas-galaxy-6-black-gw3848-mau-den-size-43-anh-5-jpg-1672802769-04012023102609.jpg",
       "cat_id": "f4bf"
+    },
+    {
+      "id": "04d6",
+      "name": "Giày Thể Thao Nam Nike Revolution 5 BQ3204-013 Màu Đen Xám",
+      "title": "Nike",
+      "price": "550.000",
+      "price_sale": "549.000",
+      "status": "out of stock",
+      "quantity": "8386",
+      "description": "Giày Thể Thao Nam Nike Revolution 5 BQ3204-013 Màu Đen Xám là mẫu giày thể thao đến từ thương hiệu Nike nổi tiếng của Mỹ được rất nhiều tín đồ thể thao ưa chuộng. Nike Revolution 5 BQ3204-013 mang thiết kế thời trang cùng chất liệu cao cấp chắc chắn sẽ là một item mà bạn không thể bỏ lỡ trong bộ sưu tập giày của mình.",
+      "image_product": "https://cdn.vuahanghieu.com/unsafe/0x900/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/product/2023/04/giay-the-thao-nam-nike-revolution-5-bq3204-013-mau-den-xam-size-40-5-642b95fe2caf6-04042023101406.jpg",
+      "image_description": [
+        "blob:http://localhost:5173/56b960a9-99a9-4922-a3c0-cc91e005e97a"
+      ],
+      "cat_id": "9f8e"
     }
   ],
   "categories": [
@@ -291,7 +306,7 @@
       "phonenumber": "",
       "email": "phongduyxyz@gmail.com",
       "password": "abcxyz",
-      "status": "active",
+      "status": "inactive",
       "date_create": "2024-10-23T03:32:41.800Z",
       "date_update": "2024-10-23T03:32:41.800Z"
     },
@@ -393,7 +408,8 @@
       "total_money": 600,
       "description": "Cart contains two Nike Court Vision Low Next Nature shoes.",
       "date_create": "2024-10-21T09:30:00Z",
-      "date_update": "2024-10-21T10:00:00Z"
+      "date_update": "2024-10-21T10:00:00Z",
+      "id": "b714"
     },
     {
       "cart_id": "C002",
@@ -401,7 +417,8 @@
       "total_money": 250,
       "description": "Cart contains one Air Jordan 1 Low shoe.",
       "date_create": "2024-10-22T14:00:00Z",
-      "date_update": "2024-10-22T14:30:00Z"
+      "date_update": "2024-10-22T14:30:00Z",
+      "id": "d259"
     },
     {
       "cart_id": "C003",
@@ -409,7 +426,8 @@
       "total_money": 900,
       "description": "Cart contains three Jordan One Take 5 PF shoes.",
       "date_create": "2024-10-20T08:30:00Z",
-      "date_update": "2024-10-20T08:45:00Z"
+      "date_update": "2024-10-20T08:45:00Z",
+      "id": "b035"
     },
     {
       "cart_id": "C004",
@@ -417,7 +435,8 @@
       "total_money": 990000,
       "description": "Giày Thể Thao Nike Air Jordan 1 High OG UNC University Blue.",
       "date_create": "2024-10-24T08:30:00Z",
-      "date_update": "2024-10-24T08:45:00Z"
+      "date_update": "2024-10-24T08:45:00Z",
+      "id": "d029"
     }
   ]
 }

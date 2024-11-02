@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import apisphp from "../Service/api";
 import Tcategory from "../Types/TCategories"; // Giả sử bạn có định nghĩa type cho danh mục
 
 const Category = () => {
@@ -10,8 +10,8 @@ const Category = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const responses = await axios.get("http://localhost:3000/categories"); // Thay URL bằng endpoint API của bạn
-        setCategories(responses.data); // Gán dữ liệu danh mục vào state
+        const responses = await apisphp.get("/categories"); // Thay URL bằng endpoint API của bạn
+        setCategories(responses.data.data); // Gán dữ liệu danh mục vào state
       } catch (error) {
         console.error("Lỗi khi gọi API danh mục:", error);
       } finally {

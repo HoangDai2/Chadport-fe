@@ -62,6 +62,7 @@ import { useNavigate } from "react-router-dom";
 import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
+import apisphp from "./Service/api";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -142,12 +143,21 @@ function App() {
   }, []);
 
   // hàm này sử lý thêm sản phẩm
-  const handleAddProduct = (newShoe: TProduct) => {
+  const handleAddProduct = (newShoe: TProduct, images: File[]) => {
     (async () => {
-      const newProduct = await createProduct(newShoe);
-      setProduct([...product, newProduct]);
-      navigate("/admin/products");
-      window.location.reload();
+      try {
+        console.log(newShoe, images);
+
+        // Gọi hàm createProduct với dữ liệu đã bao gồm image_description
+        const newProduct = await createProduct(newShoe, images);
+        setProduct([...product, newProduct]);
+
+        // Điều hướng sau khi thêm thành công
+        // navigate("/admin/products");
+        // window.location.reload();
+      } catch (error) {
+        console.error("Error adding product:", error);
+      }
     })();
   };
 
@@ -173,8 +183,11 @@ function App() {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const responses = await axios.get("http://localhost:3000/categories");
-        setCategory(responses.data);
+        const responses = await axios.get(
+          "http://127.0.0.1:8000/api/categories"
+        );
+        setCategory(responses.data.data);
+        // console.log(responses);
       } catch (error) {
         console.error("Error fetching shoes:", error);
       }
@@ -203,19 +216,18 @@ function App() {
       }
 
       // Gửi yêu cầu PUT để chỉnh sửa danh mục
-      const { data } = await instance.put(
-        `/categories/${categoryss.id}`,
-        {
-          name: categoryss.name,
-          status: categoryss.status,
-          imageURL: categoryss.imageURL,
-        } // Đảm bảo gửi đúng dữ liệu
-      );
+      const { data } = await apisphp.put(`/categories/${categoryss.id}`, {
+        name: categoryss.name,
+        status: categoryss.status,
+        imageURL: categoryss.imageURL,
+      });
 
       // Kiểm tra dữ liệu trả về
       if (data && data.data && data.data._id) {
         toast.success("Danh mục đã được cập nhật thành công!");
         setCategory(data.data);
+        console.log("123");
+
         navigate("/admin/categorieslist", { replace: true });
       } else {
         console.error("Dữ liệu trả về không hợp lệ:", data);

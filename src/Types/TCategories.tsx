@@ -3,7 +3,7 @@ type Tcategory = {
   name: string;
   status: "active" | "inactive";
   imageURL: string;
-  date_create: string;
-  date_update: string;
+  created_at: string;
+  updated_at: string;
 };
 export default Tcategory;
