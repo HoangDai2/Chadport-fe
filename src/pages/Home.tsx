@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import TProduct from "../Types/TProduct";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import apisphp from "../Service/api";
 // import { addToCart } from "../Types/cartUtils";
 // import { useDispatch } from 'react-redux';
 // const dispatch = useDispatch();
@@ -18,10 +19,17 @@ const Home = ({
   const [products, setProducts] = useState<TProduct[]>([]);
   const navigate = useNavigate();
   useEffect(() => {
-    fetch("http://localhost:3000/products")
-      .then((res) => res.json())
-      .then((data: TProduct[]) => setProducts(data))
-      .catch((error) => console.error("Error fetching data:", error));
+    const fetchProducts = async () => {
+      try {
+        const response = await apisphp.get("list/products");
+        setProducts(response.data.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        toast.error("Error fetching products");
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (

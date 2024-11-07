@@ -216,17 +216,32 @@ function App() {
 
   // hàm này sử lý thêm sản phẩm
   const handleAddProduct = (newShoe: TProduct, images: File[]) => {
+    console.log("Dữ liệu sản phẩm:", newShoe);
+    console.log("Hình ảnh sản phẩm:", images); // In ra danh sách các ảnh
+
     (async () => {
       try {
-        console.log(newShoe, images);
+        const formData = new FormData();
 
-        // Gọi hàm createProduct với dữ liệu đã bao gồm image_description
-        const newProduct = await createProduct(newShoe, images);
-        setProduct([...product, newProduct]);
+        // Thêm các trường từ newShoe vào FormData
+        Object.entries(newShoe).forEach(([key, value]) => {
+          formData.append(key, value as string | Blob);
+        });
 
-        // Điều hướng sau khi thêm thành công
-        // navigate("/admin/products");
-        // window.location.reload();
+        // Thêm tất cả ảnh vào FormData
+        images.forEach((image) => {
+          formData.append("image_description[]", image); // Sử dụng array notation để gửi nhiều ảnh
+        });
+
+        // Kiểm tra FormData
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ": ", pair[1]); // Kiểm tra từng mục trong FormData
+        }
+
+        const newProduct = await createProduct(formData);
+        setProduct((prev) => [...prev, newProduct]);
+        navigate("/admin/products"); // Điều hướng sau khi thêm thành công
+        window.location.reload(); // Tải lại trang nếu cần thiết
       } catch (error) {
         console.error("Error adding product:", error);
       }
@@ -234,9 +249,17 @@ function App() {
   };
 
   // hàm này sẽ xử lí sửa sản phẩm
-  const handleEditProduct = async (product: TProduct) => {
+  const handleEditProduct = async (product: FormData) => {
     try {
-      const { data } = await instance.put(`/products/${product.id}`, product);
+      const { data } = await apisphp.post(
+        `update/products/${product.get("id")}`, // Lấy `id` từ `FormData`
+        product,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (data && data.id) {
         setProduct((prevProducts) =>

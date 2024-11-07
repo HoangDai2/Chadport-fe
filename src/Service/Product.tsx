@@ -1,23 +1,9 @@
 import TProduct from "../Types/TProduct";
 import apisphp from "./api";
 
-const createProduct = async (formData: TProduct, images: File[]) => {
+const createProduct = async (formData: FormData) => {
   try {
-    const dataToSend = new FormData();
-
-    // Thêm các trường từ formData vào FormData
-    Object.entries(formData).forEach(([key, value]) => {
-      dataToSend.append(key, value);
-    });
-
-    // Thêm hình ảnh vào FormData
-    if (Array.isArray(images) && images.length > 0) {
-      images.forEach((image) => {
-        dataToSend.append("image_description", image);
-      });
-    }
-
-    const { data } = await apisphp.post("/add/products", dataToSend, {
+    const { data } = await apisphp.post("/add/products", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

@@ -28,7 +28,7 @@ export interface TProduct {
   description: string;
   quantity: number;
   image_product: string;
-  image_description: File[];
+  image_description?: string[];
   price: number;
   price_sale: number;
   type: string;

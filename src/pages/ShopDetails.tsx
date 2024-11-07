@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import instance from "../Service";
 import { ToastContainer } from "react-toastify";
+import apisphp from "../Service/api";
 const ShopDetails = ({
   addToCart,
   addToWishlist,
@@ -51,37 +52,37 @@ const ShopDetails = ({
   const handleIncrement = () => setQuantity((prev) => prev + 1);
   const handleDecrement = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const [mainImage, setMainImage] = useState<string | null>(null);
 
   useEffect(() => {
-    instance
-      .get(`products/${id}`)
-      .then((res) => setProduct(res.data))
-      .catch((error) =>
-        console.error("Error fetching product details:", error)
-      );
-  }, [id]);
-  useEffect(() => {
-    if (product) {
-      instance
-        .get("/products")
-        .then((res) => {
-          const related = res.data.filter((relatedProduct: TProduct) => {
-            return (
-              relatedProduct.id !== product.id && // Không lấy sản phẩm hiện tại
-              relatedProduct.category.some((relatedCategory) =>
-                product.category.some(
-                  (currentCategory) => currentCategory.id === relatedCategory.id
-                )
-              )
-            );
-          });
-          setRelatedProducts(related);
-        })
-        .catch((error) =>
-          console.error("Error fetching related products:", error)
-        );
+    const fetchProductDetails = async () => {
+      try {
+        const res = await apisphp.get(`/showdetail/products/${id}`);
+        const fetchedProduct = res.data;
+
+        let images: string[] = [];
+        if (typeof fetchedProduct.image_description === "string") {
+          try {
+            images = JSON.parse(fetchedProduct.image_description);
+          } catch (error) {
+            console.error("Error parsing image_description:", error);
+          }
+        } else if (Array.isArray(fetchedProduct.image_description)) {
+          images = fetchedProduct.image_description;
+        }
+
+        setProduct({ ...fetchedProduct, image_description: images });
+        setMainImage(fetchedProduct.image_product); // Đặt ảnh chính ban đầu
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    };
+
+    if (id) {
+      fetchProductDetails();
     }
-  }, [product]);
+  }, [id]);
+
   if (!product) {
     return <div>Loading...</div>;
   }
@@ -155,64 +156,49 @@ const ShopDetails = ({
                                   data-vertical="true"
                                   data-verticalswiping="true"
                                 >
-                                  <div className="img-item slick-slide">
-                                    <span className="img-thumbnail-scroll">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src={product.image_product}
-                                      />
-                                    </span>
-                                  </div>
-                                  <div className="img-item slick-slide">
-                                    <span className="img-thumbnail-scroll">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src={product.image_product}
-                                      />
-                                    </span>
-                                  </div>
-                                  <div className="img-item slick-slide">
-                                    <span className="img-thumbnail-scroll">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src={product.image_product}
-                                      />
-                                    </span>
-                                  </div>
-                                  <div className="img-item slick-slide">
-                                    <span className="img-thumbnail-scroll">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src={product.image_product}
-                                      />
-                                    </span>
-                                  </div>
-                                  <div className="img-item slick-slide">
-                                    <span className="img-thumbnail-scroll">
-                                      <img
-                                        width={600}
-                                        height={600}
-                                        src={product.image_product}
-                                      />
-                                    </span>
+                                  <div className="product-gallery">
+                                    {product.image_description &&
+                                    Array.isArray(product.image_description) ? (
+                                      product.image_description.map(
+                                        (image, index) => (
+                                          <div
+                                            key={index}
+                                            className="img-item slick-slide"
+                                            onMouseEnter={() =>
+                                              setMainImage(
+                                                `http://127.0.0.1:8000/storage/${image}`
+                                              )
+                                            }
+                                          >
+                                            <span className="img-thumbnail-scroll">
+                                              <img
+                                                width={100}
+                                                height={100}
+                                                src={`http://127.0.0.1:8000/storage/${image}`}
+                                                alt={`Additional image ${
+                                                  index + 1
+                                                }`}
+                                              />
+                                            </span>
+                                          </div>
+                                        )
+                                      )
+                                    ) : (
+                                      <p>No additional images</p>
+                                    )}
                                   </div>
                                 </div>
                               </div>
                             </div>
                             <div className="col-md-10">
                               <div className="scroll-image main-image">
-                                <div className="scroll-image main-image">
-                                  <img
-                                    src={product.image_product}
-                                    width={900}
-                                    height={900}
-                                    alt={product.name}
-                                  />
-                                </div>
+                                <img
+                                  src={mainImage || product.image_product}
+                                  width={900}
+                                  height={900}
+                                  alt={product.name}
+                                  className="main-image animated-image"
+                                />
                               </div>
                             </div>
                           </div>

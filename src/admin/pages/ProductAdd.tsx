@@ -18,49 +18,41 @@ function ProductAdd({ onAdd, categories }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { error },
+    formState: {},
   } = useForm<TProduct>({});
 
   // hàm này xử lí khi chọn ảnh trong input
-  const onFileUploadhandle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileList = e.target.files; // Lấy FileList
-    console.log(fileList);
-
+  const onFileUploadHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
     if (fileList) {
-      // Kiểm tra fileList có phải là null không
       const files = Array.from(fileList); // Chuyển FileList thành mảng
-      setImages(files); // Lưu nhiều file vào state
-
-      // Tạo các URL xem trước cho các file
+      setImages((prev) => [...prev, ...files]); // Cập nhật state với tất cả ảnh đã chọn
       const filePreviews = files.map((file) => URL.createObjectURL(file));
-
-      // Thiết lập các ảnh xem trước (nếu bạn cần quản lý chúng trong một state riêng)
-      setImagePreviews(filePreviews); // Giả sử bạn có một state gọi là imagePreviews để lưu trữ các URL xem trước
+      setImagePreviews((prev) => [...prev, ...filePreviews]); // Cập nhật các URL xem trước
     }
   };
 
   // Hàm xóa ảnh
   const removeImage = (indexToRemove: number) => {
-    setImages(
-      (prevImages) => prevImages.filter((_, index) => index !== indexToRemove) // Loại bỏ ảnh tại vị trí được chỉ định
+    setImages((prevImages) =>
+      prevImages.filter((_, index) => index !== indexToRemove)
     );
+    setImagePreviews((prevPreviews) => {
+      URL.revokeObjectURL(prevPreviews[indexToRemove]); // Giải phóng URL xem trước khỏi bộ nhớ
+      return prevPreviews.filter((_, index) => index !== indexToRemove);
+    });
   };
 
   // Hàm in ảnh ra sau khi chọn
-  const inImages = () => {
-    return images.map((image, index) => (
+  const renderImagePreviews = () => {
+    return imagePreviews.map((preview, index) => (
       <div
         key={index}
-        style={{
-          position: "relative", // Để đặt biểu tượng "X" ở góc trên phải
-          width: "100%",
-          padding: "10px",
-        }}
+        style={{ position: "relative", width: "100%", padding: "10px" }}
       >
-        {/* Nút xóa ảnh bằng icon Font Awesome "X" */}
         <i
           className="fa fa-times-circle"
-          onClick={() => removeImage(index)} // Xử lý xóa ảnh
+          onClick={() => removeImage(index)}
           style={{
             position: "absolute",
             top: "5px",
@@ -71,13 +63,9 @@ function ProductAdd({ onAdd, categories }: Props) {
           }}
         ></i>
         <img
-          src={URL.createObjectURL(image)}
+          src={preview}
           alt={`Preview ${index}`}
-          style={{
-            width: "40%",
-            height: "100%",
-            objectFit: "cover", // Đảm bảo ảnh lấp đầy thẻ cha
-          }}
+          style={{ width: "40%", height: "100%", objectFit: "cover" }}
         />
       </div>
     ));
@@ -85,15 +73,8 @@ function ProductAdd({ onAdd, categories }: Props) {
 
   // Gửi dữ liệu sản phẩm và ảnh lên server
   const onSubmit = async (data: TProduct) => {
-    const productData = {
-      ...data,
-      image_description: images, // Sử dụng mảng hình ảnh trực tiếp
-    };
-
     try {
-      await onAdd(productData, images); // Gọi hàm onAdd với dữ liệu sản phẩm
-      // navigate("/admin/products"); // Điều hướng sau khi thêm thành công
-      // window.location.reload(); // Tải lại trang nếu cần thiết
+      await onAdd(data, images); // Truyền TProduct và images riêng biệt vào onAdd
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -177,7 +158,7 @@ function ProductAdd({ onAdd, categories }: Props) {
               required
             >
               <option value="inactive">inactive</option>
-              <option value="Active">Active</option>
+              <option value="active">active</option>
             </select>
           </div>
         </div>
@@ -253,8 +234,8 @@ function ProductAdd({ onAdd, categories }: Props) {
               accept="image/*"
               {...register("image_description", { required: true })}
               className="form-control"
-              id="image_product"
-              onChange={onFileUploadhandle}
+              id="image_description"
+              onChange={onFileUploadHandle}
             />
             <div
               className="row"
@@ -265,7 +246,7 @@ function ProductAdd({ onAdd, categories }: Props) {
                 gap: "10px",
               }}
             >
-              {inImages().map((imageElement, index) => (
+              {renderImagePreviews().map((imageElement, index) => (
                 <div
                   key={index}
                   style={{
