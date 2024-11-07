@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import TProduct from "../Types/TProduct";
-import axios from "axios";
-
+import apisphp from "../Service/api";
 type Props = {};
 
 const SearchResults = (props: Props) => {
@@ -16,8 +15,9 @@ const SearchResults = (props: Props) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/products");
-        setProducts(response.data);
+        const response = await apisphp.get("/list/products");
+        setProducts(response.data.data);
+        console.log(response);
       } catch (error) {
         console.error("lỗi get products:", error);
       }

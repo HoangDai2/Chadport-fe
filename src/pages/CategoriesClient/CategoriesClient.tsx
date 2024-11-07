@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import instance from "../../Service";
 import { useNavigate, useParams } from "react-router-dom";
 import TProduct from "../../Types/TProduct";
+import apisphp from "../../Service/api";
 type Props = {};
 
 const CategoriesClient = (props: Props) => {
@@ -16,12 +17,14 @@ const CategoriesClient = (props: Props) => {
     const fetchDataCategories = async () => {
       try {
         // đoạn này sẽ lấy sản phẩm thuộc danh mục
-        const productResponse = await instance.get(`/products?cat_id=${id}`);
-        setProducts(productResponse.data);
+        const productResponse = await apisphp.get(`/products/category/${id}`);
+        setProducts(productResponse.data.data);
+        console.log(productResponse);
 
         //đoạn này sẽ lấy thông tin danh mục để hiển thị tên danh mục
-        const categoryResponse = await instance.get(`/categories/${id}`);
+        const categoryResponse = await apisphp.get(`/categories/${id}`);
         setCategoryName(categoryResponse.data.name);
+        console.log(categoryResponse);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -164,11 +167,12 @@ const CategoriesClient = (props: Props) => {
                         >
                           <div className="products-list grid">
                             <div className="row">
-                              {products.length === 0 ? (
+                              {Array.isArray(products) &&
+                              products.length === 0 ? (
                                 <p>Không có sản phẩm nào</p>
                               ) : (
+                                Array.isArray(products) &&
                                 products.map((product) => {
-                                  // Giới hạn độ dài tên sản phẩm
                                   const maxLength = 25;
                                   const productName =
                                     product.name.length > maxLength

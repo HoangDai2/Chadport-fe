@@ -4,8 +4,14 @@ import { useNavigate } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import axios from "axios";
 import Tcategory from "../Types/TCategories";
-
-const Headerclient = ({ carCount, wishlisCount }: { carCount: number, wishlisCount: number }) => {
+import apisphp from "../Service/api";
+const Headerclient = ({
+  carCount,
+  wishlisCount,
+}: {
+  carCount: number;
+  wishlisCount: number;
+}) => {
   const [loading, setLoading] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   // const [carCount, setCarCount] = useState(0);
@@ -22,8 +28,8 @@ const Headerclient = ({ carCount, wishlisCount }: { carCount: number, wishlisCou
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/products");
-        setProducts(response.data);
+        const response = await apisphp.get("list/products");
+        setProducts(response.data.data);
       } catch (error) {
         console.error("lỗi get products:", error);
       }
@@ -35,8 +41,8 @@ const Headerclient = ({ carCount, wishlisCount }: { carCount: number, wishlisCou
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const cate = await axios.get("http://localhost:3000/categories");
-        setCategories(cate.data);
+        const cate = await apisphp.get("/categories");
+        setCategories(cate.data.data);
         // console.log(cate);
       } catch (error) {
         console.error("lỗi get products:", error);
@@ -412,27 +418,29 @@ const Headerclient = ({ carCount, wishlisCount }: { carCount: number, wishlisCou
               <div className="row-span-4">
                 <p className="text-lg font-bold mb-2">Categories </p>
                 {/* Hiển thị dữ liệu danh mục */}
-                {categories.map((cates) => (
-                  <a href={`/categoriesnike/${cates.id}`} key={cates.id}>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="h-[90px] flex justify-center items-center">
-                        <img
-                          src={cates.imageURL}
-                          alt=""
-                          className="w-[80px] h-[80px] rounded-full object-contain border-2 border-gray-300"
-                        />
+                {Array.isArray(categories) &&
+                  categories.map((cates) => (
+                    <a href={`/categoriesnike/${cates.id}`} key={cates.id}>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="h-[90px] flex justify-center items-center">
+                          <img
+                            src={cates.imageURL}
+                            alt=""
+                            className="w-[80px] h-[80px] rounded-full object-contain border-2 border-gray-300"
+                          />
+                        </div>
+                        <div className="h-[100px] flex items-center">
+                          <span className="text-left">{cates.name}</span>
+                        </div>
                       </div>
-                      <div className="h-[100px] flex items-center">
-                        <span className="text-left">{cates.name}</span>
-                      </div>
-                    </div>
-                  </a>
-                ))}
+                    </a>
+                  ))}
               </div>
 
               <div className="col-span-4 row-span-4 flex justify-center">
                 {/* Hiển thị dữ liệu sản phẩm mà người dùng tìm kiếm */}
-                {filteredProducts.length > 0 ? (
+                {Array.isArray(filteredProducts) &&
+                filteredProducts.length > 0 ? (
                   filteredProducts.map((product, index) => (
                     <div
                       className="row-span-3 col-start-2 row-start-1 "
