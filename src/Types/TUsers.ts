@@ -1,6 +1,8 @@
 type TUser = {
-  user_id: number;
+  email: string;
+  password: string;
   role_id: number;
+  status: "active" | "inactive" | "suspended"; // Thêm các trạng thái khác nếu có
   first_name: string;
   last_name: string;
   gender: "male" | "female" | "other"; // Có thể thêm các giá trị khác nếu cần
@@ -8,11 +10,9 @@ type TUser = {
   address: string;
   img_user: string;
   phonenumber: string;
-  email: string;
-  password: string;
-  status: "active" | "inactive" | "suspended"; // Thêm các trạng thái khác nếu có
-  date_create: string; // Có thể dùng Date nếu cần
-  date_update: string; // Có thể dùng Date nếu cần
+  user_id: number;
+  date_create: string;
+  date_update: string;
   id: string;
 };
 export default TUser;

@@ -21,6 +21,7 @@
     "buffer": "^6.0.3",
     "client": "file:",
     "cors": "^2.8.5",
+    "emoji-mart": "^3.0.1",
     "express": "^4.21.1",
     "font-awesome": "^4.7.0",
     "joi": "^17.13.3",

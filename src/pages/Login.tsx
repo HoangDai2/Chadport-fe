@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import apisphp from "../Service/api";
 const LoginRegister: React.FC = () => {
   const [loginData, setLoginData] = useState({
     username: "",
@@ -159,7 +159,11 @@ const LoginRegister: React.FC = () => {
                         <h2>Login</h2>
                         <div className="box-content">
                           <div className="form-login">
-                            <form method="post" className="login" onSubmit={handleLoginSubmit}>
+                            <form
+                              method="post"
+                              className="login"
+                              onSubmit={handleLoginSubmit}
+                            >
                               {formError && (
                                 <div className="error-message">{formError}</div>
                               )}
@@ -225,7 +229,11 @@ const LoginRegister: React.FC = () => {
                         <h2 className="register">Register</h2>
                         <div className="box-content">
                           <div className="form-register">
-                            <form method="post" className="register" onSubmit={handleRegisterSubmit}>
+                            <form
+                              method="post"
+                              className="register"
+                              onSubmit={handleRegisterSubmit}
+                            >
                               {formError && (
                                 <div className="error-message">{formError}</div>
                               )}

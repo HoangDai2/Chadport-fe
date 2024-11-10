@@ -83,7 +83,7 @@
     {
       "name": "Nike",
       "status": "active",
-      "imageURL": "https://static.nike.com/a/images/f_jpg,q_auto:eco/61b4738b-e1e1-4786-8f6c-26aa0008e80b/swoosh-logo-black.png",
+      "imageURL": "q",
       "id": "9f8e"
     },
     {
@@ -429,7 +429,6 @@
       "date_update": "2024-10-20T08:45:00Z",
       "id": "b035"
     },
-
     {
       "id": "7360",
       "product": {
@@ -446,21 +445,5 @@
       }
     }
   ],
-  "wishlist": [
-    {
-      "id": "2e4e",
-      "product": {
-        "id": "9ef6",
-        "name": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen",
-        "title": "Adidas",
-        "price": "490.000",
-        "price_sale": "489.000",
-        "status": "out of stock",
-        "quantity": "6",
-        "description": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen được thiết kế hiện đại đến từ thương hiệu Adidas nổi tiếng. Với gam màu năng động và khỏe khoắn, đôi giày mang đến cho bạn vẻ ngoài cá tính và cuốn hút.",
-        "image_product": "https://cdn.vuahanghieu.com/unsafe/0x0/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/news/content/2023/01/giay-the-thao-adidas-galaxy-6-black-gw3848-mau-den-size-43-anh-5-jpg-1672802769-04012023102609.jpg",
-        "cat_id": "f4bf"
-      }
-    }
-  ]
+  "wishlist": []
 }

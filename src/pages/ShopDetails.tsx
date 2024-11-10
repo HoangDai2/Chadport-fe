@@ -4,6 +4,8 @@ import TProduct from "../Types/TProduct";
 import instance from "../Service";
 import { ToastContainer } from "react-toastify";
 import apisphp from "../Service/api";
+import CommentSection from "./Comments/CommentSection";
+
 const ShopDetails = ({
   addToCart,
   addToWishlist,
@@ -17,6 +19,7 @@ const ShopDetails = ({
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
   const handleSizeChange = (size: string) => {
     setSelectedSize(size);
   };
@@ -190,6 +193,8 @@ const ShopDetails = ({
                                 </div>
                               </div>
                             </div>
+
+                            {/* ảnh sản phẩm chính */}
                             <div className="col-md-10">
                               <div className="scroll-image main-image">
                                 <img
@@ -201,16 +206,19 @@ const ShopDetails = ({
                                 />
                               </div>
                             </div>
+
+                            {/* Description Additional information Reviews */}
+                            <CommentSection />
                           </div>
                         </div>
                         <div className="product-info col-lg-5 col-md-12 col-12 ">
-                          <h1 className="title">{product.name}</h1>
+                          <h1 className="title text-left">{product.name}</h1>
                           <span className="price">
                             <del aria-hidden="true">
                               <span>${product.price}</span>
                             </del>
                             <ins>
-                              <span>${product.price}</span>
+                              <span>${product.price_sale}</span>
                             </ins>
                           </span>
                           <div className="rating">
@@ -219,7 +227,7 @@ const ShopDetails = ({
                               (3<span> reviews</span>)
                             </div>
                           </div>
-                          <div className="description">
+                          <div className="description text-left">
                             <p>{product.description}</p>
                           </div>
                           <div className="variations">
@@ -420,223 +428,8 @@ const ShopDetails = ({
                     </div>
                   </div>
                 </div>
-                <div className="product-tabs">
-                  <div className="section-padding">
-                    <div className="section-container p-l-r">
-                      <div className="product-tabs-wrap">
-                        <ul className="nav nav-tabs" role="tablist">
-                          <li className="nav-item">
-                            <a
-                              className="nav-link active"
-                              data-toggle="tab"
-                              href="#description"
-                              role="tab"
-                            >
-                              Description
-                            </a>
-                          </li>
-                          <li className="nav-item">
-                            <a
-                              className="nav-link"
-                              data-toggle="tab"
-                              href="#additional-information"
-                              role="tab"
-                            >
-                              Additional information
-                            </a>
-                          </li>
-                          <li className="nav-item">
-                            <a
-                              className="nav-link"
-                              data-toggle="tab"
-                              href="#reviews"
-                              role="tab"
-                            >
-                              Reviews (1)
-                            </a>
-                          </li>
-                        </ul>
-                        <div className="tab-content">
-                          <div
-                            className="tab-pane fade show active"
-                            id="description"
-                            role="tabpanel"
-                          >
-                            <p>{product.description}</p>
-                            <p>
-                              Nemo enim ipsam voluptatem quia voluptas sit
-                              aspernatur aut odit aut fugit, sed quia
-                              consequuntur magni dolores eos qui ratione
-                              voluptatem sequi nesciunt. Neque porro quisquam
-                              est, qui dolorem ipsum quia dolor sit amet,
-                              consectetur, adipisci velit, sed quia non numquam
-                              eius modi tempora incidunt ut labore et dolore
-                              magnam aliquam quaerat voluptatem.
-                            </p>
-                          </div>
-                          <div
-                            className="tab-pane fade"
-                            id="additional-information"
-                            role="tabpanel"
-                          >
-                            <table className="product-attributes">
-                              <tbody>
-                                <tr className="attribute-item">
-                                  <th className="attribute-label">Color</th>
-                                  <td className="attribute-value">
-                                    Black, Blue, Green
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                          <div
-                            className="tab-pane fade"
-                            id="reviews"
-                            role="tabpanel"
-                          >
-                            <div id="reviews" className="product-reviews">
-                              <div id="comments">
-                                <h2 className="reviews-title">
-                                  1 review for{" "}
-                                  <span>Nike Air Force 1 '07 LV8</span>
-                                </h2>
-                                <ol className="comment-list">
-                                  <li className="review">
-                                    <div className="content-comment-container">
-                                      <div className="comment-container">
-                                        <img
-                                          src="media/user.jpg"
-                                          className="avatar"
-                                          height={60}
-                                          width={60}
-                                        />
-                                        <div className="comment-text">
-                                          <div className="rating small">
-                                            <div className="star star-5" />
-                                          </div>
-                                          <div className="review-author">
-                                            Peter Capidal
-                                          </div>
-                                          <div className="review-time">
-                                            January 12, 2022
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="description">
-                                        <p>good</p>
-                                      </div>
-                                    </div>
-                                  </li>
-                                </ol>
-                              </div>
-                              <div id="review-form">
-                                <div id="respond" className="comment-respond">
-                                  <span
-                                    id="reply-title"
-                                    className="comment-reply-title"
-                                  >
-                                    Add a review
-                                  </span>
-                                  <form
-                                    action="#"
-                                    method="post"
-                                    id="comment-form"
-                                    className="comment-form"
-                                  >
-                                    <p className="comment-notes">
-                                      <span id="email-notes">
-                                        Your email address will not be
-                                        published.
-                                      </span>{" "}
-                                      Required fields are marked{" "}
-                                      <span className="required">*</span>
-                                    </p>
-                                    <div className="comment-form-rating">
-                                      <label htmlFor="rating">
-                                        Your rating
-                                      </label>
-                                      <p className="stars">
-                                        <span>
-                                          <a className="star-1" href="#">
-                                            1
-                                          </a>
-                                          <a className="star-2" href="#">
-                                            2
-                                          </a>
-                                          <a className="star-3" href="#">
-                                            3
-                                          </a>
-                                          <a className="star-4" href="#">
-                                            4
-                                          </a>
-                                          <a className="star-5" href="#">
-                                            5
-                                          </a>
-                                        </span>
-                                      </p>
-                                    </div>
-                                    <p className="comment-form-comment">
-                                      <textarea
-                                        id="comment"
-                                        name="comment"
-                                        placeholder="Your Reviews *"
-                                        cols={45}
-                                        rows={8}
-                                        aria-required="true"
-                                        required
-                                        defaultValue={""}
-                                      />
-                                    </p>
-                                    <div className="content-info-reviews">
-                                      <p className="comment-form-author">
-                                        <input
-                                          id="author"
-                                          name="author"
-                                          placeholder="Name *"
-                                          type="text"
-                                          defaultValue={""}
-                                          size={30}
-                                          aria-required="true"
-                                          required
-                                        />
-                                      </p>
-                                      <p className="comment-form-email">
-                                        <input
-                                          id="email"
-                                          name="email"
-                                          placeholder="Email *"
-                                          type="email"
-                                          defaultValue={""}
-                                          size={30}
-                                          aria-required="true"
-                                          required
-                                        />
-                                      </p>
-                                      <p className="form-submit">
-                                        <input
-                                          name="submit"
-                                          type="submit"
-                                          id="submit"
-                                          className="submit"
-                                          defaultValue="Submit"
-                                        />
-                                      </p>
-                                    </div>
-                                  </form>
-                                  {/* #respond */}
-                                </div>
-                              </div>
-                              <div className="clear" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
                 {/* Related Products */}
-                {/* {console.log(product)} */}
                 <div className="product-related">
                   <div className="section-padding">
                     <div className="section-container p-l-r">

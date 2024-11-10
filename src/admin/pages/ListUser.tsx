@@ -58,7 +58,7 @@ const ListUser = ({ listuser }: Props) => {
       setIsLoading(false); // Dừng trạng thái chờ
     }
   };
-  const openModal = (user) => {
+  const openModal = (user: any) => {
     setSelectedUser(user);
     setIsModalOpen(true);
   };
