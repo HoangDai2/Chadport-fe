@@ -34,7 +34,7 @@ import "./libs/slick/css/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./libs/mmenu/css/mmenu.min.css";
-import LoginRegister from "./pages/Login"; // Only one import
+import LoginRegister from "./pages/AuthClient/Login"; // Only one import
 import ShopDetails from "./pages/ShopDetails";
 import Wishlist from "./pages/Wishlist";
 import ShopCart from "./pages/ShopCart";

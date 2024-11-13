@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import logochartport from "../img/logochadport.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import axios from "axios";
 import Tcategory from "../Types/TCategories";
 import apisphp from "../Service/api";
+import { useUserContext } from "../pages/AuthClient/UserContext";
+import Cookies from "js-cookie";
 const Headerclient = ({
   carCount,
   wishlisCount,
@@ -12,10 +14,17 @@ const Headerclient = ({
   carCount: number;
   wishlisCount: number;
 }) => {
+  const { user, setUser } = useUserContext();
+
+  console.log("Current user in header:", user);
+
   const [loading, setLoading] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [token, setToken] = useState(null);
   // const [carCount, setCarCount] = useState(0);
   const [userName, setUserName] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<TProduct[]>([]); // Khai báo kiểu dữ liệu cho sản phẩm
@@ -111,10 +120,11 @@ const Headerclient = ({
     }
   }, [searchTerm, products]);
 
+  // Xử lý logout
   const handleLogout = () => {
-    sessionStorage.removeItem("user");
-    setUserName(null);
-    navigate("/login");
+    Cookies.remove("authToken"); // Xóa token khỏi cookie
+    setUser(null); // Đặt user về null để xóa thông tin người dùng
+    navigate("/login"); // Chuyển hướng đến trang login
   };
 
   // hàm này xử lí ẩn hiện thanh tìm kiếm
@@ -180,6 +190,35 @@ const Headerclient = ({
     localStorage.setItem("recentSearches", JSON.stringify(updatedHistory)); // Lưu lại vào localStorage
     setRecentSearches(updatedHistory);
   };
+
+  // Kiểm tra token và lấy thông tin người dùng khi tải lại trang
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!token) return;
+
+      try {
+        const response = await apisphp.get("/user/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.data?.user) setUser(response.data.user);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        if (error.response?.status === 401) setToken(null);
+      }
+    };
+
+    fetchUserData();
+  }, [token]);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+    console.log("Sidebar Open State:", !isSidebarOpen);
+  };
+
+  const toggleSubmenu = () => {
+    setIsSubmenuOpen(!isSubmenuOpen);
+  };
+
   return (
     <>
       {loading && (
@@ -301,25 +340,6 @@ const Headerclient = ({
 
                 <div className="col-xl-3 col-lg-4 col-md-12 col-sm-12 header-right mt-[28px]">
                   <div className="flex items-center space-x-4 gap-[15px]">
-                    {userName ? (
-                      <>
-                        <span>{userName}</span>
-                        <button onClick={handleLogout} className="ml-4">
-                          Logout
-                        </button>
-                      </>
-                    ) : (
-                      <ul className="sub-menu " style={{ top: "111px" }}>
-                        <li className="level-0 menu-item">
-                          <a
-                            href="/login"
-                            className="text-black hover:text-gray-400"
-                          >
-                            Login
-                          </a>
-                        </li>
-                      </ul>
-                    )}
                     <button onClick={handleSearchClick}>
                       <i
                         className="fas fa-search text-lg"
@@ -339,19 +359,138 @@ const Headerclient = ({
                         {wishlisCount}
                       </span>
                     </div>
-                    <div className="relative">
-                      <a href="/profile">
-                        <button>
-                          <i
-                            className="fa-solid fa-user text-lg"
-                            style={{ fontSize: "25px" }}
-                          ></i>
-                        </button>
-                      </a>
-                      <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
-                        {wishlistCount}
-                      </span>
+
+                    {/* phần Sidebar */}
+                    <div>
+                      {/* Nút mở sidebar */}
+                      <button
+                        onClick={toggleSidebar}
+                        className="focus:outline-none"
+                      >
+                        <i
+                          className="fa-solid fa-user text-lg"
+                          style={{ fontSize: "25px" }}
+                        ></i>
+                      </button>
+
+                      {/* Sidebar */}
+                      <>
+                        {/* Overlay */}
+                        {isSidebarOpen && (
+                          <div
+                            className="fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-1000"
+                            onClick={toggleSidebar}
+                          ></div>
+                        )}
+
+                        {/* Sidebar với lớp `custom-sidebar` */}
+                        <div
+                          className={`custom-sidebar ${
+                            isSidebarOpen ? "open" : ""
+                          }`}
+                        >
+                          {/* Thông tin người dùng */}
+                          <div
+                            className="flex items-center space-x-3 mb-6"
+                            style={{ justifyContent: "space-around" }}
+                          >
+                            <img
+                              src={
+                                user ? user.image_user : "default-avatar.png"
+                              }
+                              alt={user ? user.firt_name : "User Avatar"}
+                              className="w-12 h-12 rounded-full"
+                            />
+                            <div>
+                              <div className="font-semibold">
+                                {user ? user.firt_name : "Guest"}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {user ? user.email : "guest@example.com"}
+                              </div>
+                            </div>
+                          </div>
+                          {/* Danh sách các mục menu */}
+                          <ul className="space-y-2">
+                            <li className="menu-item">
+                              <i className="fa-solid fa-home mr-4"></i>
+                              <span>Home</span>
+                            </li>
+                            <li className="menu-item">
+                              <i className="fa-solid fa-box mr-4"></i>
+                              <span>Products</span>
+                            </li>
+                            <li
+                              className="menu-item cursor-pointer"
+                              onClick={toggleSubmenu}
+                            >
+                              <i className="fa-solid fa-wallet mr-4"></i>
+                              <span>Payments</span>
+                              <i
+                                className={` fa-solid fa-chevron-down ml-auto transition-transform duration-300 ${
+                                  isSubmenuOpen ? "rotate-180" : ""
+                                }`}
+                              ></i>
+                            </li>
+                            {isSubmenuOpen && (
+                              <ul
+                                className={`text-left pl-8 mt-2 space-y-2 text-gray-500 text-sm transition-all duration-300 ease-in-out overflow-hidden ${
+                                  isSubmenuOpen
+                                    ? "max-h-40 opacity-100"
+                                    : "max-h-0 opacity-0"
+                                }`}
+                              >
+                                <li className="submenu-item">Pay</li>
+                                <li className="submenu-item">Get Paid</li>
+                              </ul>
+                            )}
+                            <li className="menu-item">
+                              <i className="fa-solid fa-user-friends mr-4"></i>
+                              <span>Customers</span>
+                            </li>
+                            <li className="menu-item">
+                              <i className="fa-solid fa-archive mr-4"></i>
+                              <span>Resources</span>
+                            </li>
+                            <li className="menu-item relative">
+                              <i className="fa-solid fa-bell mr-4"></i>
+                              <span>Notifications</span>
+                              <span className="notification-badge">5</span>
+                            </li>
+                            <li className="menu-item">
+                              <i className="fa-solid fa-question-circle mr-4"></i>
+                              <span>Support</span>
+                            </li>
+                            <li className="menu-item">
+                              <i className="fa-solid fa-cog mr-4"></i>
+                              <span>Settings</span>
+                            </li>
+                          </ul>
+
+                          {/* login và logout */}
+                          <div className="p-4">
+                            {/* Kiểm tra trạng thái đăng nhập */}
+                            {user ? (
+                              <div className="mt-6 border-t border-gray-200 pt-4">
+                                <button
+                                  onClick={handleLogout}
+                                  className="w-full px-4 py-2 border border-black text-black font-semibold rounded-lg hover:bg-gray-100 flex items-center justify-center"
+                                >
+                                  Logout
+                                </button>
+                              </div>
+                            ) : (
+                              <a href="/login">
+                                <button className="w-full px-4 py-2 border border-black text-black font-semibold rounded-lg hover:bg-gray-100 flex items-center justify-center">
+                                  Login
+                                </button>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </>
                     </div>
+
                     <div className="relative">
                       <a href="/shopcart">
                         <button>
