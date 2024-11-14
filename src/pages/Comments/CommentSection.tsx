@@ -191,7 +191,7 @@ const CommentSection = ({ commentId }: any) => {
 
                       <div className="col-span-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-3">
                         <span className="font-semibold">
-                          {com.user ? com.user.first_name : "Unknown User"}
+                          {com.user ? com.user.firt_name : "Unknown User"}
                         </span>
 
                         <span className="text-gray-500 text-sm">

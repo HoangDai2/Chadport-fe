@@ -35,5 +35,18 @@ const registerValidationSchema = Yup.object({
     .matches(/[@$!%*?&]/, "Mật khẩu phải có ít nhất một ký tự đặc biệt")
     .required("Vui lòng nhập Mật khẩu"),
 });
-
-export { loginValidationSchema, registerValidationSchema };
+const profileValidationSchema = Yup.object({
+  phone_number: Yup.string()
+    .matches(/^\d+$/, "Phone number is not valid")
+    .required("Phone number is required"),
+  gender: Yup.number()
+    .oneOf([1, 2, 3], "Select a valid gender")
+    .required("Gender is required"),
+  birthday: Yup.date().required("Birthdate is required"),
+  address: Yup.string().required("Address is required"),
+});
+export {
+  loginValidationSchema,
+  registerValidationSchema,
+  profileValidationSchema,
+};

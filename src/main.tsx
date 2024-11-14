@@ -6,14 +6,15 @@ import "./index.css";
 import { Provider } from "react-redux";
 import store from "./Types/store";
 import { UserProvider } from "./pages/AuthClient/UserContext.tsx";
+
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <StrictMode>
-      <Provider store={store}>
-        <UserProvider>
+  <StrictMode>
+    <Provider store={store}>
+      <UserProvider>
+        <BrowserRouter>
           <App />
-        </UserProvider>
-      </Provider>
-    </StrictMode>
-  </BrowserRouter>
+        </BrowserRouter>
+      </UserProvider>
+    </Provider>
+  </StrictMode>
 );

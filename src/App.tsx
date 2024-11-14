@@ -46,7 +46,7 @@ import MyAccountPage from "./pages/MyAccountPage";
 import { toast } from "react-toastify";
 import ProductList from "./admin/pages/ProductList"; // Correcting the import path
 import ProductAdd from "./admin/pages/ProductAdd";
-import Profile from "./pages/Profile";
+import Profile from "./pages/AuthClient/Profile";
 import Pay_done from "./pages/Pay_done";
 import ProductUpdate from "./admin/pages/ProductUpdate";
 import Headerclient from "./components/HeaderClient";
@@ -477,7 +477,9 @@ function App() {
                   wishlisCount={wishlistCount}
                   carCount={carCount}
                 />
-                <Profile />
+                <div style={{ marginTop: "100px" }}>
+                  <Profile />
+                </div>
                 <FooterClient />
               </>
             }

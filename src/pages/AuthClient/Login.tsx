@@ -9,7 +9,6 @@ import TUser from "../../Types/TUsers";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginValidationSchema, registerValidationSchema } from "./Validation";
 import { useUserContext } from "./UserContext";
-import Cookies from "js-cookie";
 
 // Biểu tượng spinner loading
 const LoadingSpinner = () => (
@@ -47,8 +46,8 @@ const LoginRegister: React.FC = () => {
     gender: "other",
     birthday: "",
     address: "",
-    img_user: "",
-    phonenumber: "",
+    image_user: "",
+    phone_number: "",
     user_id: 0,
     date_create: "",
     date_update: "",
@@ -64,8 +63,8 @@ const LoginRegister: React.FC = () => {
     gender: "other",
     birthday: "",
     address: "",
-    img_user: "",
-    phonenumber: "",
+    image_user: "",
+    phone_number: "",
     user_id: 0, // user_id sẽ được backend cấp khi đăng ký
     date_create: new Date().toISOString(),
     date_update: new Date().toISOString(),
@@ -95,10 +94,10 @@ const LoginRegister: React.FC = () => {
         const userData = response.data.data; //  API trả về dữ liệu người dùng
         const token = response.data.token;
         setUser(userData); // Lưu thông tin người dùng vào context
-        console.log(token);
+        // console.log(token);
 
         // Lưu token vào cookie (expires: 1 ngày, secure nếu dùng HTTPS)
-        Cookies.set("authToken", token, { expires: 1, secure: true });
+        localStorage.setItem("jwt_token", token);
 
         setTimeout(() => {
           navigate("/");

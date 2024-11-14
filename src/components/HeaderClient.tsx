@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import logochartport from "../img/logochadport.png";
 import { Link, useNavigate } from "react-router-dom";
 import TProduct from "../Types/TProduct";
-import axios from "axios";
 import Tcategory from "../Types/TCategories";
 import apisphp from "../Service/api";
 import { useUserContext } from "../pages/AuthClient/UserContext";
-import Cookies from "js-cookie";
 const Headerclient = ({
   carCount,
   wishlisCount,
@@ -16,7 +14,7 @@ const Headerclient = ({
 }) => {
   const { user, setUser } = useUserContext();
 
-  console.log("Current user in header:", user);
+  // console.log("Current user in header:", user);
 
   const [loading, setLoading] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
@@ -122,9 +120,9 @@ const Headerclient = ({
 
   // Xử lý logout
   const handleLogout = () => {
-    Cookies.remove("authToken"); // Xóa token khỏi cookie
-    setUser(null); // Đặt user về null để xóa thông tin người dùng
-    navigate("/login"); // Chuyển hướng đến trang login
+    setUser(null);
+    localStorage.removeItem("jwt_token");
+    navigate("/login");
   };
 
   // hàm này xử lí ẩn hiện thanh tìm kiếm
@@ -191,28 +189,8 @@ const Headerclient = ({
     setRecentSearches(updatedHistory);
   };
 
-  // Kiểm tra token và lấy thông tin người dùng khi tải lại trang
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!token) return;
-
-      try {
-        const response = await apisphp.get("/user/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.data?.user) setUser(response.data.user);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        if (error.response?.status === 401) setToken(null);
-      }
-    };
-
-    fetchUserData();
-  }, [token]);
-
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
-    console.log("Sidebar Open State:", !isSidebarOpen);
   };
 
   const toggleSubmenu = () => {
@@ -394,21 +372,23 @@ const Headerclient = ({
                             className="flex items-center space-x-3 mb-6"
                             style={{ justifyContent: "space-around" }}
                           >
-                            <img
-                              src={
-                                user ? user.image_user : "default-avatar.png"
-                              }
-                              alt={user ? user.firt_name : "User Avatar"}
-                              className="w-12 h-12 rounded-full"
-                            />
-                            <div>
-                              <div className="font-semibold">
-                                {user ? user.firt_name : "Guest"}
+                            <a href="/profile" className="flex gap-[100px]">
+                              <img
+                                src={`http://127.0.0.1:8000${
+                                  user ? user.image_user : "Ảnh"
+                                }`}
+                                alt={user ? user.firt_name : "User Avatar"}
+                                className="w-12 h-12 rounded-full object-cover"
+                              />
+                              <div>
+                                <div className="font-semibold">
+                                  {user ? user.firt_name : "Guest"}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {user ? user.email : "guest@example.com"}
+                                </div>
                               </div>
-                              <div className="text-xs text-gray-500">
-                                {user ? user.email : "guest@example.com"}
-                              </div>
-                            </div>
+                            </a>
                           </div>
                           {/* Danh sách các mục menu */}
                           <ul className="space-y-2">
