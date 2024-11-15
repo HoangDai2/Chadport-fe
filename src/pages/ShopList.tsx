@@ -1,21 +1,54 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TProduct from "../Types/TProduct";
+import apisphp from "../Service/api";
 const ShopList = () => {
   const [products, setProducts] = useState<TProduct[]>([]);
+  const [sortOption, setSortOption] = useState<string>("default");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   const navigate = useNavigate();
 
   // Fetch product data from API
   useEffect(() => {
-    fetch("http://localhost:3000/products")
-      .then((res) => res.json())
-      .then((data: TProduct[]) => setProducts(data))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+    const fetchProducts = async () => {
+      try {
+        const response = await apisphp.get("list/products");
+        setProducts(response.data.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
 
+    fetchProducts();
+  }, []);
   // Navigate to product detail page
   const goToProductDetail = (id: number) => {
     navigate(`/shop-details/${id}`);
+  };
+  const sortProducts = (option: string) => {
+    let sortedProducts = [...products];
+
+    switch (option) {
+      case "price-low-to-high":
+        sortedProducts.sort((a, b) => a.price_sale - b.price_sale);
+        break;
+      case "price-high-to-low":
+        sortedProducts.sort((a, b) => b.price_sale - a.price_sale);
+        break;
+      default:
+        sortedProducts = products; // Sắp xếp mặc định
+    }
+
+    setProducts(sortedProducts);
+  };
+  const handleSortChange = (option: string) => {
+    setSortOption(option);
+    sortProducts(option);
   };
 
   return (
@@ -139,32 +172,48 @@ const ShopList = () => {
                         <div className="products-sort dropdown">
                           <span
                             className="sort-toggle dropdown-toggle"
-                            data-toggle="dropdown"
-                            aria-expanded="true"
+                            onClick={toggleDropdown}
                           >
-                            Default sorting
+                            {sortOption === "default"
+                              ? "Default sorting"
+                              : sortOption}
                           </span>
                           <ul
-                            className="sort-list dropdown-menu"
-                            x-placement="bottom-start"
+                            className={`sort-list dropdown-menu ${
+                              isDropdownOpen ? "show" : "hide"
+                            }`}
                           >
-                            <li className="active">
+                            <li
+                              className={
+                                sortOption === "default" ? "active" : ""
+                              }
+                              onClick={() => handleSortChange("default")}
+                            >
                               <a href="#">Default sorting</a>
                             </li>
-                            <li>
-                              <a href="#">Sort by popularity</a>
+                            <li
+                              className={
+                                sortOption === "price-low-to-high"
+                                  ? "active"
+                                  : ""
+                              }
+                              onClick={() =>
+                                handleSortChange("price-low-to-high")
+                              }
+                            >
+                              <a href="#">Từ nhỏ đến lớn</a>
                             </li>
-                            <li>
-                              <a href="#">Sort by average rating</a>
-                            </li>
-                            <li>
-                              <a href="#">Sort by latest</a>
-                            </li>
-                            <li>
-                              <a href="#">Sort by price: low to high</a>
-                            </li>
-                            <li>
-                              <a href="#">Sort by price: high to low</a>
+                            <li
+                              className={
+                                sortOption === "price-high-to-low"
+                                  ? "active"
+                                  : ""
+                              }
+                              onClick={() =>
+                                handleSortChange("price-high-to-low")
+                              }
+                            >
+                              <a href="#">Từ lớn đến nhỏ</a>
                             </li>
                           </ul>
                         </div>
