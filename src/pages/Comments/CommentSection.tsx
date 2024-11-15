@@ -3,14 +3,18 @@ import imm1 from "../../img/WMNS+AIR+JORDAN+1.jpg";
 import TComments from "../../Types/TComments";
 import { useEffect } from "react";
 import apisphp from "../../Service/api";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { postComment } from "./CommentsAdd";
 import TUser from "../../Types/TUsers";
 import { handleDislike, handleLike } from "./LikeAndDislike";
-
+import { useUserContext } from "../AuthClient/UserContext";
 type Props = {};
 
 const CommentSection = ({ commentId }: any) => {
+  const { user } = useUserContext();
+
+  const token = localStorage.getItem("jwt_token");
+  const [showAlert, setShowAlert] = useState(false);
   const { id } = useParams();
   const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
   const [dislikeCounts, setDislikeCounts] = useState<Record<number, number>>(
@@ -51,7 +55,6 @@ const CommentSection = ({ commentId }: any) => {
         // đoạn này sẽ lấy data comments
         const commetsResponse = await apisphp.get(`/getall/comments/${id}`);
         setComments(commetsResponse.data.data);
-        console.log(commetsResponse);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -62,6 +65,10 @@ const CommentSection = ({ commentId }: any) => {
 
   // Hàm xử lý khi nhấn nút Post Comment
   const handlePostComment = async () => {
+    if (!token) {
+      setShowAlert(true);
+      return;
+    }
     const commentData = { ...newComment };
 
     if (commentData.content.trim()) {
@@ -76,13 +83,6 @@ const CommentSection = ({ commentId }: any) => {
     } else {
       alert("Vui lòng nhập nội dung trước khi đăng!");
     }
-  };
-
-  // xổ menu
-  const handleMenuToggle = (commentId: number) => {
-    setMenuVisibleCommentId(
-      menuVisibleCommentId === commentId ? null : commentId
-    );
   };
 
   const handleEditComment = (commentId: number) => {
@@ -110,6 +110,13 @@ const CommentSection = ({ commentId }: any) => {
     }
   };
 
+  // xổ menu
+  const handleMenuToggle = (commentId: number) => {
+    setMenuVisibleCommentId(
+      menuVisibleCommentId === commentId ? null : commentId
+    );
+  };
+
   // Tải số lượng like/dislike từ localStorage khi component mount
   useEffect(() => {
     comment.forEach((com) => {
@@ -126,8 +133,62 @@ const CommentSection = ({ commentId }: any) => {
     });
   }, [comment]);
 
+  // giao diện hiện thị thông báo check login hay chưa để cho phép bình luận
+  const renderAlert = () => {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div
+          className="bg-gradient-to-br from-white to-gray-100 p-6 rounded-2xl shadow-2xl transform transition-transform duration-500 scale-100 animate-fade-in"
+          style={{ maxWidth: "450px", width: "100%" }}
+        >
+          <div className="flex flex-col items-center justify-center">
+            <div className="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full shadow-lg mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-12 h-12 text-red-500"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM11 6h2v7h-2V6zm0 9h2v2h-2v-2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
+              Yêu cầu đăng nhập
+            </h2>
+            <p className="text-gray-600 text-center mb-6">
+              Bạn cần đăng nhập/đăng kí để thực hiện chức năng này. Vui lòng
+              thực hiện để tiếp tục.
+            </p>
+          </div>
+          <div className="flex justify-center space-x-4">
+            <button
+              className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all duration-200"
+              onClick={() => setShowAlert(false)}
+            >
+              Đóng
+            </button>
+            <button
+              className="px-6 py-2 bg-black text-white rounded-lg hover:bg-blue-600 shadow-lg transition-all duration-200"
+              onClick={() => {
+                setShowAlert(false);
+                window.location.href = "/login"; // Điều hướng đến trang login
+              }}
+            >
+              Đăng nhập
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
+      {showAlert && renderAlert()}
       {/* Description Additional information Reviews */}
       <div className="w-full border-t border-gray-300 mt-[50px]">
         {/* Đánh giá */}
@@ -183,9 +244,13 @@ const CommentSection = ({ commentId }: any) => {
                       <div className="col-span-1 row-span-2 flex flex-col items-center justify-center text-green-500 space-y-2">
                         <div>{renderStars(com.rating)}</div>
                         <img
-                          src="https://via.placeholder.com/50"
+                          src={
+                            user && user.image_user
+                              ? `http://127.0.0.1:8000${user.image_user}`
+                              : "/default-avatar.png" // Đường dẫn đến ảnh mặc định
+                          }
                           alt="User Avatar"
-                          className="w-12 h-12 rounded-full"
+                          className="w-[5rem] h-[5rem] rounded-full object-cover"
                         />
                       </div>
 

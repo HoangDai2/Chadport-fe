@@ -204,9 +204,8 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const datauser = await axios.get("http://localhost:3000/users");
-        setUser(datauser.data);
-        // console.log(datauser);
+        const datauser = await apisphp.get("/user/getall/user");
+        setUser(datauser.data.users);
       } catch (error) {
         console.log("loi lay data user", error);
       }

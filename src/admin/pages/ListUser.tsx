@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import TUser from "../../Types/TUsers";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import quyen from "../../img/quyen.jpg";
+import apisphp from "../../Service/api";
 type Props = {
   listuser: TUser[];
 };
@@ -23,12 +22,9 @@ const ListUser = ({ listuser }: Props) => {
     setIsLoading(true); // Hiển thị trạng thái chờ
     setCurrentAction(action); // Lưu hành động hiện tại (mở khóa hoặc khóa)
     try {
-      const response = await axios.patch(
-        `http://localhost:3000/users/${userId}`,
-        {
-          status: action, // Cập nhật status mới
-        }
-      );
+      const response = await apisphp.patch(`/user/getall/user/${userId}`, {
+        status: action, // Cập nhật status mới
+      });
 
       if (response.status === 200) {
         // Cập nhật trạng thái người dùng ngay lập tức mà không cần reload
@@ -101,10 +97,10 @@ const ListUser = ({ listuser }: Props) => {
                     First Name
                   </th>
                   <th className="px-2 py-2 font-medium text-gray-900">Image</th>
-                  <th className="px-2 py-2 font-medium text-gray-900">Email</th>
                   <th className="px-2 py-2 font-medium text-gray-900">
                     Status
                   </th>
+                  <th className="px-2 py-2 font-medium text-gray-900">Email</th>
                   <th className="px-2 py-2 font-medium text-gray-900">
                     Date Created
                   </th>
@@ -129,10 +125,31 @@ const ListUser = ({ listuser }: Props) => {
                     </td>
                     <td className="px-2 py-2 text-gray-700">{user.role_id}</td>
                     <td className="px-2 py-2 text-gray-700">
-                      {user.first_name}
+                      {user.firt_name}
                     </td>
-                    <td className="px-2 py-2 text-gray-700">{user.img_user}</td>
-                    <td className="px-2 py-2 text-gray-700">{user.email}</td>
+                    <td className="px-2 py-2 text-gray-700">
+                      {user.image_user ? (
+                        <img
+                          src={`http://127.0.0.1:8000${user.image_user}`}
+                          alt="User"
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center border-2 border-gray-400 shadow-sm">
+                          {/* Icon đại diện */}
+                          <svg
+                            fill="#4B5563" // Đặt màu xám đậm để icon nổi bật
+                            width="20px" // Kích thước nhỏ gọn phù hợp với khung
+                            height="20px"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M15.71,12.71a6,6,0,1,0-7.42,0,10,10,0,0,0-6.22,8.18,1,1,0,0,0,2,.22,8,8,0,0,1,15.9,0,1,1,0,0,0,1,.89h.11a1,1,0,0,0,.88-1.1A10,10,0,0,0,15.71,12.71ZM12,12a4,4,0,1,1,4-4A4,4,0,0,1,12,12Z" />
+                          </svg>
+                        </div>
+                      )}
+                    </td>
+
                     {/* Hiển thị trạng thái từ state 'users' */}
                     <td
                       className={`px-2 py-2 ${
@@ -143,6 +160,7 @@ const ListUser = ({ listuser }: Props) => {
                     >
                       {user.status}
                     </td>
+                    <td className="px-2 py-2 text-gray-700">{user.email}</td>
                     <td className="px-2 py-2 text-gray-700">
                       {user.date_create}
                     </td>
@@ -188,12 +206,25 @@ const ListUser = ({ listuser }: Props) => {
 
               <div className="flex space-x-8">
                 {/* Hình ảnh người dùng */}
-                <div className="w-1/3">
-                  <img
-                    src={quyen}
-                    alt={`${selectedUser.first_name} ${selectedUser.last_name}`}
-                    className="rounded-full shadow-lg w-full object-cover"
-                  />
+                <div className="w-1/3 flex justify-center items-center">
+                  {selectedUser.image_user ? (
+                    <img
+                      src={`http://127.0.0.1:8000${selectedUser.image_user}`}
+                      alt={`${selectedUser.firt_name} ${selectedUser.last_name}`}
+                      className="w-24 h-24 rounded-full border-4 border-gray-600 shadow-lg object-cover"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full border-4 border-gray-600 shadow-lg bg-gray-300 flex items-center justify-center">
+                      <svg
+                        className="w-12 h-12 text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M15.71,12.71a6,6,0,1,0-7.42,0,10,10,0,0,0-6.22,8.18,1,1,0,0,0,2,.22,8,8,0,0,1,15.9,0,1,1,0,0,0,1,.89h.11a1,1,0,0,0,.88-1.1A10,10,0,0,0,15.71,12.71ZM12,12a4,4,0,1,1,4-4A4,4,0,0,1,12,12Z" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
 
                 {/* Thông tin chi tiết người dùng */}
@@ -204,7 +235,7 @@ const ListUser = ({ listuser }: Props) => {
                         Thông tin cá nhân
                       </h3>
                       <p className="text-gray-600 mt-2">
-                        <strong>Họ tên:</strong> {selectedUser.first_name}{" "}
+                        <strong>Họ tên:</strong> {selectedUser.firt_name}{" "}
                         {selectedUser.last_name}
                       </p>
                       <p className="text-gray-600">
@@ -212,7 +243,7 @@ const ListUser = ({ listuser }: Props) => {
                       </p>
                       <p className="text-gray-600">
                         <strong>Số điện thoại:</strong>{" "}
-                        {selectedUser.phonenumber}
+                        {selectedUser.phone_number}
                       </p>
                       <p className="text-gray-600">
                         <strong>Giới tính:</strong>{" "}
