@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 type CartItem = {
   id: string;
   product: {
@@ -18,12 +19,13 @@ type CartItem = {
     date_update: string;
   };
 };
+
 const ShopCart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [quantity, setQuantity] = useState<number[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/carts")
+    fetch("http://127.0.0.1:8000/carts")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch cart data");
@@ -38,7 +40,7 @@ const ShopCart = () => {
   }, []);
 
   const delOneCart = (cartId: string) => {
-    fetch(`http://localhost:3000/carts/${cartId}`, { method: "DELETE" })
+    fetch(`http://127.0.0.1:8000/carts/${cartId}`, { method: "DELETE" })
       .then((response) => {
         if (response.ok) {
           setCartItems((prevCartItems) =>
