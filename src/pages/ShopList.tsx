@@ -2,34 +2,46 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import apisphp from "../Service/api";
+
 const ShopList = () => {
   const [products, setProducts] = useState<TProduct[]>([]);
+  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
+  const [totalPages, setTotalPages] = useState(0); // Tổng số trang
   const [sortOption, setSortOption] = useState<string>("default");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
 
   const navigate = useNavigate();
 
   // Fetch product data from API
+  // Sử dụng API mới
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await apisphp.get("list/products");
-        setProducts(response.data.data);
+        const response = await apisphp.get(`shop/products?page=${currentPage}`);
+        setProducts(response.data.data); // Sản phẩm trên trang hiện tại
+        setTotalPages(response.data.last_page); // Tổng số trang
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
 
     fetchProducts();
-  }, []);
-  // Navigate to product detail page
+  }, [currentPage]);
+
+
+
+
+  // Điều hướng đến trang chi tiết sản phẩm
   const goToProductDetail = (id: number) => {
     navigate(`/shop-details/${id}`);
   };
+
+  // Toggle dropdown
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // Sắp xếp sản phẩm
   const sortProducts = (option: string) => {
     let sortedProducts = [...products];
 
@@ -46,9 +58,17 @@ const ShopList = () => {
 
     setProducts(sortedProducts);
   };
+
   const handleSortChange = (option: string) => {
     setSortOption(option);
     sortProducts(option);
+  };
+
+  // Xử lý phân trang
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
   };
 
   return (
@@ -61,9 +81,9 @@ const ShopList = () => {
                 <h1 className="text-title-heading">Shop_List</h1>
               </div>
               <div className="breadcrumbs">
-                <a href="index.html">Home</a>
+                <a href="/">Home</a>
                 <span className="delimiter"></span>
-                <a href="shop-grid-left.html">ShopList</a>
+                <a href="/shop-grid-left">ShopList</a>
                 <span className="delimiter"></span>Nike
               </div>
             </div>
@@ -73,6 +93,7 @@ const ShopList = () => {
             <div className="section-padding">
               <div className="section-container p-l-r">
                 <div className="row">
+                  {/* Sidebar: Brand and Feature Product */}
                   <div className="col-xl-3 col-lg-3 col-md-12 col-12 sidebar left-sidebar md-b-50">
                     {/* Block Product Categories */}
                     <div className="block block-product-cats">
@@ -83,41 +104,29 @@ const ShopList = () => {
                         <div className="product-cats-list">
                           <ul>
                             <li className="current">
-                              <a href="shop-grid-left.html">
-                                Nike <span className="count">9</span>
-                              </a>
+                              <a href="#">Nike <span className="count">9</span></a>
                             </li>
                             <li>
-                              <a href="shop-grid-left.html">
-                                Adidas <span className="count">4</span>
-                              </a>
+                              <a href="#">Adidas <span className="count">4</span></a>
                             </li>
                             <li>
-                              <a href="shop-grid-left.html">
-                                Balenciaga <span className="count">3</span>
-                              </a>
+                              <a href="#">Balenciaga <span className="count">3</span></a>
                             </li>
                             <li>
-                              <a href="shop-grid-left.html">
-                                Puma <span className="count">6</span>
-                              </a>
+                              <a href="#">Puma <span className="count">6</span></a>
                             </li>
                             <li>
-                              <a href="shop-grid-left.html">
-                                Converse <span className="count">2</span>
-                              </a>
+                              <a href="#">Converse <span className="count">2</span></a>
                             </li>
                             <li>
-                              <a href="shop-grid-left.html">
-                                Vans <span className="count">4</span>
-                              </a>
+                              <a href="#">Vans <span className="count">4</span></a>
                             </li>
                           </ul>
                         </div>
                       </div>
                     </div>
 
-                    {/* Block Products */}
+                    {/* Block Feature Products */}
                     <div className="block block-products">
                       <div className="block-title">
                         <h2>Feature Product</h2>
@@ -137,21 +146,13 @@ const ShopList = () => {
                               </a>
                               <div className="product-content">
                                 <h2 className="product-title">
-                                  <a
-                                    onClick={() =>
-                                      goToProductDetail(product.id)
-                                    }
-                                  >
+                                  <a onClick={() => goToProductDetail(product.id)}>
                                     {product.name}
                                   </a>
                                 </h2>
                                 <span className="price">
-                                  <del aria-hidden="true">
-                                    <span>${product.price}</span>
-                                  </del>
-                                  <ins>
-                                    <span>${product.price_sale}</span>
-                                  </ins>
+                                  <del>${product.price}</del>
+                                  <ins>${product.price_sale}</ins>
                                 </span>
                               </div>
                             </li>
@@ -161,11 +162,12 @@ const ShopList = () => {
                     </div>
                   </div>
 
+                  {/* Main Content: Product List */}
                   <div className="col-xl-9 col-lg-9 col-md-12 col-12">
                     <div className="products-topbar clearfix">
                       <div className="products-topbar-left">
                         <div className="products-count">
-                          Showing all {products.length} results
+                          Showing page {currentPage} of {totalPages}
                         </div>
                       </div>
                       <div className="products-topbar-right">
@@ -179,145 +181,107 @@ const ShopList = () => {
                               : sortOption}
                           </span>
                           <ul
-                            className={`sort-list dropdown-menu ${
-                              isDropdownOpen ? "show" : "hide"
-                            }`}
+                            className={`sort-list dropdown-menu ${isDropdownOpen ? "show" : "hide"
+                              }`}
                           >
                             <li
-                              className={
-                                sortOption === "default" ? "active" : ""
-                              }
+                              className={sortOption === "default" ? "active" : ""}
                               onClick={() => handleSortChange("default")}
                             >
                               <a href="#">Default sorting</a>
                             </li>
                             <li
                               className={
-                                sortOption === "price-low-to-high"
-                                  ? "active"
-                                  : ""
+                                sortOption === "price-low-to-high" ? "active" : ""
                               }
-                              onClick={() =>
-                                handleSortChange("price-low-to-high")
-                              }
+                              onClick={() => handleSortChange("price-low-to-high")}
                             >
-                              <a href="#">Từ nhỏ đến lớn</a>
+                              <a href="#">Price: Low to High</a>
                             </li>
                             <li
                               className={
-                                sortOption === "price-high-to-low"
-                                  ? "active"
-                                  : ""
+                                sortOption === "price-high-to-low" ? "active" : ""
                               }
-                              onClick={() =>
-                                handleSortChange("price-high-to-low")
-                              }
+                              onClick={() => handleSortChange("price-high-to-low")}
                             >
-                              <a href="#">Từ lớn đến nhỏ</a>
+                              <a href="#">Price: High to Low</a>
                             </li>
                           </ul>
                         </div>
                       </div>
                     </div>
 
-                    <div className="tab-content">
-                      <div
-                        className="tab-pane fade show active"
-                        id="layout-grid"
-                        role="tabpanel"
-                      >
-                        <div className="products-list grid">
-                          <div className="row">
-                            {products.map((product) => {
-                              // Giới hạn độ dài tên sản phẩm
-                              const maxLength = 25;
-                              const productName =
-                                product.name.length > maxLength
-                                  ? product.name.substring(0, maxLength) + "..."
-                                  : product.name;
-
-                              return (
-                                <div
-                                  key={product.id}
-                                  className="col-xl-4 col-lg-4 col-md-4 col-sm-6"
-                                >
-                                  <div className="product-item">
-                                    <div className="product-image">
-                                      <a
-                                        onClick={() =>
-                                          goToProductDetail(product.id)
-                                        }
-                                      >
-                                        <img
-                                          src={product.image_product}
-                                          alt={product.name}
-                                        />
-                                      </a>
-                                    </div>
-                                    <div className="products-content">
-                                      <h2 className="product-title">
-                                        <a
-                                          onClick={() =>
-                                            goToProductDetail(product.id)
-                                          }
-                                        >
-                                          {productName}
-                                        </a>
-                                      </h2>
-                                      <span className="price">
-                                        <del aria-hidden="true">
-                                          <span>${product.price}</span>
-                                        </del>
-                                        <ins>
-                                          <span>${product.price_sale}</span>
-                                        </ins>
-                                      </span>
-                                      <div className="product-action">
-                                        <a href="#" className="add-to-cart">
-                                          <span className="icon-cart"></span>
-                                        </a>
-
-                                        <a href="#" className="add-to-compare">
-                                          <span className="icon-shuffle"></span>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })}
+                    {/* Product Grid */}
+                    <div className="products-list grid">
+                      <div className="row">
+                        {products.map((product) => (
+                          <div
+                            key={product.id}
+                            className="col-xl-4 col-lg-4 col-md-4 col-sm-6"
+                          >
+                            <div className="product-item">
+                              <div className="product-image">
+                                <a onClick={() => goToProductDetail(product.id)}>
+                                  <img src={product.image_product} alt={product.name} />
+                                </a>
+                              </div>
+                              <div className="products-content">
+                                <h2 className="product-title">
+                                  <a onClick={() => goToProductDetail(product.id)}>
+                                    {product.name}
+                                  </a>
+                                </h2>
+                                <span className="price">
+                                  <del>${product.price}</del>
+                                  <ins>${product.price_sale}</ins>
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
                     </div>
 
-                    <div className="pagination-wrapper clearfix">
-                      <nav className="navigation pagination">
-                        <div className="nav-links">
-                          <a className="page-numbers prev" href="#">
-                            «
-                          </a>
-                          <a className="page-numbers" href="#">
-                            1
-                          </a>
-                          <span
-                            aria-current="page"
-                            className="page-numbers current"
-                          >
-                            2
-                          </span>
-                          <a className="page-numbers" href="#">
-                            3
-                          </a>
-                          <a className="page-numbers" href="#">
-                            4
-                          </a>
-                          <a className="page-numbers next" href="#">
-                            »
-                          </a>
-                        </div>
+                    {/* Pagination */}
+                    <div className="d-flex justify-content-center mt-4">
+                      <nav aria-label="Page navigation example">
+                        <ul className="pagination justify-content-center">
+                          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                            <button
+                              className="page-link rounded-pill shadow-sm"
+                              onClick={() => handlePageChange(currentPage - 1)}
+                              disabled={currentPage === 1}
+                            >
+                              Previous
+                            </button>
+                          </li>
+                          {Array.from({ length: totalPages }, (_, index) => (
+                            <li
+                              key={index}
+                              className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                            >
+                              <button
+                                className="page-link rounded-pill shadow-sm"
+                                onClick={() => handlePageChange(index + 1)}
+                              >
+                                {index + 1}
+                              </button>
+                            </li>
+                          ))}
+                          <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                            <button
+                              className="page-link rounded-pill shadow-sm"
+                              onClick={() => handlePageChange(currentPage + 1)}
+                              disabled={currentPage === totalPages}
+                            >
+                              Next
+                            </button>
+                          </li>
+                        </ul>
                       </nav>
                     </div>
+
+
                   </div>
                 </div>
               </div>
