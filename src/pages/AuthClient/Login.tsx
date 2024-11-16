@@ -104,7 +104,17 @@ const LoginRegister: React.FC = () => {
           setLoading(false);
         }, 2000);
       } else if (response.data.error) {
-        setFormError(response.data.error);
+        // Nếu tài khoản bị khóa
+        if (
+          response.data.error ===
+          "Your account has been locked. You cannot login."
+        ) {
+          setFormError(
+            "Tài khoản của bạn đã bị khóa do vi phạm chính sách hoặc lý do khác. Vui lòng liên hệ support."
+          );
+        } else {
+          setFormError(response.data.error); // Hiển thị lỗi khác nếu có
+        }
       }
     } catch (error: any) {
       setFormError("Thông tin tài khoản không chính xác");

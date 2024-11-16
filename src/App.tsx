@@ -63,6 +63,7 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
+import AddNewProduct from "./admin/pages/test";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -201,10 +202,11 @@ function App() {
     }
   };
 
+  // call data user
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const datauser = await apisphp.get("/user/getall/user");
+        const datauser = await apisphp.get("/user/getall");
         setUser(datauser.data.users);
       } catch (error) {
         console.log("loi lay data user", error);
@@ -214,10 +216,14 @@ function App() {
   }, []);
 
   // hàm này sử lý thêm sản phẩm
-  const handleAddProduct = (newShoe: TProduct, images: File[]) => {
+  const handleAddProduct = (
+    newShoe: TProduct,
+    images: File[],
+    imageProduct: File
+  ) => {
     console.log("Dữ liệu sản phẩm:", newShoe);
     console.log("Hình ảnh sản phẩm:", images); // In ra danh sách các ảnh
-
+    console.log("Hình ảnh sản phẩm:", imageProduct);
     (async () => {
       try {
         const formData = new FormData();
@@ -226,6 +232,9 @@ function App() {
         Object.entries(newShoe).forEach(([key, value]) => {
           formData.append(key, value as string | Blob);
         });
+
+        // Thêm ảnh chính vào FormData
+        formData.append("image_product", imageProduct);
 
         // Thêm tất cả ảnh vào FormData
         images.forEach((image) => {
@@ -532,6 +541,7 @@ function App() {
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="test" element={<AddNewProduct />} />
             <Route path="products" element={<ProductList />} />
             <Route
               path="products/add"

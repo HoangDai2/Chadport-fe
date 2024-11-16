@@ -148,7 +148,10 @@ function ProductList() {
                       {index + 1}
                     </td>
                     <td className="px-2 py-2 text-gray-700 truncate max-w-[200px]">
-                      <img src={product.image_product} alt="" />
+                      <img
+                        src={`http://127.0.0.1:8000/storage/${product.image_product}`}
+                        alt=""
+                      />
                     </td>
                     <td
                       className="px-2 py-2 cursor-pointer"
