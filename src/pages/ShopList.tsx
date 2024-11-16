@@ -13,7 +13,6 @@ const ShopList = () => {
   const navigate = useNavigate();
 
   // Fetch product data from API
-  // Sử dụng API mới
   useEffect(() => {
     const fetchProducts = async () => {
       try {
