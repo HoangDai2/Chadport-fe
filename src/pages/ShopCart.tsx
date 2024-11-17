@@ -25,7 +25,7 @@ const ShopCart = () => {
   const [quantity, setQuantity] = useState<number[]>([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/user/cart")
+    fetch("http://127.0.0.1:8000/cart")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch cart data");
@@ -40,7 +40,7 @@ const ShopCart = () => {
   }, []);
 
   const delOneCart = (cartId: string) => {
-    fetch(`http://127.0.0.1:8000/carts/${cartId}`, { method: "DELETE" })
+    fetch(`http://127.0.0.1:8000/cart/${cartId}`, { method: "DELETE" })
       .then((response) => {
         if (response.ok) {
           setCartItems((prevCartItems) =>

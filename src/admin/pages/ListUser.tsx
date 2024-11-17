@@ -86,7 +86,7 @@ const ListUser = ({ listuser }: Props) => {
         {/* Hiển thị thông báo */}
         {message && (
           <div
-            className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transition-all duration-500 transform ${
+className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transition-all duration-500 transform ${
               currentAction === "inactive" ? "bg-red-500" : "bg-green-500"
             }`}
             style={{ zIndex: 1000 }}
@@ -152,7 +152,7 @@ const ListUser = ({ listuser }: Props) => {
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth="2"
-                                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 20h.01"
+d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 20h.01"
                                 />
                               </svg>
                             </div>
@@ -211,7 +211,7 @@ const ListUser = ({ listuser }: Props) => {
                                 className="flex items-center justify-center text-gray-500 hover:text-green-500 transition duration-150 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500 rounded-md"
                                 disabled={isLoading}
                               >
-                                <svg
+<svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 448 512"
                                   className="w-5 h-5"
@@ -267,7 +267,7 @@ const ListUser = ({ listuser }: Props) => {
               </div>
 
               <div className="flex space-x-8">
-                {/* User Image */}
+{/* User Image */}
                 <div className="w-1/3 flex justify-center items-center">
                   {selectedUser.image_user ? (
                     <img
@@ -327,7 +327,7 @@ const ListUser = ({ listuser }: Props) => {
                       <p className="text-gray-600 mt-2">
                         <strong>Trạng thái:</strong>
                         <span
-                          className={`${
+className={`${
                             selectedUser.status === "active"
                               ? "text-green-600"
                               : selectedUser.status === "inactive"
