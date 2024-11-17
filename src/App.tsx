@@ -97,31 +97,34 @@ function App() {
   }, []);
   const addToCart = async (product: TProduct) => {
     try {
-      const cartResponse = await fetch("http://localhost:3000/carts");
-      const cartItems = await cartResponse.json();
-      const isProductInCart = cartItems.some(
-        (item: { product: TProduct }) => item.product.id === product.id
-      );
-      if (isProductInCart) {
-        toast.info(`${product.name} đã có trong giỏ hàng!`, {
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        return;
-      }
+      // const cartResponse = await fetch("http://127.0.0.1:8000/api/user/cart");
+      // const cartItems = await cartResponse.json();
+      // const isProductInCart = cartItems.some(
+      //   (item: { product: TProduct }) => item.product.id === product.id
+      // );
+      // if (isProductInCart) {
+      //   toast.info(`${product.name} đã có trong giỏ hàng!`, {
+      //     position: "top-right",
+      //     autoClose: 1000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //   });
+      //   return;
+      // }
 
-      const response = await fetch("http://localhost:3000/carts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ product }),
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/user/add_to_cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ product }),
+        }
+      );
 
       if (response.ok) {
         setCarCount((prevCount) => prevCount + 1);

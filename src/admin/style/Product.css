@@ -1,0 +1,32 @@
+/* Thêm style cho phân trang */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-item {
+  margin: 0 5px;
+}
+
+.page-item .page-link {
+  border-radius: 30px;
+  padding: 8px 15px;
+  font-size: 16px;
+}
+
+.page-item.disabled .page-link {
+  cursor: not-allowed;
+}
+
+.page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.page-item .page-link:hover {
+  background-color: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
