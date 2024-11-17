@@ -4,8 +4,10 @@ import Tcategory from "../../Types/TCategories";
 import { ToastContainer, toast } from "react-toastify";
 import apisphp from "../../Service/api";
 import "../style/Category.css";
-
-const CategoriesList = () => {
+type Props = {
+  listcategories: Tcategory[];
+};
+const CategoriesList = ({ listcategories }: Props) => {
   const [categories, setCategories] = useState<Tcategory[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [currentAction, setCurrentAction] = useState<"Delete" | null>(null);
@@ -19,7 +21,9 @@ const CategoriesList = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await apisphp.get(`/categories?page=${currentPage}&per_page=${perPage}`);
+        const response = await apisphp.get(
+          `/categories?page=${currentPage}&per_page=${perPage}`
+        );
 
         if (response.data) {
           setCategories(response.data.data);
@@ -75,8 +79,9 @@ const CategoriesList = () => {
 
         {message && (
           <div
-            className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transition-all duration-500 transform ${currentAction === "Delete" ? "bg-green-500" : "bg-red-500"
-              } fade-in`}
+            className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transition-all duration-500 transform ${
+              currentAction === "Delete" ? "bg-green-500" : "bg-red-500"
+            } fade-in`}
             style={{ zIndex: 1000 }}
           >
             {message}
@@ -91,8 +96,12 @@ const CategoriesList = () => {
                   <th className="px-2 py-2 font-medium text-gray-900">STT</th>
                   <th className="px-2 py-2 font-medium text-gray-900">Image</th>
                   <th className="px-2 py-2 font-medium text-gray-900">Name</th>
-                  <th className="px-2 py-2 font-medium text-gray-900">Status</th>
-                  <th className="px-2 py-2 font-medium text-gray-900">Action</th>
+                  <th className="px-2 py-2 font-medium text-gray-900">
+                    Status
+                  </th>
+                  <th className="px-2 py-2 font-medium text-gray-900">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -108,8 +117,11 @@ const CategoriesList = () => {
                     </td>
                     <td className="px-2 py-2 text-gray-700">{category.name}</td>
                     <td
-                      className={`px-2 py-2 ${category.status === "active" ? "text-green-500" : "text-red-500"
-                        }`}
+                      className={`px-2 py-2 ${
+                        category.status === "active"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
                     >
                       {category.status}
                     </td>
@@ -140,7 +152,9 @@ const CategoriesList = () => {
             <nav aria-label="Page navigation">
               <ul className="pagination justify-content-center">
                 {/* Previous Button */}
-                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                <li
+                  className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+                >
                   <button
                     className="page-link rounded-pill shadow-sm"
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -154,7 +168,9 @@ const CategoriesList = () => {
                 {Array.from({ length: totalPages }, (_, index) => (
                   <li
                     key={index + 1}
-                    className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                    className={`page-item ${
+                      currentPage === index + 1 ? "active" : ""
+                    }`}
                   >
                     <button
                       className="page-link rounded-pill shadow-sm"
@@ -166,7 +182,11 @@ const CategoriesList = () => {
                 ))}
 
                 {/* Next Button */}
-                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "disabled" : ""
+                  }`}
+                >
                   <button
                     className="page-link rounded-pill shadow-sm"
                     onClick={() => handlePageChange(currentPage + 1)}

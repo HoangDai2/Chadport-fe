@@ -63,7 +63,6 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
-import AddNewProduct from "./admin/pages/test";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -544,7 +543,6 @@ function App() {
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="orders" element={<Orders />} />
-            <Route path="test" element={<AddNewProduct />} />
             <Route path="products" element={<ProductList />} />
             <Route
               path="products/add"

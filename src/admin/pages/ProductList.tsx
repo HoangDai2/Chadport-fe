@@ -7,9 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Tcategory from "../../Types/TCategories";
 import apisphp from "../../Service/api";
 import Modal from "react-modal";
-import "../style/Product.css"
-import "bootstrap-icons/font/bootstrap-icons.css";
-
+import "../style/Product.css";
+// import "bootstrap-icons/font/bootstrap-icons.css";
 
 Modal.setAppElement("#root");
 
@@ -82,7 +81,6 @@ function ProductList() {
   const closeLightbox = () => {
     setIsLightboxOpen(false);
   };
-
   const goToNextImage = () => {
     setCurrentImageIndex((currentImageIndex + 1) % selectedImages.length);
   };
@@ -100,135 +98,69 @@ function ProductList() {
   };
 
   return (
-    <section className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="text-primary">Product List</h2>
-        <Link to="/admin/products/add" className="btn btn-success">
-          Add New Product
-        </Link>
+    <section className="conten_admin">
+      <div className="header_table">
+        <h2>Danh Sách Người Dùng</h2>
       </div>
 
       {message && (
         <div
-          className={`alert ${currentAction === "Delete" ? "alert-success" : "alert-danger"
-            } alert-dismissible fade show`}
-          role="alert"
+          className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transition-all duration-500 transform ${
+            currentAction === "Delete" ? "bg-green-500" : "bg-red-500"
+          } fade-in`}
+          style={{ zIndex: 1000 }}
         >
           {message}
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-          ></button>
         </div>
       )}
 
-      <table className="table table-bordered table-hover table-responsive">
-        <thead className="table-light">
-          <tr>
-            <th>#</th>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Quantity</th>
-            <th>Category</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product, index) => (
-            <tr key={product.id}>
-              <td>{index + 1 + (currentPage - 1) * 10}</td>
-              <td>
-                <img
-                  src={product.image_product}
-                  alt="Product"
-                  className="img-thumbnail"
-                  style={{ width: "80px", height: "80px" }}
-                />
-              </td>
-              <td>{product.name}</td>
-              <td>${product.price}</td>
-              <td>{product.status}</td>
-              <td>{product.quantity}</td>
-              <td>{getCategoryName(product.cat_id)}</td>
-              <td>
-                <div className="d-flex gap-2">
-                  <Link
-                    to={`/admin/products/edit/${product.id}`}
-                    className="btn btn-success btn-sm"
-                  >
-                    Update
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(product.id)}
-                    className="btn btn-danger btn-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="rounded-lg border border-gray-200">
+        <div className="overflow-x-auto max-w-full rounded-t-lg">
+          <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+            <thead className="ltr:text-left rtl:text-right">
+              <tr>
+                <th className="px-2 py-2 font-medium text-gray-900">STT</th>
+                <th className="px-2 py-2 font-medium text-gray-900">
+                  Image Product
+                </th>
+                <th className="px-2 py-2 font-medium text-gray-900">
+                  Image Description
+                </th>
+                <th className="px-2 py-2 font-medium text-gray-900">Name</th>
+                <th className="px-2 py-2 font-medium text-gray-900">Price</th>
+                <th className="px-2 py-2 font-medium text-gray-900">Status</th>
+                <th className="px-2 py-2 font-medium text-gray-900">
+                  Quantity
+                </th>
+                <th className="px-2 py-2 font-medium text-gray-900">
+                  Description
+                </th>
+                <th className="px-2 py-2 font-medium text-gray-900">
+                  Categories
+                </th>
+                <th className="px-2 py-2 font-medium text-gray-900">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {products.map((product, index) => {
+                let images: string[] = [];
+                if (typeof product.image_description === "string") {
+                  try {
+                    images = JSON.parse(product.image_description);
+                  } catch (error) {
+                    console.error("Error parsing image_description:", error);
+                  }
+                } else if (Array.isArray(product.image_description)) {
+                  images = product.image_description;
+                }
 
-      {/* Custom Pagination */}
-      <nav aria-label="Page navigation" className="mt-4">
-        <ul className="pagination justify-content-center">
-          {/* Previous Button */}
-          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <button
-              className="page-link rounded-pill shadow-sm"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-          </li>
-
-          {/* Page Number Buttons */}
-          {Array.from({ length: lastPage }, (_, index) => (
-            <li
-              key={index + 1}
-              className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-            >
-              <button
-                className="page-link rounded-pill shadow-sm"
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            </li>
-          ))}
-
-          {/* Next Button */}
-          <li className={`page-item ${currentPage === lastPage ? "disabled" : ""}`}>
-            <button
-              className="page-link rounded-pill shadow-sm"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === lastPage}
-            >
-              Next
-            </button>
-          </li>
-        </ul>
-      </nav>
-
-
-<<<<<<< HEAD
                 return (
                   <tr key={product.id} className="border-b">
                     <td className="px-2 py-2 text-gray-900 truncate max-w-xs">
                       {index + 1}
                     </td>
                     <td className="px-2 py-2 text-gray-700 truncate max-w-[200px]">
-                      <img
-                        src={`http://127.0.0.1:8000/storage/${product.image_product}`}
-                        alt=""
-                      />
+                      <img src={product.image_product} alt="" />
                     </td>
                     <td
                       className="px-2 py-2 cursor-pointer"
@@ -283,42 +215,41 @@ function ProductList() {
           </table>
         </div>
       </div>
-=======
->>>>>>> 0ce1a5bfcf073422e097330bca357edeb053a436
 
       {/* Lightbox Modal */}
       {isLightboxOpen && (
         <Modal
           isOpen={isLightboxOpen}
           onRequestClose={closeLightbox}
-          className="modal-dialog-centered modal-lg"
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75"
         >
-          <div className="modal-content">
-            <div className="modal-body">
-              <button
-                onClick={closeLightbox}
-                className="btn-close position-absolute top-0 end-0 m-2"
-                aria-label="Close"
-              ></button>
-              <img
-                src={`http://127.0.0.1:8000/storage/${selectedImages[currentImageIndex]}`}
-                alt="Product"
-                className="img-fluid mx-auto d-block"
-              />
-              <div className="d-flex justify-content-between mt-2">
-                <button className="btn btn-secondary" onClick={goToPreviousImage}>
-                  &lt; Previous
-                </button>
-                <button className="btn btn-secondary" onClick={goToNextImage}>
-                  Next &gt;
-                </button>
-              </div>
-            </div>
+          <div className="relative">
+            <button
+              onClick={closeLightbox}
+              className="absolute top-2 right-2 text-black text-2xl font-bold"
+            >
+              &times;
+            </button>
+            <button
+              onClick={goToPreviousImage}
+              className="absolute top-1/2 left-2 text-black text-2xl font-bold transform -translate-y-1/2"
+            >
+              &lt;
+            </button>
+            <img
+              src={`http://127.0.0.1:8000/storage/${selectedImages[currentImageIndex]}`}
+              alt="Product image"
+              className="max-w-full max-h-screen"
+            />
+            <button
+              onClick={goToNextImage}
+              className="absolute top-1/2 right-2 text-black text-2xl font-bold transform -translate-y-1/2"
+            >
+              &gt;
+            </button>
           </div>
         </Modal>
       )}
-
-      <ToastContainer />
     </section>
   );
 }
