@@ -76,42 +76,52 @@ const LoginRegister: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Xử lý đăng nhập
-  const handleLoginSubmit = async (
-    values: Partial<TUser>,
-    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
-  ) => {
-    setLoading(true);
-    setFormError("");
+ // Xử lý đăng nhập
+const handleLoginSubmit = async (
+  values: Partial<TUser>,
+  { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
+) => {
+  setLoading(true);
+  setFormError("");
 
-    try {
-      const response = await apisphp.post("/user/login", {
-        email: values.email,
-        password: values.password,
-      });
-      console.log(response.data);
-      if (response.data.message === "Successfully logged in") {
-        const userData = response.data.data; //  API trả về dữ liệu người dùng
-        const token = response.data.token;
-        setUser(userData); // Lưu thông tin người dùng vào context
-        // console.log(token);
+  try {
+    const response = await apisphp.post("/user/login", {
+      email: values.email,
+      password: values.password,
+    });
 
-        // Lưu token vào cookie (expires: 1 ngày, secure nếu dùng HTTPS)
-        localStorage.setItem("jwt_token", token);
+    if (response.data.message === "Successfully logged in") {
+      const userData = response.data.data; // API trả về dữ liệu người dùng
+      const token = response.data.token;
 
-        setTimeout(() => {
-          navigate("/");
-          setLoading(false);
-        }, 2000);
-      } else if (response.data.error) {
-        setFormError(response.data.error);
+      // Lưu thông tin người dùng vào context
+      setUser(userData);
+
+      // Lưu token vào localStorage
+      localStorage.setItem("jwt_token", token);
+
+      // Điều hướng dựa trên role_id
+      if ([1, 2, 3].includes(userData.role_id)) {
+        // Admin
+        navigate("/admin");
+      } else if (userData.role_id === 4) {
+        // User
+        navigate("/");
+      } else {
+        // Role không xác định
+        setFormError("Tài khoản không có quyền truy cập.");
       }
-    } catch (error: any) {
-      setFormError("Thông tin tài khoản không chính xác");
+    } else if (response.data.error) {
+      setFormError(response.data.error);
     }
-    setLoading(false);
-    setSubmitting(false);
-  };
+  } catch (error: any) {
+    setFormError("Thông tin tài khoản không chính xác.");
+  }
+
+  setLoading(false);
+  setSubmitting(false);
+};
+
 
   // Xử lý đăng ký
   const handleRegisterSubmit = async (
