@@ -11,8 +11,8 @@ type TUser = {
   image_user: string;
   phone_number: string;
   user_id: number;
-  date_create: string;
-  date_update: string;
-  id: string;
+  created_at: string;
+  updated_at: string;
+  id: number;
 };
 export default TUser;

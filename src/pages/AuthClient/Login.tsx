@@ -94,6 +94,7 @@ const handleLoginSubmit = async (
       const userData = response.data.data; // API trả về dữ liệu người dùng
       const token = response.data.token;
 
+<<<<<<< HEAD
       // Lưu thông tin người dùng vào context
       setUser(userData);
 
@@ -110,6 +111,24 @@ const handleLoginSubmit = async (
       } else {
         // Role không xác định
         setFormError("Tài khoản không có quyền truy cập.");
+=======
+        setTimeout(() => {
+          navigate("/");
+          setLoading(false);
+        }, 2000);
+      } else if (response.data.error) {
+        // Nếu tài khoản bị khóa
+        if (
+          response.data.error ===
+          "Your account has been locked. You cannot login."
+        ) {
+          setFormError(
+            "Tài khoản của bạn đã bị khóa do vi phạm chính sách hoặc lý do khác. Vui lòng liên hệ support."
+          );
+        } else {
+          setFormError(response.data.error); // Hiển thị lỗi khác nếu có
+        }
+>>>>>>> fc45bee1230442370a69aba41a966cfa90423426
       }
     } else if (response.data.error) {
       setFormError(response.data.error);
