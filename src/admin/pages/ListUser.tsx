@@ -104,7 +104,7 @@ const ListUser = ({ listuser }: Props) => {
 
         <div className="rounded-lg border border-gray-200">
           <div className="overflow-x-auto max-w-full rounded-t-lg">
-            <div className="p-4">
+            <div>
               <table className="w-full text-left border-separate border-spacing-0">
                 <thead>
                   <tr className="bg-gray-100">

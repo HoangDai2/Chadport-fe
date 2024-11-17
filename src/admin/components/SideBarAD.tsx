@@ -358,16 +358,14 @@ const SideBarAD = (props: Props) => {
                   <li className="flex items-center">
                     <span className="w-1 h-1 bg-black rounded-full mr-2"></span>
                     <a
-                      href="/admin/shipping-settings"
+                      href="/admin/loginad"
                       onClick={() =>
                         handleLinkClick("/admin/shipping-settings")
                       }
                       style={{
                         fontSize: "13px",
                         color:
-                          activeLink === "/admin/shipping-settings"
-                            ? "blue"
-                            : "black",
+                          activeLink === "/admin/loginad" ? "blue" : "black",
                       }}
                     >
                       Shipping Settings
