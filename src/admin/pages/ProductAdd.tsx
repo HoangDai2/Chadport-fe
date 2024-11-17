@@ -7,41 +7,19 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import Tcategory from "../../Types/TCategories";
 import { useForm } from "react-hook-form";
-import { FaSave, FaCheck } from "react-icons/fa";
-import { AiFillProduct } from "react-icons/ai";
-
 type Props = {
-  onAdd: (newShoe: TProduct, images: File[], imageProduct: File) => void;
+  onAdd: (newShoe: TProduct, images: File[]) => void;
   categories: Tcategory[];
 };
 function ProductAdd({ onAdd, categories }: Props) {
   const navigate = useNavigate();
   const [images, setImages] = useState<File[]>([]);
-  const [imageProduct, setImageProduct] = useState<File | null>(null); // State cho ảnh chính
-  const [imageProductPreview, setImageProductPreview] = useState<string | null>(
-    null
-  ); // State xem trước ảnh chính
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [categoryImage, setCategoryImage] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     formState: {},
   } = useForm<TProduct>({});
-
-  // Hàm xử lý khi chọn ảnh chính
-  const handleImageProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      // Kiểm tra xem file có phải là ảnh
-      setImageProduct(file);
-      setImageProductPreview(URL.createObjectURL(file)); // Xem trước ảnh
-    } else {
-      alert(
-        "Vui lòng chọn một file ảnh hợp lệ (JPEG, PNG, JPG, GIF, hoặc WebP)"
-      );
-    }
-  };
 
   // hàm này xử lí khi chọn ảnh trong input
   const onFileUploadHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,15 +48,7 @@ function ProductAdd({ onAdd, categories }: Props) {
     return imagePreviews.map((preview, index) => (
       <div
         key={index}
-        style={{
-          position: "relative",
-          width: "100%", // Thẻ cha có kích thước cố định, 100% của thẻ chứa
-          maxWidth: "90px", // Kích thước tối đa của thẻ chứa ảnh
-          height: "90px", // Chiều cao cố định cho ảnh
-          padding: "5px",
-          overflow: "hidden", // Ẩn phần ảnh bị tràn ra ngoài
-          borderRadius: "8px", // Bo góc cho thẻ chứa
-        }}
+        style={{ position: "relative", width: "100%", padding: "10px" }}
       >
         <i
           className="fa fa-times-circle"
@@ -86,18 +56,16 @@ function ProductAdd({ onAdd, categories }: Props) {
           style={{
             position: "absolute",
             top: "5px",
-            right: "5px", // Căn chỉnh lại vị trí nút xóa
+            right: "196px",
             fontSize: "24px",
             color: "gray",
             cursor: "pointer",
           }}
         ></i>
-
         <img
-          key={index}
           src={preview}
           alt={`Preview ${index}`}
-          className="w-full h-full object-cover rounded-lg" // Sử dụng object-cover để ảnh chiếm toàn bộ không gian thẻ
+          style={{ width: "40%", height: "100%", objectFit: "cover" }}
         />
       </div>
     ));
@@ -106,319 +74,236 @@ function ProductAdd({ onAdd, categories }: Props) {
   // Gửi dữ liệu sản phẩm và ảnh lên server
   const onSubmit = async (data: TProduct) => {
     try {
-      await onAdd(data, images, imageProduct!); // Truyền TProduct và images riêng biệt vào onAdd
+      await onAdd(data, images); // Truyền TProduct và images riêng biệt vào onAdd
     } catch (error) {
       console.error("Error adding product:", error);
     }
   };
 
-  // hàm này lấy dữ liệu ảnh categories
-  const handleCategoryChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const selectedCategoryId = event.target.value;
-    const imageUrl = selectedCategoryId
-      ? categories.find(
-          (category) => category.id === Number(selectedCategoryId)
-        )?.imageURL ?? null
-      : null;
-    setCategoryImage(imageUrl);
-    console.log(imageUrl);
-  };
-
-  // fake;
-  const [activeSize, setActiveSize] = useState(null);
-
-  const handleSizeClick = (size: any) => {
-    setActiveSize(size);
-  };
-
   return (
-    <div className="p-8 bg-gray-50 min-h-screen flex justify-center">
-      <form action="" className="w-[100%]" onSubmit={handleSubmit(onSubmit)}>
-        {/* nút thêm sản phẩm */}
-        <div className="grid grid-cols-4 grid-rows-1 gap-4 p-4">
-          {/* Ô đầu tiên */}
-          <div className=" flex items-center text-black font-bold text-[25px]">
-            <AiFillProduct className="mr-2  " />
-            Add New Product
-          </div>
-
-          {/* Ô thứ hai - đặt tại vị trí riêng theo col-start và col-span */}
-          <div className="col-span-2 col-start-4 flex space-x-4">
-            <button className="flex items-center border border-gray-300 text-gray-700 py-2 px-4 rounded-full text-sm font-medium">
-              <FaSave className="mr-2" />
-              Save Draft
-            </button>
-
-            <button className="flex items-center bg-black text-white py-2 px-4 rounded-full text-sm font-medium">
-              <FaCheck className="mr-2" />
-              Add Product
-            </button>
+    <div className="container mt-5">
+      <h1 className="mb-4">Add Product</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="row mb-3">
+          <label htmlFor="name" className="col-md-4 col-form-label text-start">
+            Name
+          </label>
+          <div className="col-md-8">
+            <input
+              type="text"
+              className="form-control"
+              id="name"
+              required
+              {...register("name", { required: true })}
+            />
           </div>
         </div>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* General Information */}
-          <div className="p-6 bg-white rounded-lg  text-left">
-            <h2 className="text-lg font-semibold mb-5 text-gray-800">
-              Thông tin chung
-            </h2>
-            {/* Name Product */}
-            <div className="mb-5">
-              <label className="block text-gray-600 text-sm font-medium mb-1">
-                Name Product
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                placeholder="Nhập Name Products"
-                id="name"
-                required
-                {...register("name", { required: true })}
-              />
-            </div>
-
-            {/* title */}
-            <div className="flex space-x-4 mb-5">
-              {/* Ô Title Product */}
-              <div className="flex-1">
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Title Product
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="Nhập Title Product"
-                  id="title"
-                  {...register("title", { required: true })}
-                  required
-                />
-              </div>
-
-              {/* Ô Status */}
-              <div className="flex-1">
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Status
-                </label>
-                <select
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  id="status"
-                  {...register("status", { required: true })}
-                  required
-                >
-                  <option value="">Chọn trạng thái</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Description Product */}
-            <div className="mb-5">
-              <label className="block text-gray-600 text-sm font-medium mb-1">
-                Description Product
-              </label>
-              <textarea
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                rows={4}
-                placeholder="Nhập Mô tả sản phẩm"
-                id="description"
-                {...register("description", { required: true })}
-                required
-              ></textarea>
-            </div>
-            {/* Size  */}
-            <div className="flex items-start justify-between space-x-6">
-              {/* Size Section */}
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Size
-                </label>
-                <p className="text-gray-400 text-xs mb-2">
-                  Pick Available Size
-                </p>
-                <div className="flex space-x-2">
-                  {["XS", "S", "M", "XL", "XXL"].map((size, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSizeClick(size)}
-                      className={`px-4 py-2 border rounded-lg text-sm font-medium cursor-pointer ${
-                        activeSize === size
-                          ? "bg-black text-white border-green-500"
-                          : "bg-gray-100 text-gray-600 border-gray-300"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+        <div className="row mb-3">
+          <label htmlFor="title" className="col-md-4 col-form-label text-start">
+            Title
+          </label>
+          <div className="col-md-8">
+            <input
+              type="text"
+              className="form-control"
+              id="title"
+              {...register("title", { required: true })}
+              required
+            />
           </div>
-
-          {/* Upload Image */}
-          <div className="p-6 bg-white rounded-lg  text-left">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              Upload Img
-            </h2>
-
-            {/* Main Image Display */}
-            <div className="mb-4">
-              <div className="w-full h-[26rem] bg-gray-100 rounded-lg flex items-center justify-center relative border-2 border-dashed border-gray-300">
-                {imageProductPreview ? (
-                  <img
-                    src={imageProductPreview}
-                    alt="Selected"
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                ) : (
-                  <div className="text-center ">
-                    <span className="text-gray-400 text-4xl  ">+</span>
-                  </div>
-                )}
-                <input
-                  type="file"
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  id="image_product"
-                  {...register("image_product", { required: true })}
-                  onChange={handleImageProductChange}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Thumbnails */}
-            <div className="flex space-x-4">
-              {/* Nút chọn ảnh */}
-              <div className="relative">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={onFileUploadHandle}
-                  className="absolute opacity-0 cursor-pointer"
-                  id="image_description"
-                />
-                <label
-                  htmlFor="image_description"
-                  className="flex items-center justify-center w-24 h-24 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer"
-                >
-                  <span className="text-gray-400 text-3xl">+</span>
-                </label>
-              </div>
-
-              {/* Phần hiển thị ảnh */}
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="price" className="col-md-4 col-form-label text-start">
+            Price
+          </label>
+          <div className="col-md-8">
+            <input
+              type="number"
+              className="form-control"
+              id="price"
+              {...register("price", { required: true })}
+              required
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label
+            htmlFor="price_sale"
+            className="col-md-4 col-form-label text-start"
+          >
+            Price Sale
+          </label>
+          <div className="col-md-8">
+            <input
+              type="number"
+              className="form-control"
+              id="price_sale"
+              {...register("price_sale", { required: true })}
+              required
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label
+            htmlFor="status"
+            className="col-md-4 col-form-label text-start"
+          >
+            Status
+          </label>
+          <div className="col-md-8">
+            <select
+              className="form-select"
+              id="status"
+              {...register("status", { required: true })}
+              required
+            >
+              <option value="inactive">inactive</option>
+              <option value="active">active</option>
+            </select>
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label
+            htmlFor="quantity"
+            className="col-md-4 col-form-label text-start"
+          >
+            Quantity
+          </label>
+          <div className="col-md-8">
+            <input
+              type="number"
+              className="form-control"
+              id="quantity"
+              {...register("quantity", { required: true })}
+              required
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label
+            htmlFor="description"
+            className="col-md-4 col-form-label text-start"
+          >
+            Description
+          </label>
+          <div className="col-md-8">
+            <textarea
+              className="form-control"
+              id="description"
+              {...register("description", { required: true })}
+              required
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="type" className="col-md-4 col-form-label text-start">
+            Type
+          </label>
+          <div className="col-md-8">
+            <input type="text" className="form-control" id="type" required />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label
+            htmlFor="image_product"
+            className="col-md-4 col-form-label text-start"
+          >
+            Image URL
+          </label>
+          <div className="col-md-8">
+            <input
+              type="text"
+              className="form-control"
+              id="image_product"
+              {...register("image_product", { required: true })}
+              required
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label
+            htmlFor="image_product"
+            className="col-md-4 col-form-label text-start"
+          >
+            Image Description
+          </label>
+          <div className="col-md-8">
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              {...register("image_description", { required: true })}
+              className="form-control"
+              id="image_description"
+              onChange={onFileUploadHandle}
+            />
+            <div
+              className="row"
+              style={{
+                padding: "25px",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "10px",
+              }}
+            >
               {renderImagePreviews().map((imageElement, index) => (
                 <div
                   key={index}
-                  className="relative w-[90px] h-[90px] bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center"
-                  style={{ padding: "5px" }} // Điều chỉnh khoảng cách trong thẻ chứa
+                  style={{
+                    flexBasis: "360px",
+                    flexGrow: 0,
+                    flexShrink: 0,
+                    padding: "10px",
+                    boxSizing: "border-box",
+                  }}
                 >
-                  {imageElement}
+                  {imageElement}{" "}
                 </div>
               ))}
             </div>
           </div>
-
-          {/* giá và số lượng */}
-          <div className="p-6 bg-white rounded-lg  text-left">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              Giá và Số Lượng
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Giá cơ bản
-                </label>
-                <input
-                  type="number"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="77"
-                  id="price"
-                  {...register("price", { required: true })}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Hàng tồn kho
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="$47.55"
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Giảm giá
-                </label>
-                <input
-                  type="number"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="10%"
-                  id="price_sale"
-                  {...register("price_sale", { required: true })}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Số Lượng
-                </label>
-                <input
-                  type="number"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="Chinese New Year Discount"
-                  id="quantity"
-                  {...register("quantity", { required: true })}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Category */}
-          <div className="p-6 bg-white rounded-lg text-left">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              Category
-            </h2>
-            <div className="mb-4">
-              <label className="block text-gray-600 text-sm font-medium mb-1">
-                Product Category
-              </label>
-              <select
-                className="form-select"
-                id="category"
-                {...register("cat_id", { required: true })}
-                required
-                onChange={handleCategoryChange}
-              >
-                <option value="">Chọn danh mục</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Hiển thị ảnh của category nếu có */}
-            {categoryImage ? (
-              <div className="mt-4">
-                <img
-                  src={categoryImage}
-                  alt="Category"
-                  className="w-full h-auto"
-                />
-              </div>
-            ) : (
-              <div className="mt-4 text-gray-500">No image available</div> // Thông báo khi không có ảnh
-            )}
+        </div>
+        <div className="row mb-3">
+          <label
+            htmlFor="category"
+            className="col-md-4 col-form-label text-start"
+          >
+            Select Category
+          </label>
+          <div className="col-md-8">
+            <select
+              className="form-select"
+              id="category"
+              {...register("cat_id", { required: true })} // Cập nhật danh mục khi chọn
+              required
+            >
+              <option value="">Chọn danh mục</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
+
+        <div className="row mb-3">
+          <button type="submit" className="btn btn-primary ">
+            Add Product
+          </button>
+        </div>
       </form>
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }

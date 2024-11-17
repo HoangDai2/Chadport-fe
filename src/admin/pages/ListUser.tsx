@@ -1,55 +1,17 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-=======
 import React, { useEffect, useState } from "react";
->>>>>>> fc45bee1230442370a69aba41a966cfa90423426
 import TUser from "../../Types/TUsers";
 import axios from "axios";
-
+import apisphp from "../../Service/api";
 type Props = {
-  currentUserRole: number; // Role của người dùng hiện tại
+  listuser: TUser[];
 };
 
-const ListUser = ({ currentUserRole }: Props) => {
-  const [users, setUsers] = useState<TUser[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+const ListUser = ({ listuser }: Props) => {
+  const [users, setUsers] = useState(listuser); // Đảm bảo state 'users' là state được dùng để hiển thị danh sách
+  const [isLoading, setIsLoading] = useState(false); // Trạng thái chờ khi gọi API
+  const [message, setMessage] = useState<string | null>(null); // Trạng thái hiển thị thông báo
   const [currentAction, setCurrentAction] = useState<
     "active" | "inactive" | null
-<<<<<<< HEAD
-  >(null);
-
-  useEffect(() => {
-    // Gọi API lấy danh sách người dùng
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/users");
-        if (response.status === 200) {
-          setUsers(response.data);
-        }
-      } catch (error) {
-        console.error("Lỗi khi gọi API:", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  const handleLockUnlock = async (userId: number, action: "active" | "inactive") => {
-    if (currentUserRole !== 1) {
-      // Chỉ Admin mới có quyền
-      setMessage("Bạn không có quyền thực hiện hành động này!");
-      setTimeout(() => setMessage(null), 4000);
-      return;
-    }
-
-    setIsLoading(true);
-    setCurrentAction(action);
-
-    try {
-      const response = await axios.patch(`http://127.0.0.1:8000/users/${userId}`, {
-        status: action,
-=======
   >(null); // Trạng thái hành động hiện tại
   const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,38 +30,26 @@ const ListUser = ({ currentUserRole }: Props) => {
     try {
       const response = await apisphp.patch(`/user/status/${userId}`, {
         status: action, // Cập nhật status mới
->>>>>>> fc45bee1230442370a69aba41a966cfa90423426
       });
       console.log(response);
 
       if (response.status === 200) {
-<<<<<<< HEAD
-        const updatedUsers = users.map((user) =>
-          user.user_id === userId ? { ...user, status: action } : user
-        );
-        setUsers(updatedUsers);
-=======
         // Lấy lại dữ liệu người dùng từ server sau khi thay đổi trạng thái
         const updatedUsersResponse = await apisphp.get("/user/getall");
         setUsers(updatedUsersResponse.data); // Cập nhật danh sách người dùng từ server
 
         // Hiển thị thông báo ngay lập tức
->>>>>>> fc45bee1230442370a69aba41a966cfa90423426
         setMessage(
           `Tài khoản ${
             action === "inactive" ? "đã bị khóa" : "đã được mở khóa"
           } thành công!`
         );
-<<<<<<< HEAD
-        setTimeout(() => setMessage(null), 4000);
-=======
 
         // Ẩn thông báo sau 3 giây
         setTimeout(() => {
           setMessage(null);
           window.location.reload();
         }, 2000);
->>>>>>> fc45bee1230442370a69aba41a966cfa90423426
       } else {
         setMessage("Có lỗi xảy ra!");
       }
@@ -107,12 +57,10 @@ const ListUser = ({ currentUserRole }: Props) => {
       console.error("Lỗi khi gọi API:", error);
       setMessage("Không thể khóa/mở khóa tài khoản. Vui lòng thử lại!");
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Dừng trạng thái chờ
     }
   };
 
-<<<<<<< HEAD
-=======
   // menu con nút unlock và lock
   const toggleDropdown = (userId: any) => {
     setSelectedUserId(selectedUserId === userId ? null : userId);
@@ -128,7 +76,6 @@ const ListUser = ({ currentUserRole }: Props) => {
     setSelectedUser(null);
     setIsModalOpen(false);
   };
->>>>>>> fc45bee1230442370a69aba41a966cfa90423426
   return (
     <>
       <section className="conten_admin">
@@ -136,17 +83,14 @@ const ListUser = ({ currentUserRole }: Props) => {
           <h2>Danh Sách Người Dùng</h2>
         </div>
 
+        {/* Hiển thị thông báo */}
         {message && (
-<<<<<<< HEAD
-          <div className={`alert-message ${currentAction === "inactive" ? "bg-red-500" : "bg-green-500"} text-white`}>
-=======
           <div
-            className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transition-all duration-500 transform ${
+className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transition-all duration-500 transform ${
               currentAction === "inactive" ? "bg-red-500" : "bg-green-500"
             }`}
             style={{ zIndex: 1000 }}
           >
->>>>>>> fc45bee1230442370a69aba41a966cfa90423426
             {message}
           </div>
         )}
@@ -159,60 +103,8 @@ const ListUser = ({ currentUserRole }: Props) => {
         )}
 
         <div className="rounded-lg border border-gray-200">
-<<<<<<< HEAD
-          <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
-            <thead>
-              <tr>
-                <th className="px-2 py-2">User ID</th>
-                <th className="px-2 py-2">Role ID</th>
-                <th className="px-2 py-2">First Name</th>
-                <th className="px-2 py-2">Status</th>
-                <th className="px-2 py-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.user_id}>
-                  <td className="px-2 py-2">{user.user_id}</td>
-                  <td className="px-2 py-2">{user.role_id}</td>
-                  <td className="px-2 py-2">{user.firt_name}</td>
-                  <td
-                    className={`px-2 py-2 ${
-                      user.status === "active" ? "text-green-500" : "text-red-500"
-                    }`}
-                  >
-                    {user.status}
-                  </td>
-                  <td className="px-2 py-2">
-                    {currentUserRole === 1 ? (
-                      <div className="flex space-x-4">
-                        <button
-                          onClick={() => handleLockUnlock(user.user_id, "active")}
-                          className="bg-green-500 text-white px-4 py-2 rounded"
-                          disabled={isLoading}
-                        >
-                          Unlock
-                        </button>
-                        <button
-                          onClick={() => handleLockUnlock(user.user_id, "inactive")}
-                          className="bg-red-500 text-white px-4 py-2 rounded"
-                          disabled={isLoading}
-                        >
-                          Lock
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">Không có quyền</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-=======
           <div className="overflow-x-auto max-w-full rounded-t-lg">
-            <div className="p-4">
+            <div>
               <table className="w-full text-left border-separate border-spacing-0">
                 <thead>
                   <tr className="bg-gray-100">
@@ -260,7 +152,7 @@ const ListUser = ({ currentUserRole }: Props) => {
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth="2"
-                                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 20h.01"
+d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 20h.01"
                                 />
                               </svg>
                             </div>
@@ -319,7 +211,7 @@ const ListUser = ({ currentUserRole }: Props) => {
                                 className="flex items-center justify-center text-gray-500 hover:text-green-500 transition duration-150 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500 rounded-md"
                                 disabled={isLoading}
                               >
-                                <svg
+<svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 448 512"
                                   className="w-5 h-5"
@@ -375,7 +267,7 @@ const ListUser = ({ currentUserRole }: Props) => {
               </div>
 
               <div className="flex space-x-8">
-                {/* User Image */}
+{/* User Image */}
                 <div className="w-1/3 flex justify-center items-center">
                   {selectedUser.image_user ? (
                     <img
@@ -435,7 +327,7 @@ const ListUser = ({ currentUserRole }: Props) => {
                       <p className="text-gray-600 mt-2">
                         <strong>Trạng thái:</strong>
                         <span
-                          className={`${
+className={`${
                             selectedUser.status === "active"
                               ? "text-green-600"
                               : selectedUser.status === "inactive"
@@ -480,7 +372,6 @@ const ListUser = ({ currentUserRole }: Props) => {
             </div>
           </div>
         )}
->>>>>>> fc45bee1230442370a69aba41a966cfa90423426
       </section>
     </>
   );

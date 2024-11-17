@@ -98,34 +98,31 @@ function App() {
   }, []);
   const addToCart = async (product: TProduct) => {
     try {
-      // const cartResponse = await fetch("http://127.0.0.1:8000/api/user/cart");
-      // const cartItems = await cartResponse.json();
-      // const isProductInCart = cartItems.some(
-      //   (item: { product: TProduct }) => item.product.id === product.id
-      // );
-      // if (isProductInCart) {
-      //   toast.info(`${product.name} đã có trong giỏ hàng!`, {
-      //     position: "top-right",
-      //     autoClose: 1000,
-      //     hideProgressBar: false,
-      //     closeOnClick: true,
-      //     pauseOnHover: true,
-      //     draggable: true,
-      //     progress: undefined,
-      //   });
-      //   return;
-      // }
-
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/user/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ product }),
-        }
+      const cartResponse = await fetch("http://localhost:3000/carts");
+      const cartItems = await cartResponse.json();
+      const isProductInCart = cartItems.some(
+        (item: { product: TProduct }) => item.product.id === product.id
       );
+      if (isProductInCart) {
+        toast.info(`${product.name} đã có trong giỏ hàng!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return;
+      }
+
+      const response = await fetch("http://localhost:3000/carts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product }),
+      });
 
       if (response.ok) {
         setCarCount((prevCount) => prevCount + 1);
@@ -206,7 +203,6 @@ function App() {
     }
   };
 
-  // call data user
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -220,14 +216,10 @@ function App() {
   }, []);
 
   // hàm này sử lý thêm sản phẩm
-  const handleAddProduct = (
-    newShoe: TProduct,
-    images: File[],
-    imageProduct: File
-  ) => {
+  const handleAddProduct = (newShoe: TProduct, images: File[]) => {
     console.log("Dữ liệu sản phẩm:", newShoe);
     console.log("Hình ảnh sản phẩm:", images); // In ra danh sách các ảnh
-    console.log("Hình ảnh sản phẩm:", imageProduct);
+
     (async () => {
       try {
         const formData = new FormData();
@@ -236,9 +228,6 @@ function App() {
         Object.entries(newShoe).forEach(([key, value]) => {
           formData.append(key, value as string | Blob);
         });
-
-        // Thêm ảnh chính vào FormData
-        formData.append("image_product", imageProduct);
 
         // Thêm tất cả ảnh vào FormData
         images.forEach((image) => {
