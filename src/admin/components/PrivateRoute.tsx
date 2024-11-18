@@ -1,23 +1,13 @@
-// PrivateRoute.tsx
 import React from "react";
-import { Route, Navigate } from "react-router-dom";
-import { useUserContext } from "../../pages/AuthClient/UserContext"; // Nếu bạn dùng context để quản lý người dùng
+import { Navigate, Outlet } from "react-router-dom";
 
-interface PrivateRouteProps {
-  element: React.ReactNode;
-  path: string;
-}
+// Hàm kiểm tra token (có thể thay đổi theo logic thực tế của bạn)
+const isAuthenticated = () => {
+  return !!localStorage.getItem("jwt_token"); // Kiểm tra token trong localStorage
+};
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, path }) => {
-  const { user } = useUserContext(); // Lấy thông tin người dùng từ context (nếu có)
-
-  // Kiểm tra nếu người dùng đã đăng nhập, nếu chưa, chuyển hướng đến trang login
-  return (
-    <Route
-      path={path}
-      element={user ? element : <Navigate to="/loginadmin" replace />}
-    />
-  );
+const PrivateRoute: React.FC = () => {
+  return isAuthenticated() ? <Outlet /> : <Navigate to="/loginadmin" />;
 };
 
 export default PrivateRoute;

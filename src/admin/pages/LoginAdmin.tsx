@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { loginValidationSchema } from "../../pages/AuthClient/Validation"; // Import schema
@@ -8,6 +9,11 @@ import logo from "../../img/logochadport.png"; // Logo
 
 const LoginAdmin: React.FC = () => {
   const navigate = useNavigate();
+  // useEffect(() => {
+  //   if (localStorage.getItem("jwt_token")) {
+  //     navigate("/admin"); // Chuyển hướng đến admin nếu đã đăng nhập
+  //   }
+  // }, [navigate]);
   const { setUser } = useUserContext(); // Set thông tin người dùng vào context
 
   const formik = useFormik({
