@@ -63,6 +63,7 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
+import LoginAdmin from "./admin/pages/LoginAdmin";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -536,7 +537,9 @@ function App() {
             }
           />
         </Routes>
-
+        <Routes>
+        <Route path="loginadmin" element={<LoginAdmin />} />
+        </Routes>
         <Routes>
           {/* Router admin */}
           <Route path="/admin" element={<Admin />}>
