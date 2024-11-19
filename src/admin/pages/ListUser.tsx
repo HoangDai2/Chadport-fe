@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import TUser from "../../Types/TUsers";
 import apisphp from "../../Service/api";
+import { useUserContext } from "../../pages/AuthClient/UserContext"; // Import context để lấy thông tin người dùng
 
 type Props = {
   listuser: TUser[];
 };
 
 const ListUser = ({ listuser }: Props) => {
+  const { user } = useUserContext(); // Lấy thông tin người dùng hiện tại từ context
   const [users, setUsers] = useState<TUser[]>(listuser); // Quản lý danh sách người dùng
   const [isLoading, setIsLoading] = useState(false); // Trạng thái chờ
   const [message, setMessage] = useState<string | null>(null); // Thông báo
@@ -54,8 +56,14 @@ const ListUser = ({ listuser }: Props) => {
     }
   };
 
-  // Cập nhật vai trò người dùng
+  // Cập nhật vai trò người dùng (chỉ cho phép Boss thay đổi vai trò)
   const handleRoleChange = async (userId: number, newRoleId: number) => {
+    if (user?.role_id !== 1) {
+      setMessage("Bạn không có quyền thay đổi chức vụ người dùng.");
+      setTimeout(() => setMessage(null), 2000);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await apisphp.patch(`/user/role/${userId}`, { role_id: newRoleId });

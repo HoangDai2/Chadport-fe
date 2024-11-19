@@ -30,8 +30,8 @@ const LoginAdmin: React.FC = () => {
           const userData = response.data.data; // Dữ liệu người dùng trả về
           const token = response.data.token;
 
-          // Kiểm tra role_id, chỉ cho phép role_id = 4
-          if (userData.role_id === 4) {
+          // Kiểm tra role_id, chỉ cho phép role_id = 1,2,3
+          if (userData.role_id === 1 || 2 || 3 ) {
             setUser(userData); // Lưu thông tin người dùng vào context
             localStorage.setItem("jwt_token", token); // Lưu token vào localStorage
             navigate("/admin"); // Điều hướng đến trang admin

@@ -31,9 +31,9 @@ const HeaderAD = (props: Props) => {
          }`}
     >
     {user ? (
-      <strong>
+      <h1>
           Hello, <strong>{user.firt_name} {user.last_name}</strong>! 👋
-        </strong>
+        </h1>
       ) : (
         <p>Hello, Admin! 👋</p>
       )}

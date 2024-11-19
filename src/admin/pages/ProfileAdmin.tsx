@@ -24,16 +24,9 @@ const ProfileAdmin: React.FC = () => {
     }, 1000);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Logging out...</p>
-      </div>
-    );
-  }
-
+ 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex flex-col items-center bg-gray-100">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4 text-center">Admin Profile</h2>
         {user ? (
@@ -46,7 +39,7 @@ const ProfileAdmin: React.FC = () => {
             </p>
             <p>
             <strong>Role:</strong> 
-            {user.role_id === 1 ? "Boss" : user.role_id === 2 ? "Staff Pro" : user.role_id === 3 ? "Staff" : "Other"}
+            {user.role_id === 1 ? "Boss" : user.role_id === 2 ? "Staff Pro" : user.role_id === 3 ? "Staff" : "Admin"}
             </p>
 
             <button
