@@ -1,81 +1,100 @@
 import React, { useEffect, useState } from "react";
 import TUser from "../../Types/TUsers";
-import axios from "axios";
 import apisphp from "../../Service/api";
+
 type Props = {
   listuser: TUser[];
 };
 
 const ListUser = ({ listuser }: Props) => {
-  const [users, setUsers] = useState(listuser); // Đảm bảo state 'users' là state được dùng để hiển thị danh sách
-  const [isLoading, setIsLoading] = useState(false); // Trạng thái chờ khi gọi API
-  const [message, setMessage] = useState<string | null>(null); // Trạng thái hiển thị thông báo
-  const [currentAction, setCurrentAction] = useState<
-    "active" | "inactive" | null
-  >(null); // Trạng thái hành động hiện tại
-  const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [users, setUsers] = useState<TUser[]>(listuser); // Quản lý danh sách người dùng
+  const [isLoading, setIsLoading] = useState(false); // Trạng thái chờ
+  const [message, setMessage] = useState<string | null>(null); // Thông báo
+  const [selectedUser, setSelectedUser] = useState<TUser | null>(null); // Người dùng được chọn
+  const [isModalOpen, setIsModalOpen] = useState(false); // Trạng thái modal
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null); // Người dùng đang hiển thị menu
+
+  const roleOptions = {
+    1: "Boss",
+    2: "Staff Pro",
+    3: "Staff",
+    4: "Client",
+  };
+
   useEffect(() => {
     setUsers(listuser);
   }, [listuser]);
 
-  const handleLockUnlock = async (
-    userId: number,
-    action: "active" | "inactive"
-  ) => {
-    setIsLoading(true); // Hiển thị trạng thái chờ
-    setCurrentAction(action); // Lưu hành động hiện tại (mở khóa hoặc khóa)
+  // Thay đổi trạng thái khóa/mở khóa
+  const handleLockUnlock = async (userId: number, action: "active" | "inactive") => {
+    setIsLoading(true);
     try {
-      const response = await apisphp.patch(`/user/status/${userId}`, {
-        status: action, // Cập nhật status mới
-      });
-      console.log(response);
-
+      const response = await apisphp.patch(`/user/status/${userId}`, { status: action });
       if (response.status === 200) {
-        // Lấy lại dữ liệu người dùng từ server sau khi thay đổi trạng thái
-        const updatedUsersResponse = await apisphp.get("/user/getall");
-        setUsers(updatedUsersResponse.data); // Cập nhật danh sách người dùng từ server
+        // Cập nhật danh sách người dùng
+        const updatedUsers = users.map((user) =>
+          user.id === userId ? { ...user, status: action } : user
+        );
+        setUsers(updatedUsers);
 
-        // Hiển thị thông báo ngay lập tức
         setMessage(
           `Tài khoản ${
             action === "inactive" ? "đã bị khóa" : "đã được mở khóa"
           } thành công!`
         );
-
-        // Ẩn thông báo sau 3 giây
-        setTimeout(() => {
-          setMessage(null);
-          window.location.reload();
-        }, 2000);
       } else {
-        setMessage("Có lỗi xảy ra!");
+        throw new Error("Không thể cập nhật trạng thái.");
       }
     } catch (error) {
       console.error("Lỗi khi gọi API:", error);
-      setMessage("Không thể khóa/mở khóa tài khoản. Vui lòng thử lại!");
+      setMessage("Không thể cập nhật trạng thái. Vui lòng thử lại!");
     } finally {
-      setIsLoading(false); // Dừng trạng thái chờ
+      setIsLoading(false);
+      setTimeout(() => setMessage(null), 2000);
     }
   };
 
-  // menu con nút unlock và lock
-  const toggleDropdown = (userId: any) => {
+  // Cập nhật vai trò người dùng
+  const handleRoleChange = async (userId: number, newRoleId: number) => {
+    setIsLoading(true);
+    try {
+      const response = await apisphp.patch(`/user/role/${userId}`, { role_id: newRoleId });
+      if (response.status === 200) {
+        const updatedUsers = users.map((user) =>
+          user.id === userId ? { ...user, role_id: newRoleId } : user
+        );
+        setUsers(updatedUsers);
+
+        setMessage("Cập nhật chức vụ thành công!");
+      } else {
+        throw new Error("Không thể cập nhật vai trò.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+      setMessage("Không thể cập nhật chức vụ. Vui lòng thử lại!");
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => setMessage(null), 2000);
+    }
+  };
+
+  // Hiển thị menu dropdown
+  const toggleDropdown = (userId: number) => {
     setSelectedUserId(selectedUserId === userId ? null : userId);
   };
 
-  // mở modal chi tiểt người dùng
-  const openModal = (user: any) => {
+  // Mở modal chi tiết người dùng
+  const openModal = (user: TUser) => {
     setSelectedUser(user);
     setIsModalOpen(true);
   };
-  // đóng modal chi tiểt người dùng
+
+  // Đóng modal chi tiết người dùng
   const closeModal = () => {
     setSelectedUser(null);
     setIsModalOpen(false);
   };
+
   return (
     <>
       <section className="conten_admin">
@@ -86,8 +105,8 @@ const ListUser = ({ listuser }: Props) => {
         {/* Hiển thị thông báo */}
         {message && (
           <div
-className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transition-all duration-500 transform ${
-              currentAction === "inactive" ? "bg-red-500" : "bg-green-500"
+            className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 ${
+              message.includes("khóa") ? "bg-red-500" : "bg-green-500"
             }`}
             style={{ zIndex: 1000 }}
           >
@@ -95,7 +114,7 @@ className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transi
           </div>
         )}
 
-        {/* Hiển thị loading khi đang thực hiện hành động */}
+        {/* Hiển thị loading */}
         {isLoading && (
           <div className="loading-overlay">
             <div className="pulse-spinner"></div>
@@ -103,96 +122,61 @@ className={`alert-message p-4 mb-4 rounded text-white fixed top-4 right-4 transi
         )}
 
         <div className="rounded-lg border border-gray-200">
-          <div className="overflow-x-auto max-w-full rounded-t-lg">
-            <div>
-              <table className="w-full text-left border-separate border-spacing-0">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="w-12 text-center"></th>
-                    <th className="py-2 text-center">User Name</th>
-                    <th className="py-2 text-center">Status</th>
-                    <th className="py-2 text-center">Created_at</th>
-                    <th className="py-2 text-center">Updated_at</th>
-                    <th className="py-2 text-center"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listuser.map((user, index) => (
-                    <tr key={index} className="bg-white">
-                      {/* Checkbox */}
-                      <td className="px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          className="rounded border-gray-300"
-                        />
-                      </td>
-
-                      {/* User Info */}
-                      <td
-                        className="px-4 py-3 text-left"
-                        onClick={() => openModal(user)}
-                      >
-                        <div className="flex items-center justify-center space-x-3">
-                          {user.image_user ? (
-                            <img
-                              src={`http://127.0.0.1:8000${user.image_user}`}
-                              alt={user.firt_name}
-                              className="w-10 h-10 rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <svg
-                                className="w-6 h-6 text-gray-500"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 15.53 9.7 14.5 12 14.5s4.38 1.03 5.72 2.79M12 20h.01"
-                                />
-                              </svg>
-                            </div>
-                          )}
-                          <div>
-                            <div className="text-sm font-semibold">
-                              {user && `${user.firt_name} ${user.last_name}`}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {user.email}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-4 py-3 text-left">
-                        <span
-                          className={`font-semibold text-sm px-2 py-0.5 rounded-full ${
-                            user.status === "active"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {user.status}
-                        </span>
-                      </td>
-
-                      {/* Created_at */}
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {user.created_at}
-                      </td>
-
-                      {/* Updated_at */}
-                      <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {user.updated_at}
-                      </td>
-
-                      {/* Options  */}
-                      <td className="px-4 py-3 text-center relative">
+          <table className="w-full text-left border-separate border-spacing-0">
+            <thead>
+              <tr className="bg-gray-100">
+              <th className="py-2 text-center">User Name</th>
+                <th className="py-2 text-center">Status</th>
+                <th className="py-2 text-center">Role</th>
+                <th className="py-2 text-center">Created At</th>
+                <th className="py-2 text-center">Updated At</th>
+                <th className="py-2 text-center"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} className="bg-white">
+                  <td className="px-4 py-3 text-left">
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => openModal(user)}
+                    >
+                      {user.firt_name} {user.last_name}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={`font-semibold px-2 py-0.5 rounded-full ${
+                        user.status === "active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {user.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <select
+                      value={user.role_id}
+                      onChange={(e) =>
+                        handleRoleChange(user.id, parseInt(e.target.value))
+                      }
+                      className="rounded border-gray-300 text-sm"
+                    >
+                      {Object.entries(roleOptions).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {new Date(user.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {new Date(user.updated_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 text-center relative">
                         <button
                           onClick={() => toggleDropdown(user.id)}
                           className="text-gray-400 hover:text-gray-600"
@@ -246,129 +230,29 @@ d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6.28 17.29C7.62 1
                           </div>
                         )}
                       </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        {/*  hiển thị thông tin người dùng chi tiết */}
+        {/* Modal chi tiết người dùng */}
         {isModalOpen && selectedUser && (
           <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="absolute inset-0 bg-black opacity-75 transition-opacity duration-300"></div>
-
-            <div className="bg-white p-10 rounded-2xl shadow-2xl relative z-10 max-w-[60rem] w-full">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 text-left">
-                  Chi tiết người dùng
-                </h2>
+            <div className="absolute inset-0 bg-black opacity-75"></div>
+            <div className="bg-white p-10 rounded-2xl shadow-2xl relative z-10 max-w-3xl">
+              <h2 className="text-2xl font-bold mb-6">Chi tiết người dùng</h2>
+              <div>
+                <p>Họ tên: {selectedUser.firt_name} {selectedUser.last_name}</p>
+                <p>Email: {selectedUser.email}</p>
+                <p>Trạng thái: {selectedUser.status}</p>
               </div>
-
-              <div className="flex space-x-8">
-{/* User Image */}
-                <div className="w-1/3 flex justify-center items-center">
-                  {selectedUser.image_user ? (
-                    <img
-                      src={`http://127.0.0.1:8000${selectedUser.image_user}`}
-                      alt={`${selectedUser.firt_name} ${selectedUser.last_name}`}
-                      className="w-24 h-24 rounded-full border-4 border-gray-600 shadow-lg object-cover"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full border-4 border-gray-600 shadow-lg bg-gray-300 flex items-center justify-center">
-                      <svg
-                        className="w-12 h-12 text-gray-500"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M15.71,12.71a6,6,0,1,0-7.42,0,10,10,0,0,0-6.22,8.18,1,1,0,0,0,2,.22,8,8,0,0,1,15.9,0,1,1,0,0,0,1,.89h.11a1,1,0,0,0,.88-1.1A10,10,0,0,0,15.71,12.71ZM12,12a4,4,0,1,1,4-4A4,4,0,0,1,12,12Z" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-
-                {/* User Details */}
-                <div className="w-2/3">
-                  <div className="grid grid-cols-2 gap-6 ">
-                    <div className="text-left">
-                      <h3 className="text-lg font-semibold text-gray-700">
-                        Thông tin cá nhân
-                      </h3>
-                      <p className="text-gray-600 mt-2">
-                        <strong>Họ tên:</strong> {selectedUser.firt_name}{" "}
-                        {selectedUser.last_name}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Email:</strong> {selectedUser.email}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Số điện thoại:</strong>{" "}
-                        {selectedUser.phone_number}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Giới tính:</strong>{" "}
-                        {selectedUser.gender === "male"
-                          ? "Nam"
-                          : selectedUser.gender === "female"
-                          ? "Nữ"
-                          : "Khác"}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Ngày sinh:</strong> {selectedUser.birthday}
-                      </p>
-                    </div>
-
-                    <div className="text-left">
-                      <h3 className="text-lg font-semibold text-gray-700">
-                        Thông tin tài khoản
-                      </h3>
-                      <p className="text-gray-600 mt-2">
-                        <strong>Trạng thái:</strong>
-                        <span
-className={`${
-                            selectedUser.status === "active"
-                              ? "text-green-600"
-                              : selectedUser.status === "inactive"
-                              ? "text-red-600"
-                              : "text-yellow-600"
-                          } font-semibold`}
-                        >
-                          {selectedUser.status === "active"
-                            ? "Hoạt động"
-                            : selectedUser.status === "inactive"
-                            ? "Không hoạt động"
-                            : "Đình chỉ"}
-                        </span>
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Role ID:</strong> {selectedUser.role_id}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Ngày tạo:</strong> {selectedUser.created_at}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Cập nhật lần cuối:</strong>{" "}
-                        {selectedUser.updated_at}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Địa chỉ:</strong> {selectedUser.address}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Close Button */}
-              <div className="mt-8 flex justify-end">
-                <button
-                  onClick={closeModal}
-                  className="px-6 py-3 bg-red-500 text-white rounded-full font-semibold shadow-lg hover:bg-red-600 transition duration-300 focus:outline-none"
-                >
-                  Đóng
-                </button>
-              </div>
+              <button
+                onClick={closeModal}
+                className="mt-4 px-6 py-2 bg-red-500 text-white rounded-md"
+              >
+                Đóng
+              </button>
             </div>
           </div>
         )}
