@@ -51,7 +51,7 @@ const LoginAdmin: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="text-left bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+      <div className="text-left bg-white shadow-lg rounded-lg p-2 max-w-md w-full">
         <div className="flex justify-between h-[30px]">
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
             Admin Login

@@ -125,6 +125,7 @@ const ListUser = ({ listuser }: Props) => {
           <table className="w-full text-left border-separate border-spacing-0">
             <thead>
               <tr className="bg-gray-100">
+              <th className="py-2 text-center">STT</th>
               <th className="py-2 text-center">User Name</th>
                 <th className="py-2 text-center">Status</th>
                 <th className="py-2 text-center">Role</th>
@@ -134,8 +135,9 @@ const ListUser = ({ listuser }: Props) => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {users.map((user, index) => (
                 <tr key={user.id} className="bg-white">
+                  <td className="px-4 py-3 text-center">{index + 1}</td>
                   <td className="px-4 py-3 text-left">
                     <div
                       className="cursor-pointer"

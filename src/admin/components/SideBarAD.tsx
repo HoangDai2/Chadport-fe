@@ -415,7 +415,7 @@ const SideBarAD = (props: Props) => {
               </a>
             </li>
             <li>
-              <a href="">
+              <a href="/admin/profilead">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <title>shield-check</title>
                   <path
