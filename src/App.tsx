@@ -587,6 +587,14 @@ function App() {
               element={<ColorForm />}
             />
             <Route
+              path="size"
+              element={<SizeForm/>}
+            />
+            <Route
+              path="color"
+              element={<ColorForm />}
+            />
+            <Route
               path="variants"
               element={<VariantForm />}
             />

@@ -16,6 +16,7 @@ export interface Color {
 }
 
 export interface Variant {
+  product: any;
   id: number;
   product_id: number;
   col_id: number;
