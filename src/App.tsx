@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
@@ -64,6 +64,7 @@ import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
 import LoginAdmin from "./admin/pages/LoginAdmin";
+import ProfileAdmin from "./admin/pages/ProfileAdmin";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -293,7 +294,7 @@ function App() {
           "http://127.0.0.1:8000/api/categories"
         );
         setCategory(responses.data.data);
-        // console.log(responses);
+        console.log(responses);
       } catch (error) {
         console.error("Error fetching shoes:", error);
       }
@@ -545,14 +546,18 @@ function App() {
             }
           />
         </Routes>
-
+        <Routes>
+          <Route path="loginadmin" element={<LoginAdmin />} />
+        </Routes>
         <Routes>
           {/* Router admin */}
           <Route path="/admin" element={<Admin />}>
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="profileadmin" element={<ProfileAdmin />} />
             <Route path="products" element={<ProductList />} />
+
             <Route
               path="products/add"
               element={
