@@ -63,6 +63,9 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
+import SizeForm from "./admin/pages/SizeForm";
+import ColorForm from "./admin/pages/ColorForm";
+import VariantForm from "./admin/pages/VariantsForm";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -221,7 +224,8 @@ function App() {
   const handleAddProduct = (
     newShoe: TProduct,
     images: File[],
-    imageProduct: File
+    imageProduct: File,
+    
   ) => {
     console.log("Dữ liệu sản phẩm:", newShoe);
     console.log("Hình ảnh sản phẩm:", images); // In ra danh sách các ảnh
@@ -573,6 +577,18 @@ function App() {
               element={
                 <CategoriesUpadate onEditCategory={handleEditCategory} />
               }
+            />
+            <Route
+              path="size"
+              element={<SizeForm />}
+            />
+            <Route
+              path="color"
+              element={<ColorForm />}
+            />
+            <Route
+              path="variants"
+              element={<VariantForm />}
             />
           </Route>
         </Routes>

@@ -227,33 +227,6 @@ function ProductAdd({ onAdd, categories }: Props) {
                 required
               ></textarea>
             </div>
-            {/* Size  */}
-            <div className="flex items-start justify-between space-x-6">
-              {/* Size Section */}
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Size
-                </label>
-                <p className="text-gray-400 text-xs mb-2">
-                  Pick Available Size
-                </p>
-                <div className="flex space-x-2">
-                  {["XS", "S", "M", "XL", "XXL"].map((size, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSizeClick(size)}
-                      className={`px-4 py-2 border rounded-lg text-sm font-medium cursor-pointer ${
-                        activeSize === size
-                          ? "bg-black text-white border-green-500"
-                          : "bg-gray-100 text-gray-600 border-gray-300"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Upload Image */}
