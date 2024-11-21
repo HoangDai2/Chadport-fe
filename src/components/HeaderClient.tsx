@@ -320,7 +320,7 @@ const Headerclient = ({
                   <div className="flex items-center space-x-4 gap-[15px]">
                     <button onClick={handleSearchClick}>
                       <i
-                        className="fas fa-search text-lg"
+                        className="fas fa-search text-lg ml-2"
                         style={{ fontSize: "25px" }}
                       ></i>
                     </button>

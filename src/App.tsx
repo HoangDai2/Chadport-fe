@@ -540,7 +540,7 @@ function App() {
           />
         </Routes>
         <Routes>
-        <Route path="loginadmin" element={<LoginAdmin />} />
+          <Route path="loginadmin" element={<LoginAdmin />} />
         </Routes>
         <Routes>
           {/* Router admin */}

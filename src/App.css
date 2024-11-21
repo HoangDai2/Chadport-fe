@@ -517,3 +517,68 @@ li.selected {
 .dropdown-menu.show {
   display: block;
 }
+
+/* reponsive header */
+.header-desktop {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.site-logo img {
+  max-width: 150px;
+  height: auto;
+}
+
+.site-navigation ul {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+}
+
+.site-navigation ul li a {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
+
+/* Responsive Styles */
+.row {
+  display: flex;
+  /* Kích hoạt Flexbox */
+  align-items: center;
+  /* Căn giữa theo chiều dọc */
+  justify-content: space-between;
+  /* Căn đều giữa các phần */
+}
+
+.header-left,
+.header-center,
+.header-right {
+  flex-shrink: 0;
+  /* Đảm bảo các phần tử không bị co lại */
+}
+
+.header-center {
+  flex-grow: 1;
+  /* Cho phép phần giữa mở rộng chiếm không gian trống */
+  text-align: center;
+  /* Căn giữa nội dung text */
+}
+
+.header-left img {
+  max-width: 100%;
+  /* Giữ kích thước hợp lý cho logo */
+  height: auto;
+}

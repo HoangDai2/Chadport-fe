@@ -49,7 +49,7 @@ const Home = ({
         </div>
         <div className="block block-products">
           <div className="products-grid">
-            {products.map((product) => (
+            {products.slice(0, 8).map((product) => (
               // console.log(product),
               <div
                 key={product.id}
