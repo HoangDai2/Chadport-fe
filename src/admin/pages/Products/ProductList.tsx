@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { TProduct } from "../../Types/TProduct";
+import { TProduct } from "../../../Types/TProduct";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Tcategory from "../../Types/TCategories";
-import apisphp from "../../Service/api";
+import Tcategory from "../../../Types/TCategories";
+import apisphp from "../../../Service/api";
 import Modal from "react-modal";
-import "../style/Product.css";
+import "../../style/Product.css";
 // import "bootstrap-icons/font/bootstrap-icons.css";
 
 Modal.setAppElement("#root");
@@ -38,8 +38,9 @@ function ProductList() {
 
     const fetchCategories = async () => {
       try {
-        const response = await apisphp.get("/categories");
+        const response = await apisphp.get("getall/categories");
         setCategories(response.data.data);
+        console.log(response);
       } catch (error) {
         console.error("Error fetching categories:", error);
         toast.error("Error fetching categories");
@@ -159,8 +160,11 @@ function ProductList() {
                     <td className="px-2 py-2 text-gray-900 truncate max-w-xs">
                       {index + 1}
                     </td>
-                    <td className="px-2 py-2 text-gray-700 truncate max-w-[200px]">
-                      <img src={product.image_product} alt="" />
+                    <td className="px-2 py-2 text-gray-700 truncate max-w-[500px]">
+                      <img
+                        src={`http://127.0.0.1:8000/storage/${product.image_product}`}
+                        alt=""
+                      />
                     </td>
                     <td
                       className="px-2 py-2 cursor-pointer"

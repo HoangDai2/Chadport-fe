@@ -198,7 +198,7 @@ const ShopDetails = ({
                             <div className="col-md-10">
                               <div className="scroll-image main-image">
                                 <img
-                                  src={mainImage || product.image_product}
+                                  src={`http://127.0.0.1:8000/storage/${product.image_product}`}
                                   width={900}
                                   height={900}
                                   alt={product.name}

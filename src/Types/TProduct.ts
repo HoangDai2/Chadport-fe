@@ -1,24 +1,35 @@
 import Tcategory from "./TCategories";
-export interface size {
+
+export interface Size {
   id?: number;
   name: string;
-  status: string;
   date_create: string;
   date_update: string;
 }
 
-export interface color {
+export interface Color {
   id?: number;
-
   name: string;
-  status: string;
+  hex: string;
+  image: string;
   date_create: string;
   date_update: string;
+}
+
+export interface Variant {
+  product: any;
+  id: number;
+  product_id: number;
+  color_id: number;
+  size_id: number;
+  quatity: number;
+  color?: Color; // Bao gồm thông tin màu sắc
+  size?: Size; // Bao gồm thông tin kích cỡ
 }
 
 export interface TProduct {
   id: number;
-  cat_id: number;
+  category_id: number;
   title: string;
   name: string;
   status: string;
@@ -35,11 +46,7 @@ export interface TProduct {
   date_create: string;
   date_update: string;
   category?: Tcategory[];
-
-  // size?: [];
-  // color?: [];
-  size?: string; // Thay vì mảng, đây là chuỗi để lưu lựa chọn đã chọn
-  color?: string; // Tương tự, chuỗi để lưu màu đã chọn
+  variants?: Variant[]; // Thêm danh sách các biến thể của sản phẩm
 }
 
 export default TProduct;

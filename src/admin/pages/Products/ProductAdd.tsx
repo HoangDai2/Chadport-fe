@@ -1,83 +1,43 @@
-import React, { useState, useEffect } from "react";
-import instance from "../../Service";
-import { TProduct } from "../../Types/TProduct";
+import React, { useState } from "react";
+import instance from "../../../Service";
+import { TProduct, Variant } from "../../../Types/TProduct";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate, useParams } from "react-router-dom";
-import Tcategory from "../../Types/TCategories";
+import { useNavigate } from "react-router-dom";
+import Tcategory from "../../../Types/TCategories";
 import { useForm } from "react-hook-form";
-import apisphp from "../../Service/api";
 import { FaSave, FaCheck } from "react-icons/fa";
 import { AiFillProduct } from "react-icons/ai";
+import VariantForm from "../Variants/VariantsForm";
+import VariantsForm from "../Variants/VariantsForm";
 type Props = {
-  onEdit: (product: FormData) => void;
+  onAdd: (newShoe: TProduct, images: File[], imageProduct: File) => void;
   categories: Tcategory[];
 };
-
-function ProductUpdate({ onEdit, categories }: Props) {
-  const { id } = useParams<{ id: string }>();
-  const [product, setProducts] = useState<TProduct | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+function ProductAdd({ onAdd, categories }: Props) {
+  const navigate = useNavigate();
   const [images, setImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageProduct, setImageProduct] = useState<File | null>(null); // State cho ảnh chính
   const [imageProductPreview, setImageProductPreview] = useState<string | null>(
     null
   ); // State xem trước ảnh chính
-  // sate này để lưu url ảnh
-  const [existingImagePreviews, setExistingImagePreviews] = useState<string[]>(
-    []
-  );
-
-  const navigate = useNavigate();
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [categoryImage, setCategoryImage] = useState<string | null>(null);
+  const [variant, setVariant] = useState<
+    Array<{ quantity: number; color: string; size: string }>
+  >([
+    {
+      size: "",
+      color: "",
+      quantity: 0,
+    },
+  ]);
   const {
     register,
     handleSubmit,
-    setValue,
     formState: {},
   } = useForm<TProduct>({});
-
-  useEffect(() => {
-    if (id) {
-      (async () => {
-        try {
-          const { data } = await apisphp.get(`/showdetail/products/${id}`);
-          // console.log("Product data:", data);
-
-          setLoading(false);
-
-          // Cập nhật giá trị cho các trường form
-          setValue("name", data.name);
-          setValue("price", data.price);
-          setValue("title", data.title);
-          setValue("price_sale", data.price_sale);
-          setValue("quantity", data.quantity);
-          setValue("status", data.status);
-          setValue("description", data.description);
-          setValue("type", data.type);
-          setValue("image_product", data.image_product); // Lấy ảnh chính
-          setValue("cat_id", data.cat_id);
-
-          // Cập nhật ảnh chính preview nếu có
-          setImageProductPreview(
-            `http://127.0.0.1:8000/storage/${data.image_product}`
-          );
-
-          // Lưu ảnh mô tả cũ
-          if (data.image_description && Array.isArray(data.image_description)) {
-            const imageUrls = data.image_description.map(
-              (fileName: string) => `http://127.0.0.1:8000/storage/${fileName}`
-            );
-            setExistingImagePreviews(imageUrls);
-          }
-        } catch (error) {
-          console.error("Error fetching product:", error);
-          toast.error("Error loading product data!");
-        }
-      })();
-    }
-  }, [id, setValue]);
 
   // Hàm xử lý khi chọn ảnh chính
   const handleImageProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,9 +58,8 @@ function ProductUpdate({ onEdit, categories }: Props) {
     const fileList = e.target.files;
     if (fileList) {
       const files = Array.from(fileList); // Chuyển FileList thành mảng
-      setImages((prev) => [...prev, ...files]); // Cập nhật state với ảnh đã chọn
-
-      const filePreviews = files.map((file) => URL.createObjectURL(file)); // Tạo URL xem trước cho ảnh
+      setImages((prev) => [...prev, ...files]); // Cập nhật state với tất cả ảnh đã chọn
+      const filePreviews = files.map((file) => URL.createObjectURL(file));
       setImagePreviews((prev) => [...prev, ...filePreviews]); // Cập nhật các URL xem trước
     }
   };
@@ -111,68 +70,70 @@ function ProductUpdate({ onEdit, categories }: Props) {
       prevImages.filter((_, index) => index !== indexToRemove)
     );
     setImagePreviews((prevPreviews) => {
-      URL.revokeObjectURL(prevPreviews[indexToRemove]); // Giải phóng bộ nhớ
+      URL.revokeObjectURL(prevPreviews[indexToRemove]); // Giải phóng URL xem trước khỏi bộ nhớ
       return prevPreviews.filter((_, index) => index !== indexToRemove);
     });
   };
 
-  // Hàm render cho các ảnh mô tả
+  // Hàm in ảnh ra sau khi chọn
   const renderImagePreviews = () => {
-    // Hiển thị ảnh mô tả cũ (existingImagePreviews) kết hợp với ảnh mới (imagePreviews)
-    const allImages = [...existingImagePreviews, ...imagePreviews];
-
-    return allImages.map((preview, index) => (
+    return imagePreviews.map((preview, index) => (
       <div
         key={index}
-        className="relative w-24 h-24 border-2 border-gray-200 rounded-lg overflow-hidden"
+        style={{
+          position: "relative",
+          width: "100%", // Thẻ cha có kích thước cố định, 100% của thẻ chứa
+          maxWidth: "90px", // Kích thước tối đa của thẻ chứa ảnh
+          height: "90px", // Chiều cao cố định cho ảnh
+          padding: "5px",
+          overflow: "hidden", // Ẩn phần ảnh bị tràn ra ngoài
+          borderRadius: "8px", // Bo góc cho thẻ chứa
+        }}
       >
         <i
-          className="fa fa-times-circle absolute top-1 right-1 text-xl text-gray-600 cursor-pointer"
-          onClick={() => removeImage(index)} // Hàm xóa ảnh
+          className="fa fa-times-circle"
+          onClick={() => removeImage(index)}
+          style={{
+            position: "absolute",
+            top: "5px",
+            right: "5px", // Căn chỉnh lại vị trí nút xóa
+            fontSize: "24px",
+            color: "gray",
+            cursor: "pointer",
+          }}
         ></i>
+
         <img
+          key={index}
           src={preview}
           alt={`Preview ${index}`}
-          className="object-cover w-full h-full"
+          className="w-full h-full object-cover rounded-lg" // Sử dụng object-cover để ảnh chiếm toàn bộ không gian thẻ
         />
       </div>
     ));
   };
 
-  const onSubmit = (data: TProduct) => {
-    const formData = new FormData();
-
-    // Append product data to formData
-    formData.append("id", id!); // Ensure id is not null
-    formData.append("name", data.name);
-    formData.append("price", data.price.toString());
-    formData.append("title", data.title);
-    formData.append("price_sale", data.price_sale.toString());
-    formData.append("quantity", data.quantity.toString());
-    formData.append("status", data.status);
-    formData.append("description", data.description);
-    formData.append("type", data.type);
-    formData.append("cat_id", data.cat_id.toString());
-    // Kiểm tra và thêm ảnh chính (image_product)
-    if (imageProduct) {
-      formData.append("image_product", imageProduct);
-    } else {
-      formData.append("image_product", data.image_product); // Nếu không thay đổi ảnh chính, sử dụng ảnh cũ
+  // Gửi dữ liệu sản phẩm và ảnh lên server
+  const onSubmit = async (data: TProduct) => {
+    try {
+      await onAdd(data, images, imageProduct!); // Truyền TProduct và images riêng biệt vào onAdd
+    } catch (error) {
+      console.error("Error adding product:", error);
     }
+  };
 
-    // Thêm các ảnh mô tả (cả ảnh mới và ảnh cũ)
-    existingImagePreviews.forEach((imageUrl) => {
-      formData.append("image_description[]", imageUrl); // Các ảnh cũ
-    });
-
-    images.forEach((image) => {
-      formData.append("image_description[]", image); // Các ảnh mới
-    });
-
-    // Gọi `onEdit` với `FormData`
-    onEdit(formData); // Truyền `FormData` thay vì `TProduct`
-    toast.success("Product updated successfully!");
-    navigate("/admin/products");
+  // hàm này lấy dữ liệu ảnh categories
+  const handleCategoryChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedCategoryId = event.target.value;
+    const imageUrl = selectedCategoryId
+      ? categories.find(
+          (category) => category.id === Number(selectedCategoryId)
+        )?.imageURL ?? null
+      : null;
+    setCategoryImage(imageUrl);
+    console.log(imageUrl);
   };
 
   // fake;
@@ -190,7 +151,7 @@ function ProductUpdate({ onEdit, categories }: Props) {
           {/* Ô đầu tiên */}
           <div className=" flex items-center text-black font-bold text-[25px]">
             <AiFillProduct className="mr-2  " />
-            Update Products
+            Add New Product
           </div>
 
           {/* Ô thứ hai - đặt tại vị trí riêng theo col-start và col-span */}
@@ -202,7 +163,7 @@ function ProductUpdate({ onEdit, categories }: Props) {
 
             <button className="flex items-center bg-black text-white py-2 px-4 rounded-full text-sm font-medium">
               <FaCheck className="mr-2" />
-              Update Product
+              Add Product
             </button>
           </div>
         </div>
@@ -276,33 +237,6 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 required
               ></textarea>
             </div>
-            {/* Size  */}
-            <div className="flex items-start justify-between space-x-6">
-              {/* Size Section */}
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Size
-                </label>
-                <p className="text-gray-400 text-xs mb-2">
-                  Pick Available Size
-                </p>
-                <div className="flex space-x-2">
-                  {["XS", "S", "M", "XL", "XXL"].map((size, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSizeClick(size)}
-                      className={`px-4 py-2 border rounded-lg text-sm font-medium cursor-pointer ${
-                        activeSize === size
-                          ? "bg-black text-white border-green-500"
-                          : "bg-gray-100 text-gray-600 border-gray-300"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Upload Image */}
@@ -313,7 +247,7 @@ function ProductUpdate({ onEdit, categories }: Props) {
 
             {/* Main Image Display */}
             <div className="mb-4">
-              <div className="border-2 border-dashed border-gray-300 w-full h-[26rem] bg-gray-100 rounded-lg flex items-center justify-center relative">
+              <div className="w-full h-[26rem] bg-gray-100 rounded-lg flex items-center justify-center relative border-2 border-dashed border-gray-300">
                 {imageProductPreview ? (
                   <img
                     src={imageProductPreview}
@@ -321,31 +255,30 @@ function ProductUpdate({ onEdit, categories }: Props) {
                     className="w-full h-full object-cover rounded-lg"
                   />
                 ) : (
-                  <div className="text-center">
-                    <span className="text-green-500 text-4xl">+</span>
+                  <div className="text-center ">
+                    <span className="text-gray-400 text-4xl  ">+</span>
                   </div>
                 )}
                 <input
                   type="file"
                   className="absolute inset-0 opacity-0 cursor-pointer"
                   id="image_product"
-                  {...register("image_product", {
-                    required: !imageProductPreview,
-                  })}
+                  {...register("image_product", { required: true })}
                   onChange={handleImageProductChange}
+                  required
                 />
               </div>
             </div>
 
             {/* Thumbnails */}
             <div className="flex space-x-4">
-              {/* Nút chọn ảnh mô tả */}
+              {/* Nút chọn ảnh */}
               <div className="relative">
                 <input
                   type="file"
                   multiple
                   accept="image/*"
-                  onChange={onFileUploadHandle} // Xử lý ảnh được tải lên
+                  onChange={onFileUploadHandle}
                   className="absolute opacity-0 cursor-pointer"
                   id="image_description"
                 />
@@ -357,17 +290,16 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 </label>
               </div>
 
-              {/* Hiển thị ảnh mô tả */}
-              {imagePreviews.length > 0 ? (
-                <div className="flex flex-wrap space-x-4">
-                  {renderImagePreviews()}{" "}
-                  {/* Hiển thị ảnh từ `imagePreviews` */}
+              {/* Phần hiển thị ảnh */}
+              {renderImagePreviews().map((imageElement, index) => (
+                <div
+                  key={index}
+                  className="relative w-[90px] h-[90px] bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center"
+                  style={{ padding: "5px" }} // Điều chỉnh khoảng cách trong thẻ chứa
+                >
+                  {imageElement}
                 </div>
-              ) : (
-                <div className="text-center text-gray-400">
-                  Không có ảnh nào được chọn
-                </div> // Nếu không có ảnh nào
-              )}
+              ))}
             </div>
           </div>
 
@@ -431,7 +363,7 @@ function ProductUpdate({ onEdit, categories }: Props) {
           </div>
 
           {/* Category */}
-          <div className="p-6 bg-white rounded-lg  text-left">
+          <div className="p-6 bg-white rounded-lg text-left">
             <h2 className="text-lg font-semibold mb-4 text-gray-800">
               Category
             </h2>
@@ -442,8 +374,9 @@ function ProductUpdate({ onEdit, categories }: Props) {
               <select
                 className="form-select"
                 id="category"
-                {...register("cat_id", { required: true })} // Cập nhật danh mục khi chọn
+                {...register("category_id", { required: true })}
                 required
+                onChange={handleCategoryChange}
               >
                 <option value="">Chọn danh mục</option>
                 {categories.map((category) => (
@@ -453,6 +386,22 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 ))}
               </select>
             </div>
+
+            {/* Hiển thị ảnh của category nếu có */}
+            {categoryImage ? (
+              <div className="mt-4">
+                <img
+                  src={categoryImage}
+                  alt="Category"
+                  className="w-full h-auto"
+                />
+              </div>
+            ) : (
+              <div className="mt-4 text-gray-500">No image available</div> // Thông báo khi không có ảnh
+            )}
+          </div>
+          <div>
+            <VariantsForm variant={variant} setVariantAddress={setVariant} />
           </div>
         </div>
       </form>
@@ -460,4 +409,4 @@ function ProductUpdate({ onEdit, categories }: Props) {
   );
 }
 
-export default ProductUpdate;
+export default ProductAdd;

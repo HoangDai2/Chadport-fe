@@ -81,7 +81,7 @@ const Home = ({
                 <div className="h-64 w-full overflow-hidden sm:h-72">
                   <Link to={`/shop-details/${product.id}`}>
                     <img
-                      src={product.image_product}
+                      src={`http://127.0.0.1:8000/storage/${product.image_product}`}
                       alt={product.name}
                       className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
                     />
@@ -105,7 +105,7 @@ const Home = ({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation(); // Ngăn không cho sự kiện click vào product card xảy ra
-                        addToCart(product);
+                        // addToCart(product);
                       }}
                       className="block w-full rounded bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 transition hover:scale-105"
                     >
