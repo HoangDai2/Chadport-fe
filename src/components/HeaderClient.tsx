@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import logochartport from "../img/logochadport.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import Tcategory from "../Types/TCategories";
 import apisphp from "../Service/api";
 import { useUserContext } from "../pages/AuthClient/UserContext";
-const Headerclient = ({
+const HeaderClientC = ({
   carCount,
   wishlisCount,
 }: {
@@ -196,6 +196,15 @@ const Headerclient = ({
   const toggleSubmenu = () => {
     setIsSubmenuOpen(!isSubmenuOpen);
   };
+  const isActive = (path: string) => {
+    const location = useLocation();
+    return location.pathname === path;
+  };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <>
@@ -231,7 +240,8 @@ const Headerclient = ({
                         width="400"
                         height="79"
                         src={logochartport}
-                        style={{ width: "200px" }}
+                        className="w-[150px] md:w-[120px] sm:w-[100px] xs:w-[80px]"
+                        alt="Logo"
                       />
                     </a>
                   </div>
@@ -248,12 +258,21 @@ const Headerclient = ({
                   <div className="site-navigation">
                     <nav id="main-navigation">
                       <ul id="menu-main-menu" className="menu">
-                        <li className="level-0 menu-item">
-                          <a href="/" className="menu-item-text">
+                        <li
+                          className={`level-0 menu-item ${
+                            isActive("/") ? "current-menu-item" : ""
+                          }`}
+                        >
+                          {" "}
+                          <Link to="/" className="menu-item-text">
                             Home
-                          </a>
+                          </Link>
                         </li>
-                        <li className="level-0 menu-item menu-item-has-children current-menu-item">
+                        <li
+                          className={`level-0 menu-item ${
+                            isActive("/shoplist") ? "current-menu-item" : ""
+                          }`}
+                        >
                           <a href="/shoplist">
                             <span className="menu-item-text">Shop</span>
                           </a>
@@ -296,18 +315,30 @@ const Headerclient = ({
                             </li>
                           </ul>
                         </li>
-                        <li className="level-0 menu-item mega-menu mega-menu-fullwidth align-center">
-                          <a href="blog-grid-left.html">
+                        <li
+                          className={`level-0 menu-item ${
+                            isActive("/blog") ? "current-menu-item" : ""
+                          }`}
+                        >
+                          <a href="/blog">
                             <span className="menu-item-text">Blog</span>
                           </a>
                         </li>
-                        <li className="level-0 menu-item">
+                        <li
+                          className={`level-0 menu-item ${
+                            isActive("/about") ? "current-menu-item" : ""
+                          }`}
+                        >
                           <a href="/about">
                             <span className="menu-item-text">About</span>
                           </a>
                         </li>
-                        <li className="level-0 menu-item">
-                          <a href="page-contact.html">
+                        <li
+                          className={`level-0 menu-item ${
+                            isActive("/contact") ? "current-menu-item" : ""
+                          }`}
+                        >
+                          <a href="/contact">
                             <span className="menu-item-text">Contact</span>
                           </a>
                         </li>
@@ -316,8 +347,8 @@ const Headerclient = ({
                   </div>
                 </div>
 
-                <div className="col-xl-3 col-lg-4 col-md-12 col-sm-12 header-right mt-[28px]">
-                  <div className="flex items-center space-x-4 gap-[15px]">
+                <div className="col-xl-3 col-lg-4 col-md-12 col-sm-12 header-right mt-[28px] md:ml-auto md:mr-0 ">
+                  <div className="flex justify-end items-center space-x-4 gap-[15px]">
                     <button onClick={handleSearchClick}>
                       <i
                         className="fas fa-search text-lg ml-2"
@@ -483,6 +514,71 @@ const Headerclient = ({
                       <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
                         {carCount}
                       </span>
+                      <div className="site-navigation justify-center items-center inline-flex">
+                        {/* Nút 3 gạch hiển thị khi màn hình nhỏ */}
+                        <div className="block relative md:hidden">
+                          <button
+                            className="text-black text-lg pb-4 absolute left-4"
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                          >
+                            <i className="fas fa-bars text-2xl"></i>
+                          </button>
+
+                          {/* Menu Di Động */}
+                          <nav
+                            className={`fixed top-0 right-0 h-full bg-white shadow-lg transition-transform transform ${
+                              isMenuOpen ? "translate-x-0" : "translate-x-full"
+                            } lg:translate-x-0 lg:static lg:shadow-none`}
+                            style={{
+                              width: "30%",
+                              maxWidth: "300px",
+                            }}
+                          >
+                            <div className="p-6">
+                              <button
+                                className="text-black text-lg p-2 absolute top-2 right-2"
+                                onClick={() => setIsMenuOpen(false)}
+                              >
+                                <i className="fas fa-times text-2xl"></i>
+                              </button>
+                              <ul className="space-y-4">
+                                <li>
+                                  <a
+                                    href="/"
+                                    className="block text-lg font-semibold"
+                                  >
+                                    Home
+                                  </a>
+                                </li>
+                                <li>
+                                  <a
+                                    href="/shoplist"
+                                    className="block text-lg font-semibold"
+                                  >
+                                    Shop
+                                  </a>
+                                </li>
+                                <li>
+                                  <a
+                                    href="/about"
+                                    className="block text-lg font-semibold"
+                                  >
+                                    About
+                                  </a>
+                                </li>
+                                <li>
+                                  <a
+                                    href="/contact"
+                                    className="block text-lg font-semibold"
+                                  >
+                                    Contact
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </nav>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -637,4 +733,4 @@ const Headerclient = ({
   );
 };
 
-export default Headerclient;
+export default HeaderClientC;

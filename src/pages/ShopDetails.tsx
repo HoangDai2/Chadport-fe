@@ -16,7 +16,7 @@ const ShopDetails = ({
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<TProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<TProduct[]>([]);
-
+  const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
@@ -62,6 +62,7 @@ const ShopDetails = ({
       try {
         const res = await apisphp.get(`/showdetail/products/${id}`);
         const fetchedProduct = res.data;
+        // console.log(fetchedProduct, "fet");
 
         let images: string[] = [];
         if (typeof fetchedProduct.image_description === "string") {
@@ -85,7 +86,44 @@ const ShopDetails = ({
       fetchProductDetails();
     }
   }, [id]);
+  // console.log(product);
+  // start hung test details
+  useEffect(() => {
+    const testDetailsFetch = async () => {
+      try {
+        // Gọi API để lấy chi tiết sản phẩm
+        const res = await apisphp.get(`/showdetail/products/${id}`);
+        const fetchedProduct = res.data;
 
+        // Kiểm tra nếu mảng `products` đã có sản phẩm với cùng `id`
+        setRelatedProducts((prevProducts) => {
+          // Kiểm tra xem sản phẩm có tồn tại trong mảng chưa
+          const existingProduct = prevProducts.find(
+            (product) => product.id === fetchedProduct.id
+          );
+
+          if (existingProduct) {
+            // Nếu sản phẩm đã có, không thêm vào mà giữ nguyên mảng cũ
+            return prevProducts;
+          } else {
+            // Nếu sản phẩm chưa có, thêm sản phẩm vào mảng
+            return [...prevProducts, fetchedProduct];
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      } finally {
+        setLoading(false); // Đảm bảo loading được tắt sau khi lấy dữ liệu xong
+      }
+    };
+
+    if (id) {
+      testDetailsFetch();
+    }
+  }, [id]); // Chạy lại khi id thay đổi
+  console.log("relatedProducts", relatedProducts);
+
+  // end hung test details
   if (!product) {
     return <div>Loading...</div>;
   }
@@ -455,7 +493,7 @@ const ShopDetails = ({
                                 {relatedProducts.map((relatedProduct) => (
                                   <div
                                     className="item-product slick-slider-item"
-                                    key={relatedProduct.pro_id}
+                                    key={relatedProduct.id}
                                   >
                                     <div className="items">
                                       <div className="products-entry clearfix product-wapper">
@@ -465,7 +503,7 @@ const ShopDetails = ({
                                           </div>
                                           <div className="product-thumb-hover">
                                             <a
-                                              href={`/shop-details/${relatedProduct.pro_id}`}
+                                              href={`/shop-details/${relatedProduct.id}`}
                                             >
                                               <img
                                                 width={600}
@@ -559,6 +597,7 @@ const ShopDetails = ({
                                     </div>
                                   </div>
                                 ))}
+                                {/* <p>{product.name}</p> */}
                               </div>
                             </div>
                           </div>

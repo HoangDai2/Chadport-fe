@@ -519,66 +519,117 @@ li.selected {
 }
 
 /* reponsive header */
-.header-desktop {
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #e1e1e1;
   position: fixed;
-  top: 0;
   width: 100%;
-  z-index: 999;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
+  top: 0;
+  z-index: 1000;
 }
 
-.header-wrapper {
+.header-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 16px;
+  justify-content: space-between;
+  padding: 10px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.site-logo img {
-  max-width: 150px;
-  height: auto;
+/* Logo */
+.logo-img {
+  height: 30px;
 }
 
-.site-navigation ul {
+/* Menu */
+.menu {
   display: flex;
-  gap: 16px;
-  list-style: none;
+  gap: 20px;
 }
 
-.site-navigation ul li a {
+.menu ul {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li a {
   text-decoration: none;
-  color: black;
-  font-weight: 600;
+  color: #000;
+  font-weight: 500;
+}
+
+.menu li a:hover {
+  color: #0073e6;
+}
+
+/* Icons */
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-icons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.header-icons i {
+  font-size: 18px;
+  color: #000;
+}
+
+/* Hamburger Icon */
+.hamburger {
+  display: none;
+  font-size: 20px;
+  cursor: pointer;
 }
 
 /* Responsive Styles */
-.row {
-  display: flex;
-  /* Kích hoạt Flexbox */
-  align-items: center;
-  /* Căn giữa theo chiều dọc */
-  justify-content: space-between;
-  /* Căn đều giữa các phần */
+@media (max-width: 800px) {
+  .menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background-color: #fff;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+  }
+
+  .menu.open {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
 }
 
-.header-left,
-.header-center,
-.header-right {
-  flex-shrink: 0;
-  /* Đảm bảo các phần tử không bị co lại */
+@media (max-width: 999px) {
+  .site-navigation {
+    display: none;
+  }
 }
 
-.header-center {
-  flex-grow: 1;
-  /* Cho phép phần giữa mở rộng chiếm không gian trống */
-  text-align: center;
-  /* Căn giữa nội dung text */
+@media (max-width: 992px) {
+  .header-center {
+    display: none;
+  }
 }
 
-.header-left img {
-  max-width: 100%;
-  /* Giữ kích thước hợp lý cho logo */
-  height: auto;
+/* Hiển thị menu khi màn hình > 700px */
+@media (min-width: 700px) {
+  .site-navigation {
+    display: block;
+    text-align: left;
+    justify-items: left;
+  }
 }

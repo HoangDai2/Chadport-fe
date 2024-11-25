@@ -29,6 +29,9 @@ import "./libs/elegant-icons/css/elegant.css";
 // import "slick-carousel/slick/slick.css";
 // import "slick-carousel/slick/slick-theme.css";
 // import "slick-carousel";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import "./libs/slick/css/slick.css";
 import "./libs/slick/css/slick-theme.css";
 import "slick-carousel/slick/slick.css";
@@ -65,6 +68,8 @@ import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
 import LoginAdmin from "./admin/pages/LoginAdmin";
 import ProfileAdmin from "./admin/pages/ProfileAdmin";
+import HeaderclientC from "./components/HeaderClient copy";
+import HeaderClientC from "./components/HeaderClient copy";
 
 function App() {
   const navigate = useNavigate();
@@ -500,6 +505,19 @@ function App() {
 
           <Route
             path="/about"
+            element={
+              <>
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
+                <About />
+                <FooterClient />
+              </>
+            }
+          />
+          <Route
+            path="/blog"
             element={
               <>
                 <HeaderClient
