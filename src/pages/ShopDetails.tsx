@@ -20,8 +20,14 @@ const ShopDetails = ({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
+  // Function to handle size change
   const handleSizeChange = (size: string) => {
     setSelectedSize(size);
+  };
+
+  // Function to handle color change
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
   };
   const navigate = useNavigate();
   const handleBuyNow = () => {
@@ -45,9 +51,7 @@ const ShopDetails = ({
     addToCart(productDetails);
     navigate("/checkout", { state: { product: productDetails } });
   };
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-  };
+
 
   // State để quản lý số lượng sản phẩm
   const [quantity, setQuantity] = useState(1);
@@ -89,6 +93,11 @@ const ShopDetails = ({
   if (!product) {
     return <div>Loading...</div>;
   }
+
+
+
+
+
 
   return (
     <>
@@ -161,7 +170,7 @@ const ShopDetails = ({
                                 >
                                   <div className="product-gallery">
                                     {product.image_description &&
-                                    Array.isArray(product.image_description) ? (
+                                      Array.isArray(product.image_description) ? (
                                       product.image_description.map(
                                         (image, index) => (
                                           <div
@@ -178,9 +187,8 @@ const ShopDetails = ({
                                                 width={100}
                                                 height={100}
                                                 src={`http://127.0.0.1:8000/storage/${image}`}
-                                                alt={`Additional image ${
-                                                  index + 1
-                                                }`}
+                                                alt={`Additional image ${index + 1
+                                                  }`}
                                               />
                                             </span>
                                           </div>
@@ -230,72 +238,42 @@ const ShopDetails = ({
                           <div className="description text-left">
                             <p>{product.description}</p>
                           </div>
-                          <div className="variations">
-                            <table cellSpacing={0}>
-                              <tbody>
-                                <tr>
-                                  <td className="label">Size</td>
-                                  <td className="attributes">
-                                    <ul className="text">
-                                      {["S", "M", "L"].map((size) => (
-                                        <li
-                                          key={size}
-                                          onClick={() => handleSizeChange(size)} // Gọi hàm khi người dùng chọn size
-                                          className={
-                                            selectedSize === size
-                                              ? "selected"
-                                              : ""
-                                          }
-                                        >
-                                          <span>{size}</span>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="label">Color</td>
-                                  <td className="attributes">
-                                    <ul className="colors">
-                                      {["black", "blue", "green"].map(
-                                        (color) => (
-                                          <li
-                                            key={color}
-                                            onClick={() => {
-                                              // console.log(
-                                              //   `Color selected: ${color}`
-                                              // );
-                                              handleColorChange(color); // Gọi hàm để thay đổi state
-                                            }}
-                                            className={
-                                              selectedColor === color
-                                                ? "selected-color"
-                                                : ""
-                                            }
-                                          >
-                                            <span
-                                              style={{
-                                                backgroundColor: color, // Cập nhật màu sắc cho mỗi phần tử
-                                                display: "inline-block",
-                                                width: "30px",
-                                                height: "30px",
-                                                borderRadius: "50%",
-                                                cursor: "pointer",
-                                                border:
-                                                  selectedColor === color
-                                                    ? "3px solid blue"
-                                                    : "2px solid #ccc", // Thêm viền khi được chọn
-                                              }}
-                                            />
-                                          </li>
-                                        )
-                                      )}
-                                    </ul>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
+                          {/* Size selection */}
+                          <div className="mb-3">
+                            <label className="form-label">Size</label>
+                            <div className="btn-group">
+                              {product.variants?.map((variant) => (
+                                <button
+                                  key={variant.size_id}
+                                  className={`btn btn-outline-primary m-1 ${selectedSize === variant.size?.name ? "bg-primary text-white" : ""
+                                    }`}
+                                  onClick={() => handleSizeChange(variant.size?.name || "")}
+                                >
+                                  {variant.size?.name}
+                                </button>
+                              ))}
+                            </div>
                           </div>
+
+                          {/* Color selection */}
+                          <div className="mb-3">
+                            <label className="form-label">Color</label>
+                            <div className="btn-group">
+                              {product.variants?.map((variant) => (
+                                <button
+                                  key={variant.color_id}
+                                  className={`btn m-1`}
+                                  style={{
+                                    backgroundColor: variant.color?.hex,
+                                    borderColor: selectedColor === variant.color?.name ? "blue" : "#ccc",  // Viền chỉ hiển thị khi chọn màu
+                                    boxShadow: selectedColor === variant.color?.name ? "0 0 10px blue" : "none", // Tạo bóng khi chọn
+                                  }}
+                                  onClick={() => handleColorChange(variant.color?.name || "")}
+                                />
+                              ))}
+                            </div>
+                          </div>
+
                           <div className="buttons">
                             <div className="add-to-cart-wrap">
                               <div className="quantity">
@@ -340,8 +318,7 @@ const ShopDetails = ({
                                     addToCart({
                                       ...product,
                                       quantity,
-                                      size: selectedSize,
-                                      color: selectedColor,
+                                     
                                     });
                                   }}
                                   href="#"
