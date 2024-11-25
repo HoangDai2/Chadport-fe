@@ -8,7 +8,7 @@ import "./style/toast.css";
 import "./style/Home.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import TProduct from "./Types/TProduct";
+import TProduct, { Color, Size, TVariant } from "./Types/TProduct";
 import HeaderClient from "./components/HeaderClient";
 import FooterClient from "./components/FooterClient";
 import Banner from "./components/Banner";
@@ -227,15 +227,25 @@ function App() {
   const handleAddProduct = (
     newShoe: TProduct,
     images: File[],
-    imageProduct: File
+    imageProduct: File,
+    variant: Array<{ quantity: number; color: string; size: string }>,
+    sizes: Size[],
+    colors: Color[]
   ) => {
     console.log("Dữ liệu sản phẩm:", newShoe);
     console.log("Hình ảnh sản phẩm:", images); // In ra danh sách các ảnh
     console.log("Hình ảnh sản phẩm:", imageProduct);
-    // console.log("Biến thể sản phẩm:", variants);
+    console.log("Biến thể sản phẩm:", variant);
     (async () => {
       try {
         const formData = new FormData();
+
+        // Chuyển đổi `variant` thành định dạng đúng
+        const convertedVariants = variant.map((v) => ({
+          size_id: sizes.filter((s) => s.name === v.size).map((s) => s.id), // Trích xuất mảng `id` của size
+          color_id: colors.filter((c) => c.name === v.color).map((c) => c.id), // Trích xuất mảng `id` của color
+          quantity: v.quantity,
+        }));
 
         // Thêm các trường từ newShoe vào FormData
         Object.entries(newShoe).forEach(([key, value]) => {
@@ -250,6 +260,9 @@ function App() {
           formData.append("image_description[]", image); // Sử dụng array notation để gửi nhiều ảnh
         });
 
+        formData.append("variants", JSON.stringify(convertedVariants)); // Đảm bảo gửi JSON
+        console.log("Variants gửi đi:", JSON.stringify(convertedVariants));
+
         // Kiểm tra FormData
         for (let pair of formData.entries()) {
           console.log(pair[0] + ": ", pair[1]); // Kiểm tra từng mục trong FormData
@@ -257,8 +270,8 @@ function App() {
 
         const newProduct = await createProduct(formData);
         setProduct((prev) => [...prev, newProduct]);
-        navigate("/admin/products"); // Điều hướng sau khi thêm thành công
-        window.location.reload(); // Tải lại trang nếu cần thiết
+        // navigate("/admin/products"); // Điều hướng sau khi thêm thành công
+        // window.location.reload(); // Tải lại trang nếu cần thiết
       } catch (error) {
         console.error("Error adding product:", error);
       }

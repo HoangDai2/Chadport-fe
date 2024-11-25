@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import instance from "../../../Service";
-import { TProduct, Variant } from "../../../Types/TProduct";
+import { Color, Size, TProduct, TVariant } from "../../../Types/TProduct";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,7 +12,14 @@ import { AiFillProduct } from "react-icons/ai";
 import VariantForm from "../Variants/VariantsForm";
 import VariantsForm from "../Variants/VariantsForm";
 type Props = {
-  onAdd: (newShoe: TProduct, images: File[], imageProduct: File) => void;
+  onAdd: (
+    newShoe: TProduct,
+    images: File[],
+    imageProduct: File,
+    variant: Array<{ quantity: number; color: string; size: string }>,
+    sizes: Size[],
+    colors: Color[]
+  ) => void;
   categories: Tcategory[];
 };
 function ProductAdd({ onAdd, categories }: Props) {
@@ -33,6 +40,8 @@ function ProductAdd({ onAdd, categories }: Props) {
       quantity: 0,
     },
   ]);
+  const [sizes, setSizes] = useState<Size[]>([]); // Thêm state để lưu sizes
+  const [colors, setColors] = useState<Color[]>([]); // Thêm state để lưu colors
   const {
     register,
     handleSubmit,
@@ -116,7 +125,7 @@ function ProductAdd({ onAdd, categories }: Props) {
   // Gửi dữ liệu sản phẩm và ảnh lên server
   const onSubmit = async (data: TProduct) => {
     try {
-      await onAdd(data, images, imageProduct!); // Truyền TProduct và images riêng biệt vào onAdd
+      await onAdd(data, images, imageProduct!, variant, sizes, colors); // Truyền cả sản phẩm và biến thể
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -401,7 +410,12 @@ function ProductAdd({ onAdd, categories }: Props) {
             )}
           </div>
           <div>
-            <VariantsForm variant={variant} setVariantAddress={setVariant} />
+            <VariantsForm
+              variant={variant}
+              setVariantAddress={setVariant}
+              setSizes={setSizes}
+              setColors={setColors}
+            />
           </div>
         </div>
       </form>

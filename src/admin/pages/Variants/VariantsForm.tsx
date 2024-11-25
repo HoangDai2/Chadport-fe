@@ -4,102 +4,159 @@ import { FaSave } from "react-icons/fa";
 import { Color, Size } from "../../../Types/TProduct";
 import apisphp from "../../../Service/api";
 
+// Interface định nghĩa cấu trúc dữ liệu của một biến thể sản phẩm
 interface Variant {
-  id: number;
-  sizes: string[];
-  colors: string[];
-  quantity: number;
+  id: number; // ID duy nhất cho mỗi biến thể
+  sizes: string[]; // Danh sách kích thước của biến thể
+  colors: string[]; // Danh sách màu sắc của biến thể
+  quantity: number; // Số lượng của biến thể
 }
 
+// Định nghĩa kiểu Props cho component VariantsForm
 type Props = {
   variant: Array<{ quantity: number; color: string; size: string }>;
   setVariantAddress: React.Dispatch<
     React.SetStateAction<
       Array<{ quantity: number; color: string; size: string }>
     >
-  >;
+  >; // Hàm để cập nhật danh sách biến thể ở component cha
+  setSizes: React.Dispatch<React.SetStateAction<Size[]>>; // Hàm cập nhật kích thước từ component cha
+  setColors: React.Dispatch<React.SetStateAction<Color[]>>; // Hàm cập nhật màu sắc từ component cha
 };
 
-const VariantsForm: React.FC<Props> = ({ variant, setVariantAddress }) => {
+const VariantsForm: React.FC<Props> = ({
+  variant,
+  setVariantAddress,
+  setSizes,
+  setColors,
+}) => {
+  // State lưu trữ danh sách các biến thể
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [sizes, setSizes] = useState<Size[]>([]);
-  const [colors, setColors] = useState<Color[]>([]);
+  // State lưu trữ danh sách kích thước và màu sắc
+  const [sizes, setLocalSizes] = useState<Size[]>([]);
+  const [colors, setLocalColors] = useState<Color[]>([]);
 
+  // useEffect để tải danh sách kích thước và màu sắc khi component được render lần đầu
   useEffect(() => {
     fetchSizes();
     fetchColors();
   }, []);
 
+  // Hàm tải danh sách kích thước từ API
   const fetchSizes = async () => {
     try {
       const response = await apisphp.get("/sizes");
-      setSizes(response.data.data);
+      setLocalSizes(response.data.data); // Lưu kích thước vào state local
+      setSizes(response.data.data); // Cập nhật kích thước lên component cha
     } catch (error) {
       console.error("Error fetching sizes:", error);
     }
   };
 
+  // Hàm tải danh sách màu sắc từ API
   const fetchColors = async () => {
     try {
       const responseColor = await apisphp.get("/colors");
-      setColors(responseColor.data.data);
+      setLocalColors(responseColor.data.data); // Lưu màu sắc vào state local
+      setColors(responseColor.data.data); // Cập nhật màu sắc lên component cha
     } catch (error) {
       console.error("Error fetching colors:", error);
     }
   };
 
+  // Hàm thêm một biến thể mới
   const addVariant = () => {
-    const newVariants = [
-      ...variants,
-      { id: Date.now(), sizes: [], colors: [], quantity: 1 },
-    ];
-    setVariants(newVariants);
-    setVariantAddress(
-      newVariants.map((variant) => ({
-        size: variant.sizes.join(", "),
-        color: variant.colors.join(", "),
-        quantity: variant.quantity,
-      }))
-    );
+    const newVariant = { id: Date.now(), sizes: [], colors: [], quantity: 1 };
+    setVariants((prevVariants) => {
+      const updatedVariants = [...prevVariants, newVariant];
+
+      // Cập nhật biến thể về component cha sau khi thêm
+      setVariantAddress(
+        updatedVariants.map((variant) => ({
+          size: variant.sizes.join(", "), // Ghép các kích thước thành chuỗi
+          color: variant.colors.join(", "), // Ghép các màu sắc thành chuỗi
+          quantity: variant.quantity, // Lấy số lượng
+        }))
+      );
+
+      return updatedVariants;
+    });
   };
 
+  // Hàm xóa một biến thể theo ID
   const removeVariant = (id: number) => {
-    setVariants(variants.filter((variant) => variant.id !== id));
+    setVariants((prevVariants) => {
+      const updatedVariants = prevVariants.filter(
+        (variant) => variant.id !== id
+      );
+
+      // Cập nhật biến thể về component cha sau khi xóa
+      setVariantAddress(
+        updatedVariants.map((variant) => ({
+          size: variant.sizes.join(", "),
+          color: variant.colors.join(", "),
+          quantity: variant.quantity,
+        }))
+      );
+
+      return updatedVariants;
+    });
   };
 
+  // Hàm chọn hoặc bỏ chọn kích thước hoặc màu sắc
   const toggleSelection = (id: number, field: keyof Variant, value: string) => {
-    setVariants(
-      variants.map((variant) =>
-        variant.id === id
-          ? {
-              ...variant,
-              [field]: variant[field].includes(value)
-                ? (variant[field] as string[]).filter((v) => v !== value)
-                : [...(variant[field] as string[]), value],
-            }
-          : variant
-      )
-    );
+    setVariants((prevVariants) => {
+      const updatedVariants = prevVariants.map((variant) => {
+        if (variant.id !== id) return variant; // Nếu không phải biến thể cần chỉnh sửa, trả về như cũ
+
+        // Thêm hoặc xóa giá trị khỏi danh sách kích thước/màu sắc
+        const updatedField = variant[field].includes(value)
+          ? (variant[field] as string[]).filter((v) => v !== value) // Bỏ giá trị nếu đã chọn
+          : [...(variant[field] as string[]), value]; // Thêm giá trị nếu chưa chọn
+
+        return {
+          ...variant,
+          [field]: updatedField, // Cập nhật giá trị mới cho biến thể
+        };
+      });
+
+      // Cập nhật biến thể về component cha
+      setVariantAddress(
+        updatedVariants.map((variant) => ({
+          size: variant.sizes.join(", "),
+          color: variant.colors.join(", "),
+          quantity: variant.quantity,
+        }))
+      );
+
+      return updatedVariants;
+    });
   };
 
+  // Hàm cập nhật số lượng cho biến thể
   const updateVariant = (id: number, field: keyof Variant, value: number) => {
-    setVariants(
-      variants.map((variant) =>
+    setVariants((prevVariants) => {
+      const updatedVariants = prevVariants.map((variant) =>
         variant.id === id ? { ...variant, [field]: value } : variant
-      )
-    );
+      );
+
+      // Cập nhật biến thể về component cha
+      setVariantAddress(
+        updatedVariants.map((variant) => ({
+          size: variant.sizes.join(", "),
+          color: variant.colors.join(", "),
+          quantity: variant.quantity,
+        }))
+      );
+
+      return updatedVariants;
+    });
   };
 
+  // Hàm xử lý khi nhấn nút lưu
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const transformedVariants = variants.map((variant) => ({
-      size: variant.sizes.join(", "),
-      color: variant.colors.join(", "),
-      quantity: variant.quantity,
-    }));
-
-    setVariantAddress(transformedVariants); // Đẩy dữ liệu lên ProductAdd
-    console.log("Submitted Variants:", transformedVariants);
+    e.preventDefault(); // Ngăn chặn reload trang
+    console.log("Submitted Variants:", variants); // Log biến thể ra console
   };
 
   return (

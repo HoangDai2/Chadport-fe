@@ -16,7 +16,7 @@ export interface Color {
   date_update: string;
 }
 
-export interface Variant {
+export interface TVariant {
   product: any;
   id: number;
   product_id: number;
@@ -46,7 +46,7 @@ export interface TProduct {
   date_create: string;
   date_update: string;
   category?: Tcategory[];
-  variants?: Variant[]; // Thêm danh sách các biến thể của sản phẩm
+  variants?: TVariant[]; // Thêm danh sách các biến thể của sản phẩm
 }
 
 export default TProduct;

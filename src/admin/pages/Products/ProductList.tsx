@@ -194,7 +194,7 @@ function ProductList() {
                       {product.description}
                     </td>
                     <td className="px-2 py-2 text-gray-700">
-                      {getCategoryName(product.cat_id)}
+                      {getCategoryName(product.category_id)}
                     </td>
                     <td className="px-2 py-2 text-gray-700">
                       <div className="flex space-x-4">

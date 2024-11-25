@@ -1,45 +1,44 @@
-import React, { createContext, useState, useContext } from "react";
-import { Color, Size } from "../../../Types/TProduct";
+import React, { createContext, useState, useEffect, ReactNode } from "react";
+import apisphp from "../../../Service/api";
+import { Color, Size, TProduct, TVariant } from "../../../Types/TProduct";
 
-interface Variant {
-  product: any;
-  id: number;
-  product_id: number;
-  color_id: number;
-  size_id: number;
-  quatity: number;
-  color?: Color; // Bao gồm thông tin màu sắc
-  size?: Size; // Bao gồm thông tin kích cỡ
+interface ProductContextType {
+  sizes: Size[];
+  colors: Color[];
+  variants: TVariant[];
+  setVariants: React.Dispatch<React.SetStateAction<TVariant[]>>;
+  fetchSizesAndColors: () => void;
 }
 
-interface VariantsContextType {
-  variants: Variant[];
-  setVariants: React.Dispatch<React.SetStateAction<Variant[]>>;
-}
+const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
-// Tạo context mặc định
-const VariantsContext = createContext<VariantsContextType | undefined>(
-  undefined
-);
+const ProductProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [sizes, setSizes] = useState<Size[]>([]);
+  const [colors, setColors] = useState<Color[]>([]);
+  const [variants, setVariants] = useState<TVariant[]>([]);
 
-// Provider để quản lý variants
-export const VariantsProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [variants, setVariants] = useState<Variant[]>([]);
+  useEffect(() => {
+    fetchSizesAndColors();
+  }, []);
+
+  const fetchSizesAndColors = async () => {
+    try {
+      const sizeResponse = await apisphp.get("/sizes");
+      const colorResponse = await apisphp.get("/colors");
+      setSizes(sizeResponse.data.data);
+      setColors(colorResponse.data.data);
+    } catch (error) {
+      console.error("Error fetching sizes and colors:", error);
+    }
+  };
 
   return (
-    <VariantsContext.Provider value={{ variants, setVariants }}>
+    <ProductContext.Provider
+      value={{ sizes, colors, variants, setVariants, fetchSizesAndColors }}
+    >
       {children}
-    </VariantsContext.Provider>
+    </ProductContext.Provider>
   );
 };
 
-// Hook để sử dụng VariantsContext
-export const useVariants = () => {
-  const context = useContext(VariantsContext);
-  if (!context) {
-    throw new Error("useVariants must be used within a VariantsProvider");
-  }
-  return context;
-};
+export { ProductContext, ProductProvider };
