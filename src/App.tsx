@@ -29,6 +29,9 @@ import "./libs/elegant-icons/css/elegant.css";
 // import "slick-carousel/slick/slick.css";
 // import "slick-carousel/slick/slick-theme.css";
 // import "slick-carousel";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import "./libs/slick/css/slick.css";
 import "./libs/slick/css/slick-theme.css";
 import "slick-carousel/slick/slick.css";
@@ -63,11 +66,17 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
+import LoginAdmin from "./admin/pages/LoginAdmin";
+import ProfileAdmin from "./admin/pages/ProfileAdmin";
+import HeaderclientC from "./components/HeaderClient copy";
+import HeaderClientC from "./components/HeaderClient copy";
+
 // import LoginAdmin from "./admin/pages/LoginAdmin";
 // import ProfileAdmin from "./admin/pages/ProfileAdmin";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
+
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -529,6 +538,19 @@ function App() {
               </>
             }
           />
+          <Route
+            path="/blog"
+            element={
+              <>
+                <HeaderClient
+                  wishlisCount={wishlistCount}
+                  carCount={carCount}
+                />
+                <About />
+                <FooterClient />
+              </>
+            }
+          />
 
           <Route
             path="/categoriesnike/:id"
@@ -566,7 +588,9 @@ function App() {
           /> */}
         </Routes>
         <Routes>
+          <Route path="loginadmin" element={<LoginAdmin />} />
           {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
+
         </Routes>
         <Routes>
           {/* Router admin */}
