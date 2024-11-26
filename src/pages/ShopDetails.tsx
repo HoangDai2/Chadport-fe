@@ -90,6 +90,7 @@ const ShopDetails = ({
     }
   }, [id]);
 
+
   if (!product) {
     return <div>Loading...</div>;
   }
@@ -242,37 +243,48 @@ const ShopDetails = ({
                           <div className="mb-3">
                             <label className="form-label">Size</label>
                             <div className="btn-group">
-                              {product.variants?.map((variant) => (
+                              {/* Lọc ra các size duy nhất */}
+                              {[
+                                ...new Set(product.variants?.map((variant) => variant.size?.name).filter(Boolean)),
+                              ].map((size) => (
                                 <button
-                                  key={variant.size_id}
-                                  className={`btn btn-outline-primary m-1 ${selectedSize === variant.size?.name ? "bg-primary text-white" : ""
+                                  key={size}
+                                  className={`btn btn-outline-primary m-1 ${selectedSize === size ? "bg-primary text-white" : ""
                                     }`}
-                                  onClick={() => handleSizeChange(variant.size?.name || "")}
+                                  onClick={() => handleSizeChange(size || "")}
                                 >
-                                  {variant.size?.name}
+                                  {size}
                                 </button>
                               ))}
                             </div>
                           </div>
-
                           {/* Color selection */}
                           <div className="mb-3">
                             <label className="form-label">Color</label>
                             <div className="btn-group">
-                              {product.variants?.map((variant) => (
-                                <button
-                                  key={variant.color_id}
-                                  className={`btn m-1`}
-                                  style={{
-                                    backgroundColor: variant.color?.hex,
-                                    borderColor: selectedColor === variant.color?.name ? "blue" : "#ccc",  // Viền chỉ hiển thị khi chọn màu
-                                    boxShadow: selectedColor === variant.color?.name ? "0 0 10px blue" : "none", // Tạo bóng khi chọn
-                                  }}
-                                  onClick={() => handleColorChange(variant.color?.name || "")}
-                                />
-                              ))}
+                              {/* Lọc ra các màu duy nhất */}
+                              {[
+                                ...new Set(product.variants?.map((variant) => variant.color?.name).filter(Boolean)),
+                              ].map((color) => {
+                                const hex = product.variants?.find(
+                                  (variant) => variant.color?.name === color
+                                )?.color?.hex; // Lấy mã màu từ variant tương ứng
+                                return (
+                                  <button
+                                    key={color}
+                                    className="btn m-1"
+                                    style={{
+                                      backgroundColor: hex || "#ccc",
+                                      borderColor: selectedColor === color ? "blue" : "#ccc", // Viền chỉ hiển thị khi chọn màu
+                                      boxShadow: selectedColor === color ? "0 0 10px blue" : "none", // Tạo bóng khi chọn
+                                    }}
+                                    onClick={() => handleColorChange(color || "")}
+                                  />
+                                );
+                              })}
                             </div>
                           </div>
+
 
                           <div className="buttons">
                             <div className="add-to-cart-wrap">
@@ -311,15 +323,25 @@ const ShopDetails = ({
                               <div className="btn-add-to-cart">
                                 <a
                                   onClick={() => {
+                                    // Kiểm tra nếu chưa chọn size và color
                                     if (!selectedSize || !selectedColor) {
                                       alert("Please select size and color");
                                       return;
                                     }
-                                    addToCart({
-                                      ...product,
-                                      quantity,
-                                     
-                                    });
+
+                                    // Tìm variant phù hợp với size và color đã chọn
+                                    const selectedVariant = product.variants?.find(
+                                      (variant) =>
+                                        variant.size?.name === selectedSize && variant.color?.hex === selectedColor
+                                    );
+
+                                    if (!selectedVariant) {
+                                      alert("Variant not found!");
+                                      return;
+                                    }
+
+                                    // Thêm vào giỏ hàng với thông tin variant
+                                    
                                   }}
                                   href="#"
                                   className="button"
@@ -328,6 +350,7 @@ const ShopDetails = ({
                                   Add to cart
                                 </a>
                               </div>
+
                             </div>
                             <div
                               className="btn-quick-buy"

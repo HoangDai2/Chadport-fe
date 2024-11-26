@@ -17,12 +17,11 @@ export interface Color {
 }
 
 export interface TVariant {
-  product: any;
   id: number;
   product_id: number;
   color_id: number;
   size_id: number;
-  quatity: number;
+  quantity: number;
   color?: Color; // Bao gồm thông tin màu sắc
   size?: Size; // Bao gồm thông tin kích cỡ
 }
@@ -33,8 +32,6 @@ export interface TProduct {
   title: string;
   name: string;
   status: string;
-  col_id: number;
-  size_id: number;
   brand_id: number;
   description: string;
   quantity: number;
