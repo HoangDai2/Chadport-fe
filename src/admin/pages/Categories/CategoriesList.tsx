@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Tcategory from "../../Types/TCategories";
+import Tcategory from "../../../Types/TCategories";
 import { ToastContainer, toast } from "react-toastify";
-import apisphp from "../../Service/api";
-import "../style/Category.css";
+import apisphp from "../../../Service/api";
+// import "../style/Category.css";
 type Props = {
   listcategories: Tcategory[];
 };
@@ -22,7 +22,7 @@ const CategoriesList = ({ listcategories }: Props) => {
     const fetchCategories = async () => {
       try {
         const response = await apisphp.get(
-          `/categories?page=${currentPage}&per_page=${perPage}`
+          `getall/categories?page=${currentPage}&per_page=${perPage}`
         );
 
         if (response.data) {

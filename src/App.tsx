@@ -8,7 +8,7 @@ import "./style/toast.css";
 import "./style/Home.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import TProduct from "./Types/TProduct";
+import TProduct, { Color, Size, TVariant } from "./Types/TProduct";
 import HeaderClient from "./components/HeaderClient";
 import FooterClient from "./components/FooterClient";
 import Banner from "./components/Banner";
@@ -47,17 +47,17 @@ import Checkout from "./pages/Checkout";
 import BillOrder from "./pages/BillOrder";
 import MyAccountPage from "./pages/MyAccountPage";
 import { toast } from "react-toastify";
-import ProductList from "./admin/pages/ProductList"; // Correcting the import path
-import ProductAdd from "./admin/pages/ProductAdd";
+import ProductList from "./admin/pages/Products/ProductList"; // Correcting the import path
+import ProductAdd from "./admin/pages/Products/ProductAdd";
 import Profile from "./pages/AuthClient/Profile";
 import Pay_done from "./pages/Pay_done";
-import ProductUpdate from "./admin/pages/ProductUpdate";
+import ProductUpdate from "./admin/pages/Products/ProductUpdate";
 import Headerclient from "./components/HeaderClient";
 import PaymentSuccess from "./pages/Pay_done";
 import DoneMomo from "./pages/Pay_done";
-import CategoriesAdd from "./admin/pages/CategoriesAdd";
-import CategoriesList from "./admin/pages/CategoriesList";
-import CategoriesUpadate from "./admin/pages/CategoriesUpadate";
+import CategoriesAdd from "./admin/pages/Categories/CategoriesAdd";
+import CategoriesList from "./admin/pages/Categories/CategoriesList";
+import CategoriesUpadate from "./admin/pages/Categories/CategoriesUpadate";
 import Tcategory from "./Types/TCategories";
 import createCategory from "./Service/categories";
 import createProduct from "./Service/Product";
@@ -70,6 +70,12 @@ import LoginAdmin from "./admin/pages/LoginAdmin";
 import ProfileAdmin from "./admin/pages/ProfileAdmin";
 import HeaderclientC from "./components/HeaderClient copy";
 import HeaderClientC from "./components/HeaderClient copy";
+
+// import LoginAdmin from "./admin/pages/LoginAdmin";
+// import ProfileAdmin from "./admin/pages/ProfileAdmin";
+import SizeForm from "./admin/pages/Variants/SizeForm";
+import ColorForm from "./admin/pages/Variants/ColorForm";
+import VariantForm from "./admin/pages/Variants/VariantsForm";
 
 function App() {
   const navigate = useNavigate();
@@ -102,6 +108,61 @@ function App() {
   useEffect(() => {
     fetchWihsListCount();
   }, []);
+  const addToWishlist = async (product: TProduct) => {
+    try {
+      const wishlistResponse = await fetch("http://localhost:3000/wishlist");
+      const wishlistItems = await wishlistResponse.json();
+      const isProductInwishlist = wishlistItems.some(
+        (item: { product: TProduct }) => item.product.id === product.id
+      );
+      if (isProductInwishlist) {
+        toast.info(`${product.name} đã có trong giỏ wishlist!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        return;
+      }
+
+      const response = await fetch("http://localhost:3000/wishlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product }),
+      });
+
+      if (response.ok) {
+        setWishlistCount((prevCount) => prevCount + 1);
+        toast.success(`${product.name} đã được thêm vào wishlist!`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error("Có lỗi xảy ra khi thêm sản phẩm vào wishlist.", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      toast.error("Không thể kết nối đến server.", {
+        position: "top-right",
+        autoClose: 1000,
+      });
+      console.error("Error:", error);
+    }
+  };
+
+  // add cart
   const addToCart = async (product: TProduct) => {
     try {
       // const cartResponse = await fetch("http://127.0.0.1:8000/api/user/cart");
@@ -158,60 +219,6 @@ function App() {
       console.error("Error:", error);
     }
   };
-  const addToWishlist = async (product: TProduct) => {
-    try {
-      const wishlistResponse = await fetch("http://localhost:3000/wishlist");
-      const wishlistItems = await wishlistResponse.json();
-      const isProductInwishlist = wishlistItems.some(
-        (item: { product: TProduct }) => item.product.id === product.id
-      );
-      if (isProductInwishlist) {
-        toast.info(`${product.name} đã có trong giỏ wishlist!`, {
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        return;
-      }
-
-      const response = await fetch("http://localhost:3000/wishlist", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ product }),
-      });
-
-      if (response.ok) {
-        setWishlistCount((prevCount) => prevCount + 1);
-        toast.success(`${product.name} đã được thêm vào wishlist!`, {
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
-        toast.error("Có lỗi xảy ra khi thêm sản phẩm vào wishlist.", {
-          position: "top-right",
-          autoClose: 1000,
-        });
-      }
-    } catch (error) {
-      toast.error("Không thể kết nối đến server.", {
-        position: "top-right",
-        autoClose: 1000,
-      });
-      console.error("Error:", error);
-    }
-  };
-
   // call data user
   useEffect(() => {
     const fetchUser = async () => {
@@ -229,14 +236,25 @@ function App() {
   const handleAddProduct = (
     newShoe: TProduct,
     images: File[],
-    imageProduct: File
+    imageProduct: File,
+    variant: Array<{ quantity: number; color: string; size: string }>,
+    sizes: Size[],
+    colors: Color[]
   ) => {
     console.log("Dữ liệu sản phẩm:", newShoe);
     console.log("Hình ảnh sản phẩm:", images); // In ra danh sách các ảnh
     console.log("Hình ảnh sản phẩm:", imageProduct);
+    console.log("Biến thể sản phẩm:", variant);
     (async () => {
       try {
         const formData = new FormData();
+
+        // Chuyển đổi `variant` thành định dạng đúng
+        const convertedVariants = variant.map((v) => ({
+          size_id: sizes.filter((s) => s.name === v.size).map((s) => s.id), // Trích xuất mảng `id` của size
+          color_id: colors.filter((c) => c.name === v.color).map((c) => c.id), // Trích xuất mảng `id` của color
+          quantity: v.quantity,
+        }));
 
         // Thêm các trường từ newShoe vào FormData
         Object.entries(newShoe).forEach(([key, value]) => {
@@ -251,6 +269,9 @@ function App() {
           formData.append("image_description[]", image); // Sử dụng array notation để gửi nhiều ảnh
         });
 
+        formData.append("variants", JSON.stringify(convertedVariants)); // Đảm bảo gửi JSON
+        console.log("Variants gửi đi:", JSON.stringify(convertedVariants));
+
         // Kiểm tra FormData
         for (let pair of formData.entries()) {
           console.log(pair[0] + ": ", pair[1]); // Kiểm tra từng mục trong FormData
@@ -258,8 +279,8 @@ function App() {
 
         const newProduct = await createProduct(formData);
         setProduct((prev) => [...prev, newProduct]);
-        navigate("/admin/products"); // Điều hướng sau khi thêm thành công
-        window.location.reload(); // Tải lại trang nếu cần thiết
+        // navigate("/admin/products"); // Điều hướng sau khi thêm thành công
+        // window.location.reload(); // Tải lại trang nếu cần thiết
       } catch (error) {
         console.error("Error adding product:", error);
       }
@@ -297,10 +318,10 @@ function App() {
     const fetchCategory = async () => {
       try {
         const responses = await axios.get(
-          "http://127.0.0.1:8000/api/categories"
+          "http://127.0.0.1:8000/api/getall/categories"
         );
         setCategory(responses.data.data);
-        // console.log(responses);
+        console.log(responses);
       } catch (error) {
         console.error("Error fetching shoes:", error);
       }
@@ -440,6 +461,7 @@ function App() {
               </>
             }
           />
+
           <Route path="/checkout" element={<Checkout />} />
           <Route
             path="/pay_done"
@@ -556,9 +578,19 @@ function App() {
               </>
             }
           />
+          {/* <Route
+            path="/loginadmin"
+            element={
+              <>
+                <LoginAdmin />
+              </>
+            }
+          /> */}
         </Routes>
         <Routes>
           <Route path="loginadmin" element={<LoginAdmin />} />
+          {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
+
         </Routes>
         <Routes>
           {/* Router admin */}
@@ -566,8 +598,9 @@ function App() {
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="orders" element={<Orders />} />
-            <Route path="profileadmin" element={<ProfileAdmin />} />
+            {/* <Route path="profileadmin" element={<ProfileAdmin />} /> */}
             <Route path="products" element={<ProductList />} />
+
             <Route
               path="products/add"
               element={
@@ -598,6 +631,11 @@ function App() {
                 <CategoriesUpadate onEditCategory={handleEditCategory} />
               }
             />
+            <Route path="size" element={<SizeForm />} />
+            <Route path="color" element={<ColorForm />} />
+            <Route path="size" element={<SizeForm />} />
+            <Route path="color" element={<ColorForm />} />
+            {/* <Route path="variants" element={<VariantForm />} /> */}
           </Route>
         </Routes>
       </div>

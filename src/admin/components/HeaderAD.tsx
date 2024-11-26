@@ -11,34 +11,37 @@ const HeaderAD = (props: Props) => {
   const handleLinkClick = (link: string) => {
     setActiveLink(link);
   };
-  useEffect(() => {
-    if (!user) {
-      // Nếu chưa đăng nhập, điều hướng đến trang login
-      navigate("/loginadmin");
-    }
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     // Nếu chưa đăng nhập, điều hướng đến trang login
+  //     navigate("/loginadmin");
+  //   }
+  // }, [user, navigate]);
   return (
     <>
       <div className="dashboard" style={{ padding: "20px" }}>
         <div className="header">
-    <Link
-          to="/admin/profileadmin"
-          onClick={() => handleLinkClick("/admin/profileadmin")}
-          className={`text-[13px] ${
-          activeLink === "/admin/profileadmin"
-          ? "text-blue-500"
-          : "text-black"
-         }`}
-    >
-    {user ? (
-      <h1>
-          Hello, <strong>{user.firt_name} {user.last_name}</strong>! 👋
-        </h1>
-      ) : (
-        <p>Hello, Admin! 👋</p>
-      )}
-                    </Link>
-
+          <Link
+            to="/admin/profileadmin"
+            onClick={() => handleLinkClick("/admin/profileadmin")}
+            className={`text-[13px] ${
+              activeLink === "/admin/profileadmin"
+                ? "text-blue-500"
+                : "text-black"
+            }`}
+          >
+            {user ? (
+              <h1>
+                Hello,{" "}
+                <strong>
+                  {user.firt_name} {user.last_name}
+                </strong>
+                ! 👋
+              </h1>
+            ) : (
+              <p>Hello, Admin! 👋</p>
+            )}
+          </Link>
 
           <div className="search-bar">
             <i className="fa-solid fa-magnifying-glass"></i>

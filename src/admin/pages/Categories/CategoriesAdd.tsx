@@ -1,64 +1,35 @@
 import React from "react";
+import { ToastContainer, toast } from "react-toastify";
+import Tcategory from "../../../Types/TCategories";
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
-import Tcategory from "../../Types/TCategories";
-import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import instance from "../../Service";
-import apisphp from "../../Service/api";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 type Props = {
-  onEditCategory: (category: Tcategory) => void;
+  onAddCategory: (category: Tcategory) => Promise<void>;
 };
 
-const CategoriesUpadate = ({ onEditCategory }: Props) => {
-  const { id } = useParams<{ id: string }>();
-  console.log("ID từ URL:", id);
+const CategoriesAdd = ({ onAddCategory }: Props) => {
   const navigate = useNavigate();
-  const [category, setCategory] = useState<Tcategory | null>(null);
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<Tcategory>({});
 
-  useEffect(() => {
-    if (id) {
-      const fetchData = async () => {
-        try {
-          const { data } = await apisphp.get(`/categories/${id}`);
-
-          if (data) {
-            setCategory(data);
-            setValue("name", data.data.name);
-            setValue("status", data.data.status);
-            setValue("imageURL", data.data.imageURL);
-          } else {
-            console.error("Không tìm thấy danh mục với ID này.");
-          }
-        } catch (error) {
-          console.error("Lỗi khi lấy dữ liệu danh mục:", error);
-        }
-      };
-      fetchData();
-    }
-  }, [id, setValue]);
-
-  const onSubmit = (data: Tcategory) => {
-    console.log("Dữ liệu danh mục cần cập nhật:", data);
-
-    if (id) {
-      onEditCategory({ ...data, id }); // Truyền đúng ID vào đây
-      navigate("/admin/categorieslist"); // Điều hướng sau khi chỉnh sửa thành công
-    } else {
-      console.error("ID danh mục không hợp lệ");
+  const onSubmit = async (data: Tcategory) => {
+    try {
+      await onAddCategory(data); // Chờ hàm onAddCategory thực hiện
+      toast.success("Thêm danh mục sản phẩm thành công!");
+      navigate("/admin/categorieslist");
+    } catch (error) {
+      toast.error("Lỗi khi thêm danh mục!");
+      console.error("Lỗi khi thêm danh mục:", error);
     }
   };
-
   return (
     <>
       <div className="container mt-5">
-        <h1 className="mb-4">Edit Categories</h1>
+        <h1 className="mb-4">Add Categories</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row mb-3">
             <label
@@ -119,7 +90,7 @@ const CategoriesUpadate = ({ onEditCategory }: Props) => {
 
           <div className="row mb-3">
             <button type="submit" className="btn btn-primary ">
-              Edit Danh Mục
+              Add Product
             </button>
           </div>
         </form>
@@ -139,4 +110,4 @@ const CategoriesUpadate = ({ onEditCategory }: Props) => {
   );
 };
 
-export default CategoriesUpadate;
+export default CategoriesAdd;
