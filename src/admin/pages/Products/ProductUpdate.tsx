@@ -423,7 +423,7 @@ function ProductUpdate({ onEdit, categories }: Props) {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
                   placeholder="Chinese New Year Discount"
                   id="quantity"
-                  {...register("quantity", { required: true })}
+                  {...register("quatity", { required: true })}
                   required
                 />
               </div>
@@ -442,7 +442,7 @@ function ProductUpdate({ onEdit, categories }: Props) {
               <select
                 className="form-select"
                 id="category"
-                {...register("cat_id", { required: true })} // Cập nhật danh mục khi chọn
+                {...register("category_id", { required: true })} // Cập nhật danh mục khi chọn
                 required
               >
                 <option value="">Chọn danh mục</option>
