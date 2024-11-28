@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import TProduct from "../Types/TProduct";
+import { TProduct, Color } from "../Types/TProduct";
 import instance from "../Service";
 import { ToastContainer } from "react-toastify";
 import apisphp from "../Service/api";
@@ -20,15 +20,48 @@ const ShopDetails = ({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
-  // Function to handle size change
-  const handleSizeChange = (size: string) => {
-    setSelectedSize(size);
+  const [groupedVariants, setGroupedVariants] = useState<any[]>([]);
+
+  const [colorsToShow, setColorsToShow] = useState<Color[]>([]);
+
+  const [availableColors, setAvailableColors] = useState<
+    { color_id: number; name: string; hex: string }[]
+  >([]);
+
+  // Khi nhấn vào kích thước
+  const handleSizeChange = (sizeName: string | null) => {
+    setSelectedSize(sizeName);
+
+    // Nếu không chọn kích thước, hiển thị tất cả màu
+    if (!sizeName) {
+      const allColors = groupedVariants.flatMap((variant) => variant.colors);
+      const uniqueColors = Array.from(
+        new Map(allColors.map((color) => [color.color_id, color])).values()
+      );
+      setColorsToShow(uniqueColors);
+    } else {
+      // Hiển thị màu của kích thước đã chọn
+      const selectedVariant = groupedVariants.find(
+        (variant) => variant.size_name === sizeName
+      );
+      setColorsToShow(selectedVariant ? selectedVariant.colors : []);
+    }
   };
 
-  // Function to handle color change
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
+  // Khi component render lần đầu, hiển thị tất cả màu
+  useEffect(() => {
+    const allColors = groupedVariants.flatMap((variant) => variant.colors);
+    const uniqueColors = Array.from(
+      new Map(allColors.map((color) => [color.color_id, color])).values()
+    );
+    setColorsToShow(uniqueColors);
+  }, [groupedVariants]);
+
+  const handleColorChange = (colorName: string) => {
+    setSelectedColor(colorName);
   };
+
+
   const navigate = useNavigate();
   const handleBuyNow = () => {
     if (!selectedSize || !selectedColor) {
@@ -80,6 +113,11 @@ const ShopDetails = ({
 
         setProduct({ ...fetchedProduct, image_description: images });
         setMainImage(fetchedProduct.image_product); // Đặt ảnh chính ban đầu
+
+
+        // Lấy grouped_variants từ backend
+        setGroupedVariants(fetchedProduct.grouped_variants || []);
+
       } catch (error) {
         console.error("Error fetching product details:", error);
       }
@@ -203,7 +241,7 @@ const ShopDetails = ({
                                 >
                                   <div className="product-gallery">
                                     {product.image_description &&
-                                    Array.isArray(product.image_description) ? (
+                                      Array.isArray(product.image_description) ? (
                                       product.image_description.map(
                                         (image, index) => (
                                           <div
@@ -220,9 +258,8 @@ const ShopDetails = ({
                                                 width={100}
                                                 height={100}
                                                 src={`http://127.0.0.1:8000/storage/${image}`}
-                                                alt={`Additional image ${
-                                                  index + 1
-                                                }`}
+                                                alt={`Additional image ${index + 1
+                                                  }`}
                                               />
                                             </span>
                                           </div>
@@ -288,71 +325,48 @@ const ShopDetails = ({
                             <p>{product.description}</p>
                           </div>
 
-                          {/* Size selection */}
-                          <div className="mb-3">
-                            <label className="block text-sm text-left font-medium text-gray-700">
-                              Size:
-                            </label>
-                            <div className="flex flex-wrap gap-2">
-                              {[
-                                ...new Set(
-                                  product.variants
-                                    ?.map((variant) => variant.size?.name)
-                                    .filter(Boolean)
-                                ),
-                              ].map((size) => (
+                          <div className="container mt-4">
+                            {/* Select Size */}
+                            <h3 className="mb-3">Select Size</h3>
+                            <div className="d-flex flex-wrap gap-2">
+                              <button
+                                className={`btn btn-outline-primary ${selectedSize === null ? "active" : ""
+                                  }`}
+                                onClick={() => handleSizeChange(null)}
+                              >
+                                Show All
+                              </button>
+                              {groupedVariants.map((variant) => (
                                 <button
-                                  key={size}
-                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
-                                        ${
-                                          selectedSize === size
-                                            ? "bg-black text-white "
-                                            : "bg-white text-gray-700 border-gray-300"
-                                        }
-                                        hover:bg-primary hover:text-black`}
-                                  onClick={() => handleSizeChange(size || "")}
+                                  key={variant.size_id}
+                                  className={`btn btn-outline-primary ${selectedSize === variant.size_name ? "active" : ""
+                                    }`}
+                                  onClick={() => handleSizeChange(variant.size_name)}
                                 >
-                                  {size}
+                                  {variant.size_name}
                                 </button>
                               ))}
                             </div>
-                          </div>
 
-                          {/* Color selection */}
-                          <div className="mb-3">
-                            <label className="block text-sm text-left font-medium text-gray-700">
-                              Color:
-                            </label>
-                            <div className="flex gap-2">
-                              {[
-                                ...new Set(
-                                  product.variants
-                                    ?.map((variant) => variant.color?.name)
-                                    .filter(Boolean)
-                                ),
-                              ].map((color) => {
-                                const hex = product.variants?.find(
-                                  (variant) => variant.color?.name === color
-                                )?.color?.hex;
-                                return (
-                                  <button
-                                    key={color}
-                                    className={`w-8 h-8 rounded-full border transition-all duration-300
-                                          ${
-                                            selectedColor === color
-                                              ? "border-blue-500 ring-2 ring-black"
-                                              : "border-transparent"
-                                          }
-                                          ${
-                                            hex ? `bg-[${hex}]` : "bg-gray-300"
-                                          }`}
-                                    onClick={() =>
-                                      handleColorChange(color || "")
-                                    }
-                                    style={{ backgroundColor: hex || "#ccc" }}
-                                  />
-                                );
-                              })}
+                            {/* Colors */}
+                            <h3 className="mt-4 mb-3">Colors</h3>
+                            <div className="d-flex flex-wrap gap-2">
+                              {colorsToShow.map((color) => (
+                                <div
+                                  key={color.id}
+                                  className={`color-box ${selectedColor === color.name ? "border-2 border-primary" : "border-1 border-secondary"
+                                    }`}
+                                  style={{
+                                    backgroundColor: color.hex,
+                                    width: "50px",
+                                    height: "50px",
+                                    borderRadius: "5px",
+                                    cursor: "pointer",
+                                  }}
+                                  title={color.name}
+                                  onClick={() => handleColorChange(color.name)} // Cập nhật trạng thái khi click
+                                ></div>
+                              ))}
                             </div>
                           </div>
 
@@ -407,7 +421,7 @@ const ShopDetails = ({
                                       product.variants?.find(
                                         (variant) =>
                                           variant.size?.name === selectedSize &&
-                                          variant.color?.hex === selectedColor
+                                          variant.color?.name === selectedColor
                                       );
 
                                     if (!selectedVariant) {
