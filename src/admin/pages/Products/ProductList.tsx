@@ -188,7 +188,7 @@ function ProductList() {
                       {product.status}
                     </td>
                     <td className="px-2 py-2 text-gray-700">
-                      {product.quantity}
+                      {product.total_quatity}
                     </td>
                     <td className="px-2 py-2 text-gray-700 truncate max-w-xs">
                       {product.description}

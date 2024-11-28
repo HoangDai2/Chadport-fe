@@ -517,3 +517,119 @@ li.selected {
 .dropdown-menu.show {
   display: block;
 }
+
+/* reponsive header */
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #e1e1e1;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo */
+.logo-img {
+  height: 30px;
+}
+
+/* Menu */
+.menu {
+  display: flex;
+  gap: 20px;
+}
+
+.menu ul {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+}
+
+.menu li a:hover {
+  color: #0073e6;
+}
+
+/* Icons */
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-icons button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.header-icons i {
+  font-size: 18px;
+  color: #000;
+}
+
+/* Hamburger Icon */
+.hamburger {
+  display: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Responsive Styles */
+@media (max-width: 800px) {
+  .menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background-color: #fff;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+  }
+
+  .menu.open {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
+}
+
+@media (max-width: 999px) {
+  .site-navigation {
+    display: none;
+  }
+}
+
+@media (max-width: 992px) {
+  .header-center {
+    display: none;
+  }
+}
+
+/* Hiển thị menu khi màn hình > 700px */
+@media (min-width: 700px) {
+  .site-navigation {
+    display: block;
+    text-align: left;
+    justify-items: left;
+  }
+}

@@ -99,5 +99,25 @@
       }
     }
   ],
-  "wishlist": []
+  "wishlist": [
+    {
+      "id": "5df5",
+      "product": {
+        "id": 42,
+        "category_id": 7,
+        "brand_id": null,
+        "name": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen Size 39",
+        "total_quatity": null,
+        "description": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen được thiết kế hiện đại đến từ thương hiệu Adidas nổi tiếng. Với gam màu năng động và khỏe khoắn, đôi giày mang đến cho bạn vẻ ngoài cá tính và cuốn hút.",
+        "title": "Adidas",
+        "status": "active",
+        "price": 6000,
+        "price_sale": 5999,
+        "image_product": "images/CWfD0LMjGVAeD3WDFlZgRRGnEalyHsRKBswFJTbO.webp",
+        "image_description": "[\"images\\/IJk4MKVxPcsQtmJLvjEbknBDWP3fSoU2vpf1nVUJ.webp\",\"images\\/nqZyR3NfXCVfCMmKreoUvg6Jgvc7Wsfn90S875Kz.webp\",\"images\\/XxSqL9VncWHT3xh89sqItLaVI8fezhCHPTHJlred.webp\",\"images\\/mYi00cT2OLdETij6oDnuF8TvqUdf3gdkTHxEToS6.webp\"]",
+        "created_at": "2024-11-24T21:53:07.000000Z",
+        "updated_at": "2024-11-24T21:53:07.000000Z"
+      }
+    }
+  ]
 }

@@ -16,12 +16,18 @@ const ShopDetails = ({
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<TProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<TProduct[]>([]);
-
+  const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
+  // Function to handle size change
   const handleSizeChange = (size: string) => {
     setSelectedSize(size);
+  };
+
+  // Function to handle color change
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
   };
   const navigate = useNavigate();
   const handleBuyNow = () => {
@@ -45,9 +51,6 @@ const ShopDetails = ({
     addToCart(productDetails);
     navigate("/checkout", { state: { product: productDetails } });
   };
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-  };
 
   // State để quản lý số lượng sản phẩm
   const [quantity, setQuantity] = useState(1);
@@ -62,6 +65,7 @@ const ShopDetails = ({
       try {
         const res = await apisphp.get(`/showdetail/products/${id}`);
         const fetchedProduct = res.data;
+        // console.log(fetchedProduct, "fet");
 
         let images: string[] = [];
         if (typeof fetchedProduct.image_description === "string") {
@@ -85,6 +89,44 @@ const ShopDetails = ({
       fetchProductDetails();
     }
   }, [id]);
+  // console.log(product);
+  // start hung test details
+  useEffect(() => {
+    const testDetailsFetch = async () => {
+      try {
+        // Gọi API để lấy chi tiết sản phẩm
+        const res = await apisphp.get(`/showdetail/products/${id}`);
+        const fetchedProduct = res.data;
+
+        // Kiểm tra nếu mảng `products` đã có sản phẩm với cùng `id`
+        setRelatedProducts((prevProducts) => {
+          // Kiểm tra xem sản phẩm có tồn tại trong mảng chưa
+          const existingProduct = prevProducts.find(
+            (product) => product.id === fetchedProduct.id
+          );
+
+          if (existingProduct) {
+            // Nếu sản phẩm đã có, không thêm vào mà giữ nguyên mảng cũ
+            return prevProducts;
+          } else {
+            // Nếu sản phẩm chưa có, thêm sản phẩm vào mảng
+            return [...prevProducts, fetchedProduct];
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      } finally {
+        setLoading(false); // Đảm bảo loading được tắt sau khi lấy dữ liệu xong
+      }
+    };
+
+    if (id) {
+      testDetailsFetch();
+    }
+  }, [id]); // Chạy lại khi id thay đổi
+  console.log("relatedProducts", relatedProducts);
+
+  // end hung test details
 
   if (!product) {
     return <div>Loading...</div>;
@@ -213,91 +255,110 @@ const ShopDetails = ({
                         </div>
                         <div className="product-info col-lg-5 col-md-12 col-12 ">
                           <h1 className="title text-left">{product.name}</h1>
-                          <span className="price">
-                            <del aria-hidden="true">
-                              <span>${product.price}</span>
+                          {/* Giá gốc và giảm giá */}
+                          <span className="price flex items-center space-x-6 text-left">
+                            <del className="text-sm text-gray-500 ">
+                              <span style={{ fontSize: "20px" }}>
+                                {new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(product.price)}
+                              </span>
                             </del>
-                            <ins>
-                              <span>${product.price_sale}</span>
+
+                            <ins className="text-2xl font-bold text-red-600">
+                              <span style={{ fontSize: "30px" }}>
+                                {new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(product.price_sale)}
+                              </span>
                             </ins>
                           </span>
-                          <div className="rating">
+                          {/* star sản phẩm chính */}
+                          <div className="rating text-left">
                             <div className="star star-5" />
                             <div className="review-count">
                               (3<span> reviews</span>)
                             </div>
                           </div>
+
+                          {/* mổ tả sản phẩm chính */}
                           <div className="description text-left">
                             <p>{product.description}</p>
                           </div>
-                          <div className="variations">
-                            <table cellSpacing={0}>
-                              <tbody>
-                                <tr>
-                                  <td className="label">Size</td>
-                                  <td className="attributes">
-                                    <ul className="text">
-                                      {["S", "M", "L"].map((size) => (
-                                        <li
-                                          key={size}
-                                          onClick={() => handleSizeChange(size)} // Gọi hàm khi người dùng chọn size
-                                          className={
-                                            selectedSize === size
-                                              ? "selected"
-                                              : ""
-                                          }
-                                        >
-                                          <span>{size}</span>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="label">Color</td>
-                                  <td className="attributes">
-                                    <ul className="colors">
-                                      {["black", "blue", "green"].map(
-                                        (color) => (
-                                          <li
-                                            key={color}
-                                            onClick={() => {
-                                              // console.log(
-                                              //   `Color selected: ${color}`
-                                              // );
-                                              handleColorChange(color); // Gọi hàm để thay đổi state
-                                            }}
-                                            className={
-                                              selectedColor === color
-                                                ? "selected-color"
-                                                : ""
-                                            }
-                                          >
-                                            <span
-                                              style={{
-                                                backgroundColor: color, // Cập nhật màu sắc cho mỗi phần tử
-                                                display: "inline-block",
-                                                width: "30px",
-                                                height: "30px",
-                                                borderRadius: "50%",
-                                                cursor: "pointer",
-                                                border:
-                                                  selectedColor === color
-                                                    ? "3px solid blue"
-                                                    : "2px solid #ccc", // Thêm viền khi được chọn
-                                              }}
-                                            />
-                                          </li>
-                                        )
-                                      )}
-                                    </ul>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
+
+                          {/* Size selection */}
+                          <div className="mb-3">
+                            <label className="block text-sm text-left font-medium text-gray-700">
+                              Size:
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                              {[
+                                ...new Set(
+                                  product.variants
+                                    ?.map((variant) => variant.size?.name)
+                                    .filter(Boolean)
+                                ),
+                              ].map((size) => (
+                                <button
+                                  key={size}
+                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
+                                        ${
+                                          selectedSize === size
+                                            ? "bg-black text-white "
+                                            : "bg-white text-gray-700 border-gray-300"
+                                        }
+                                        hover:bg-primary hover:text-black`}
+                                  onClick={() => handleSizeChange(size || "")}
+                                >
+                                  {size}
+                                </button>
+                              ))}
+                            </div>
                           </div>
+
+                          {/* Color selection */}
+                          <div className="mb-3">
+                            <label className="block text-sm text-left font-medium text-gray-700">
+                              Color:
+                            </label>
+                            <div className="flex gap-2">
+                              {[
+                                ...new Set(
+                                  product.variants
+                                    ?.map((variant) => variant.color?.name)
+                                    .filter(Boolean)
+                                ),
+                              ].map((color) => {
+                                const hex = product.variants?.find(
+                                  (variant) => variant.color?.name === color
+                                )?.color?.hex;
+                                return (
+                                  <button
+                                    key={color}
+                                    className={`w-8 h-8 rounded-full border transition-all duration-300
+                                          ${
+                                            selectedColor === color
+                                              ? "border-blue-500 ring-2 ring-black"
+                                              : "border-transparent"
+                                          }
+                                          ${
+                                            hex ? `bg-[${hex}]` : "bg-gray-300"
+                                          }`}
+                                    onClick={() =>
+                                      handleColorChange(color || "")
+                                    }
+                                    style={{ backgroundColor: hex || "#ccc" }}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </div>
+
                           <div className="buttons">
                             <div className="add-to-cart-wrap">
+                              {/* số lượng tăng giảm */}
                               <div className="quantity">
                                 <button
                                   type="button"
@@ -330,19 +391,31 @@ const ShopDetails = ({
                                   -
                                 </button>
                               </div>
+
+                              {/* nút add cart */}
                               <div className="btn-add-to-cart">
                                 <a
                                   onClick={() => {
+                                    // Kiểm tra nếu chưa chọn size và color
                                     if (!selectedSize || !selectedColor) {
                                       alert("Please select size and color");
                                       return;
                                     }
-                                    addToCart({
-                                      ...product,
-                                      quantity,
-                                      size: selectedSize,
-                                      color: selectedColor,
-                                    });
+
+                                    // Tìm variant phù hợp với size và color đã chọn
+                                    const selectedVariant =
+                                      product.variants?.find(
+                                        (variant) =>
+                                          variant.size?.name === selectedSize &&
+                                          variant.color?.hex === selectedColor
+                                      );
+
+                                    if (!selectedVariant) {
+                                      alert("Variant not found!");
+                                      return;
+                                    }
+
+                                    // Thêm vào giỏ hàng với thông tin variant
                                   }}
                                   href="#"
                                   className="button"
@@ -375,6 +448,7 @@ const ShopDetails = ({
                               <button className="product-btn">Compare</button>
                             </div>
                           </div>
+
                           <div className="product-meta">
                             <span className="sku-wrapper">
                               SKU: <span className="sku">D2300-3-2-2</span>
@@ -396,6 +470,7 @@ const ShopDetails = ({
                               </a>
                             </span>
                           </div>
+
                           <div className="social-share">
                             <a
                               href="#"
@@ -455,7 +530,7 @@ const ShopDetails = ({
                                 {relatedProducts.map((relatedProduct) => (
                                   <div
                                     className="item-product slick-slider-item"
-                                    key={relatedProduct.pro_id}
+                                    key={relatedProduct.id}
                                   >
                                     <div className="items">
                                       <div className="products-entry clearfix product-wapper">
@@ -463,30 +538,17 @@ const ShopDetails = ({
                                           <div className="product-lable">
                                             <div className="hot">Hot</div>
                                           </div>
-                                          <div className="product-thumb-hover">
-                                            <a
-                                              href={`/shop-details/${relatedProduct.pro_id}`}
-                                            >
-                                              <img
-                                                width={600}
-                                                height={600}
-                                                src={
-                                                  relatedProduct.image_product
-                                                }
-                                                className="post-image"
-                                                alt={relatedProduct.name}
-                                              />
-                                              <img
-                                                width={600}
-                                                height={600}
-                                                src={
-                                                  relatedProduct.image_product
-                                                }
-                                                className="hover-image back"
-                                                alt={relatedProduct.name}
-                                              />
-                                            </a>
-                                          </div>
+                                          <a
+                                            href={`/shop-details/${relatedProduct.id}`}
+                                          >
+                                            <img
+                                              width={600}
+                                              height={600}
+                                              src={`http://127.0.0.1:8000/storage/${product.image_product}`}
+                                              className="post-image"
+                                              alt={relatedProduct.name}
+                                            />
+                                          </a>
                                           <div className="product-button">
                                             <div
                                               className="cart_default"
@@ -550,8 +612,11 @@ const ShopDetails = ({
                                             <div className="rating">
                                               <div className="star star-5" />
                                             </div>
-                                            <span className="price">
-                                              ${relatedProduct.price}
+                                            <span className="tracking-wider text-2xl font-semibold text-gray-900">
+                                              {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                              }).format(product.price)}
                                             </span>
                                           </div>
                                         </div>
@@ -559,6 +624,7 @@ const ShopDetails = ({
                                     </div>
                                   </div>
                                 ))}
+                                {/* <p>{product.name}</p> */}
                               </div>
                             </div>
                           </div>
