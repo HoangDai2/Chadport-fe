@@ -66,8 +66,9 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
-// import LoginAdmin from "./admin/pages/LoginAdmin";
-// import ProfileAdmin from "./admin/pages/ProfileAdmin";
+import LoginAdmin from "./admin/pages/LoginAdmin";
+import ProfileAdmin from "./admin/pages/ProfileAdmin";
+import PrivateRoute from "./admin/components/PrivateRoute";
 // import HeaderclientC from "./components/HeaderClient copy";
 // import HeaderClientC from "./components/HeaderClient copy";
 
@@ -508,25 +509,17 @@ function App() {
               </>
             }
           />
-          {/* <Route
-            path="/loginadmin"
-            element={
-              <>
-                <LoginAdmin />
-              </>
-            }
-          /> */}
         </Routes>
         <Routes>
           {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
         </Routes>
         <Routes>
-          {/* Router admin */}
-          <Route path="/admin" element={<Admin />}>
+        <Route path="/loginadmin" element={<LoginAdmin />} />
+        <Route path="/admin" element={<Admin />}>
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="orders" element={<Orders />} />
-            {/* <Route path="profileadmin" element={<ProfileAdmin />} /> */}
+            <Route path="profileadmin" element={<ProfileAdmin />} />
             <Route path="products" element={<ProductList />} />
 
             <Route

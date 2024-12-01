@@ -1,22 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import apisphp from "../../Service/api";
 import { useUserContext } from "../../pages/AuthClient/UserContext"; // Import context để lấy thông tin người dùng
+
 type Props = {};
 
 const HeaderAD = (props: Props) => {
-  const { user } = useUserContext(); // Lấy thông tin người dùng từ context
+  const { user, setUser } = useUserContext();
   const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState<string>("");
+  
   const handleLinkClick = (link: string) => {
     setActiveLink(link);
   };
-  // useEffect(() => {
-  //   if (!user) {
-  //     // Nếu chưa đăng nhập, điều hướng đến trang login
-  //     navigate("/loginadmin");
-  //   }
-  // }, [user, navigate]);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("jwt_token");
+
+    if (storedToken) {
+      // Nếu có token trong localStorage, kiểm tra xem user đã được xác thực hay chưa
+      if (!user) {
+        // Nếu chưa có user (đã có token nhưng chưa xác thực thông tin người dùng), gọi API để xác thực
+        apisphp
+          .get("/user/profile", { headers: { Authorization: `Bearer ${storedToken}` } })
+          .then((response) => {
+            if (response.data?.data) {
+              setUser(response.data.data); // Lưu thông tin người dùng vào context
+              navigate("/admin"); // Điều hướng tới trang admin nếu xác thực thành công
+            } else {
+              navigate("/loginadmin"); // Nếu không có thông tin người dùng, chuyển về login
+            }
+          })
+          .catch(() => {
+            localStorage.removeItem("jwt_token"); // Xóa token nếu có lỗi xác thực
+            navigate("/loginadmin");
+          });
+      }
+    } else {
+      // Nếu không có token, điều hướng về trang login
+      navigate("/loginadmin");
+    }
+  }, [user, navigate, setUser]);
+
   return (
     <>
       <div className="dashboard" style={{ padding: "20px" }}>
