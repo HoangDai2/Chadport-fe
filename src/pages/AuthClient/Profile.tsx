@@ -132,8 +132,29 @@ const Profile = (props: Props) => {
 
   return (
     <>
-      <div className="bg-gray-100 min-h-screen p-8">
-        <div className=" mx-auto bg-white rounded-lg shadow-lg p-8 relative">
+      <div id="title" className="page-title py-6 mt-[120px]">
+        <div className="section-container max-w-7xl mx-auto px-6">
+          <div className="content-title-heading mb-4">
+            <h1 className="text-title-heading" style={{ fontSize: "50px" }}>
+              Profile
+            </h1>
+          </div>
+          <div className="breadcrumbs text-sm text-gray-600 font-inter">
+            <a href="/" className="hover:text-blue-500">
+              Home
+            </a>
+            <span className="delimiter mx-2">/</span>
+            <a href="/shop-grid-left" className="hover:text-blue-500">
+              profile
+            </a>
+            <span className="delimiter mx-2">/</span>
+            <span className="text-gray-900">Nike</span>
+          </div>
+        </div>
+      </div>
+
+      <div className=" min-h-screen p-8">
+        <div className=" mx-auto bg-white rounded-lg  p-8 relative">
           {loading && (
             <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>

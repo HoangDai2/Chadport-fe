@@ -185,6 +185,8 @@ function ProductAdd({ onAdd, categories }: Props) {
       };
 
       await onAdd(productData, images, imageProduct!, variant, sizes, colors); // Truyền cả sản phẩm và biến thể
+      navigate("/admin/products");
+      window.location.reload();
       toast.success("Thêm sản phẩm thành công!");
     } catch (error) {
       console.error("Error adding product:", error);
