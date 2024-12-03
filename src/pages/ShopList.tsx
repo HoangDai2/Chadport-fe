@@ -27,9 +27,6 @@ const ShopList = () => {
     fetchProducts();
   }, [currentPage]);
 
-
-
-
   // Điều hướng đến trang chi tiết sản phẩm
   const goToProductDetail = (id: number) => {
     navigate(`/shop-details/${id}`);
@@ -103,29 +100,41 @@ const ShopList = () => {
                         <div className="product-cats-list">
                           <ul>
                             <li className="current">
-                              <a href="#">Nike <span className="count">9</span></a>
+                              <a href="#">
+                                Nike <span className="count">9</span>
+                              </a>
                             </li>
                             <li>
-                              <a href="#">Adidas <span className="count">4</span></a>
+                              <a href="#">
+                                Adidas <span className="count">4</span>
+                              </a>
                             </li>
                             <li>
-                              <a href="#">Balenciaga <span className="count">3</span></a>
+                              <a href="#">
+                                Balenciaga <span className="count">3</span>
+                              </a>
                             </li>
                             <li>
-                              <a href="#">Puma <span className="count">6</span></a>
+                              <a href="#">
+                                Puma <span className="count">6</span>
+                              </a>
                             </li>
                             <li>
-                              <a href="#">Converse <span className="count">2</span></a>
+                              <a href="#">
+                                Converse <span className="count">2</span>
+                              </a>
                             </li>
                             <li>
-                              <a href="#">Vans <span className="count">4</span></a>
+                              <a href="#">
+                                Vans <span className="count">4</span>
+                              </a>
                             </li>
                           </ul>
                         </div>
                       </div>
                     </div>
 
-                    {/* Block Feature Products */}
+                    {/* sản phẩm sidebar */}
                     <div className="block block-products">
                       <div className="block-title">
                         <h2>Feature Product</h2>
@@ -139,19 +148,43 @@ const ShopList = () => {
                                 className="product-image"
                               >
                                 <img
-                                  src={product.image_product}
+                                  src={`http://127.0.0.1:8000/storage/${product.image_product}`}
                                   alt={product.name}
                                 />
                               </a>
                               <div className="product-content">
                                 <h2 className="product-title">
-                                  <a onClick={() => goToProductDetail(product.id)}>
+                                  <a
+                                    onClick={() =>
+                                      goToProductDetail(product.id)
+                                    }
+                                  >
                                     {product.name}
                                   </a>
                                 </h2>
-                                <span className="price">
-                                  <del>${product.price}</del>
-                                  <ins>${product.price_sale}</ins>
+                                <span className="price flex justify-center items-center space-x-6 ">
+                                  <del className="text-sm text-gray-500 ">
+                                    <span style={{ fontSize: "10px" }}>
+                                      {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }).format(product.price)}
+                                    </span>
+                                  </del>
+
+                                  <ins className="text-2xl font-bold text-red-600">
+                                    <span
+                                      style={{
+                                        fontSize: "15px",
+                                        color: "#d63838",
+                                      }}
+                                    >
+                                      {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }).format(product.price_sale)}
+                                    </span>
+                                  </ins>
                                 </span>
                               </div>
                             </li>
@@ -180,28 +213,39 @@ const ShopList = () => {
                               : sortOption}
                           </span>
                           <ul
-                            className={`sort-list dropdown-menu ${isDropdownOpen ? "show" : "hide"
-                              }`}
+                            className={`sort-list dropdown-menu ${
+                              isDropdownOpen ? "show" : "hide"
+                            }`}
                           >
                             <li
-                              className={sortOption === "default" ? "active" : ""}
+                              className={
+                                sortOption === "default" ? "active" : ""
+                              }
                               onClick={() => handleSortChange("default")}
                             >
                               <a href="#">Default sorting</a>
                             </li>
                             <li
                               className={
-                                sortOption === "price-low-to-high" ? "active" : ""
+                                sortOption === "price-low-to-high"
+                                  ? "active"
+                                  : ""
                               }
-                              onClick={() => handleSortChange("price-low-to-high")}
+                              onClick={() =>
+                                handleSortChange("price-low-to-high")
+                              }
                             >
                               <a href="#">Price: Low to High</a>
                             </li>
                             <li
                               className={
-                                sortOption === "price-high-to-low" ? "active" : ""
+                                sortOption === "price-high-to-low"
+                                  ? "active"
+                                  : ""
                               }
-                              onClick={() => handleSortChange("price-high-to-low")}
+                              onClick={() =>
+                                handleSortChange("price-high-to-low")
+                              }
                             >
                               <a href="#">Price: High to Low</a>
                             </li>
@@ -210,7 +254,7 @@ const ShopList = () => {
                       </div>
                     </div>
 
-                    {/* Product Grid */}
+                    {/* Product list */}
                     <div className="products-list grid">
                       <div className="row">
                         {products.map((product) => (
@@ -218,22 +262,65 @@ const ShopList = () => {
                             key={product.id}
                             className="col-xl-4 col-lg-4 col-md-4 col-sm-6"
                           >
-                            <div className="product-item">
+                            <div className="product-item relative">
                               <div className="product-image">
-                                <a onClick={() => goToProductDetail(product.id)}>
-                                  <img src={product.image_product} alt={product.name} />
+                                <a
+                                  onClick={() => goToProductDetail(product.id)}
+                                >
+                                  <img
+                                    src={`http://127.0.0.1:8000/storage/${product.image_product}`}
+                                    alt={product.name}
+                                  />
                                 </a>
                               </div>
                               <div className="products-content">
                                 <h2 className="product-title">
-                                  <a onClick={() => goToProductDetail(product.id)}>
+                                  <a
+                                    onClick={() =>
+                                      goToProductDetail(product.id)
+                                    }
+                                    className="block text-ellipsis overflow-hidden whitespace-nowrap max-w-xs"
+                                  >
                                     {product.name}
                                   </a>
                                 </h2>
-                                <span className="price">
-                                  <del>${product.price}</del>
-                                  <ins>${product.price_sale}</ins>
+
+                                {/* Giá và giảm giá */}
+                                <span className="price flex flex-col items-start space-y-2 text-left">
+                                  <ins
+                                    className="text-2xl font-bold text-red-600"
+                                    style={{ color: "#d63838" }}
+                                  >
+                                    <span style={{ fontSize: "25px" }}>
+                                      {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }).format(product.price_sale)}
+                                    </span>
+                                  </ins>
+                                  <del className="text-sm text-gray-500">
+                                    <span style={{ fontSize: "15px" }}>
+                                      {new Intl.NumberFormat("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }).format(product.price)}
+                                    </span>
+                                  </del>
                                 </span>
+                              </div>
+
+                              {/* Hiển thị % giảm giá  */}
+                              <div className="absolute top-0 right-0 bg-red-600 text-white px-2 py-1 text-xs font-bold">
+                                {product.price && product.price_sale && (
+                                  <span>
+                                    {Math.round(
+                                      ((product.price - product.price_sale) /
+                                        product.price) *
+                                        100
+                                    )}
+                                    %
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -245,7 +332,11 @@ const ShopList = () => {
                     <div className="d-flex justify-content-center mt-4">
                       <nav aria-label="Page navigation example">
                         <ul className="pagination justify-content-center">
-                          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                          <li
+                            className={`page-item ${
+                              currentPage === 1 ? "disabled" : ""
+                            }`}
+                          >
                             <button
                               className="page-link rounded-pill shadow-sm"
                               onClick={() => handlePageChange(currentPage - 1)}
@@ -257,7 +348,9 @@ const ShopList = () => {
                           {Array.from({ length: totalPages }, (_, index) => (
                             <li
                               key={index}
-                              className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                              className={`page-item ${
+                                currentPage === index + 1 ? "active" : ""
+                              }`}
                             >
                               <button
                                 className="page-link rounded-pill shadow-sm"
@@ -267,7 +360,11 @@ const ShopList = () => {
                               </button>
                             </li>
                           ))}
-                          <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                          <li
+                            className={`page-item ${
+                              currentPage === totalPages ? "disabled" : ""
+                            }`}
+                          >
                             <button
                               className="page-link rounded-pill shadow-sm"
                               onClick={() => handlePageChange(currentPage + 1)}
@@ -279,8 +376,6 @@ const ShopList = () => {
                         </ul>
                       </nav>
                     </div>
-
-
                   </div>
                 </div>
               </div>

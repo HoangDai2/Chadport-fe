@@ -85,18 +85,7 @@ function App() {
   const [category, setCategory] = useState<Tcategory[]>([]);
   const [carCount, setCarCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const fetchCartCount = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/carts");
-      const cartItems = await res.json();
-      setCarCount(cartItems.length);
-    } catch (error) {
-      console.error("Error fetching cart count:", error);
-    }
-  };
-  useEffect(() => {
-    fetchCartCount();
-  }, []);
+
   const fetchWihsListCount = async () => {
     try {
       const res = await fetch("http://localhost:3000/wishlist");
@@ -163,63 +152,6 @@ function App() {
     }
   };
 
-  // add cart
-  const addToCart = async (product: TProduct) => {
-    try {
-      // const cartResponse = await fetch("http://127.0.0.1:8000/api/user/cart");
-      // const cartItems = await cartResponse.json();
-      // const isProductInCart = cartItems.some(
-      //   (item: { product: TProduct }) => item.product.id === product.id
-      // );
-      // if (isProductInCart) {
-      //   toast.info(`${product.name} đã có trong giỏ hàng!`, {
-      //     position: "top-right",
-      //     autoClose: 1000,
-      //     hideProgressBar: false,
-      //     closeOnClick: true,
-      //     pauseOnHover: true,
-      //     draggable: true,
-      //     progress: undefined,
-      //   });
-      //   return;
-      // }
-
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/user/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ product }),
-        }
-      );
-
-      if (response.ok) {
-        setCarCount((prevCount) => prevCount + 1);
-        toast.success(`${product.name} đã được thêm vào giỏ hàng!`, {
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
-        toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.", {
-          position: "top-right",
-          autoClose: 1000,
-        });
-      }
-    } catch (error) {
-      toast.error("Không thể kết nối đến server.", {
-        position: "top-right",
-        autoClose: 1000,
-      });
-      console.error("Error:", error);
-    }
-  };
   // call data user
   useEffect(() => {
     const fetchUser = async () => {
@@ -323,7 +255,7 @@ function App() {
           "http://127.0.0.1:8000/api/getall/categories"
         );
         setCategory(responses.data.data);
-        console.log(responses);
+        // console.log(responses);
       } catch (error) {
         console.error("Error fetching shoes:", error);
       }
@@ -389,7 +321,7 @@ function App() {
                 <div style={{ padding: "70px", marginTop: "80px" }}>
                   <Category />
                 </div>
-                <Home addToCart={addToCart} addToWishlist={addToWishlist} />
+                <Home addToWishlist={addToWishlist} />
                 <ProductSale />
                 <FooterClient />
               </>
@@ -416,10 +348,7 @@ function App() {
                   wishlisCount={wishlistCount}
                   carCount={carCount}
                 />
-                <ShopDetails
-                  addToCart={addToCart}
-                  addToWishlist={addToWishlist}
-                />
+                <ShopDetails addToWishlist={addToWishlist} />
                 <FooterClient />
               </>
             }
@@ -505,7 +434,7 @@ function App() {
                   wishlisCount={wishlistCount}
                   carCount={carCount}
                 />
-                <Wishlist addToCart={addToCart} />
+                <Wishlist />
                 <FooterClient />
               </>
             }

@@ -55,68 +55,24 @@
       "id": "f3b1"
     }
   ],
-  "carts": [
-    {
-      "cart_id": "C001",
-      "pro_id": 4,
-      "total_money": 600,
-      "description": "Cart contains two Nike Court Vision Low Next Nature shoes.",
-      "date_create": "2024-10-21T09:30:00Z",
-      "date_update": "2024-10-21T10:00:00Z",
-      "id": "b714"
-    },
-    {
-      "cart_id": "C002",
-      "pro_id": 5,
-      "total_money": 250,
-      "description": "Cart contains one Air Jordan 1 Low shoe.",
-      "date_create": "2024-10-22T14:00:00Z",
-      "date_update": "2024-10-22T14:30:00Z",
-      "id": "d259"
-    },
-    {
-      "cart_id": "C003",
-      "pro_id": 6,
-      "total_money": 900,
-      "description": "Cart contains three Jordan One Take 5 PF shoes.",
-      "date_create": "2024-10-20T08:30:00Z",
-      "date_update": "2024-10-20T08:45:00Z",
-      "id": "b035"
-    },
-    {
-      "id": "7360",
-      "product": {
-        "id": "9ef6",
-        "name": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen",
-        "title": "Adidas",
-        "price": "490.000",
-        "price_sale": "489.000",
-        "status": "out of stock",
-        "quantity": "6",
-        "description": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen được thiết kế hiện đại đến từ thương hiệu Adidas nổi tiếng. Với gam màu năng động và khỏe khoắn, đôi giày mang đến cho bạn vẻ ngoài cá tính và cuốn hút.",
-        "image_product": "https://cdn.vuahanghieu.com/unsafe/0x0/left/top/smart/filters:quality(90)/https://admin.vuahanghieu.com/upload/news/content/2023/01/giay-the-thao-adidas-galaxy-6-black-gw3848-mau-den-size-43-anh-5-jpg-1672802769-04012023102609.jpg",
-        "cat_id": "f4bf"
-      }
-    }
-  ],
   "wishlist": [
     {
-      "id": "5df5",
+      "id": "67db",
       "product": {
-        "id": 42,
-        "category_id": 7,
+        "id": 73,
+        "category_id": 6,
         "brand_id": null,
-        "name": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen Size 39",
-        "total_quatity": null,
-        "description": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen được thiết kế hiện đại đến từ thương hiệu Adidas nổi tiếng. Với gam màu năng động và khỏe khoắn, đôi giày mang đến cho bạn vẻ ngoài cá tính và cuốn hút.",
-        "title": "Adidas",
+        "name": "Giày Thể Thao Nam Nike SB React Leo Skateboarding Shoes DX4361-302 Màu Xanh Lá",
+        "total_quatity": 99,
+        "description": "Giày Thể Thao Nam Nike SB React Leo Skateboarding Shoes DX4361-302 Màu Xanh Lá là mẫu giày mới ra mắt của thương hiệu Nike nổi tiếng tại Mỹ. Đôi giày với phong cách mới lạ, hiện đại và không kém phần mạnh mẽ",
+        "title": "Nike",
         "status": "active",
-        "price": 6000,
-        "price_sale": 5999,
-        "image_product": "images/CWfD0LMjGVAeD3WDFlZgRRGnEalyHsRKBswFJTbO.webp",
-        "image_description": "[\"images\\/IJk4MKVxPcsQtmJLvjEbknBDWP3fSoU2vpf1nVUJ.webp\",\"images\\/nqZyR3NfXCVfCMmKreoUvg6Jgvc7Wsfn90S875Kz.webp\",\"images\\/XxSqL9VncWHT3xh89sqItLaVI8fezhCHPTHJlred.webp\",\"images\\/mYi00cT2OLdETij6oDnuF8TvqUdf3gdkTHxEToS6.webp\"]",
-        "created_at": "2024-11-24T21:53:07.000000Z",
-        "updated_at": "2024-11-24T21:53:07.000000Z"
+        "price": 2730000,
+        "price_sale": 2511600,
+        "image_product": "images/5qvEQ1cnpfC5A3hxp9QIVaj2u4UuvFCWE1njBupT.webp",
+        "image_description": "[\"images\\/s8IkSuKl8ABnD5lXG4AZpgh25o2BkgOQhZXE6yOv.webp\",\"images\\/1XBcIjmmB5RGLV13Cci05ymNLGYdJeVXWkjyOg2O.webp\",\"images\\/tGfMp9DceoT71MUpuaDAORvaA4f8l7VSIkyC3UNl.webp\",\"images\\/PyCaIF7j2ARp86Nr2B68H7tf5uy4JHdqWCqm41pP.webp\"]",
+        "created_at": "2024-11-29T16:47:59.000000Z",
+        "updated_at": "2024-11-29T16:47:59.000000Z"
       }
     }
   ]

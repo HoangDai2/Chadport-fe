@@ -20,11 +20,7 @@ type wishlistItem = {
     date_update: string;
   };
 };
-const Wishlist = ({
-  addToCart,
-}: {
-  addToCart: (product: TProduct) => void;
-}) => {
+const Wishlist = () => {
   const [wishlist, setWishlist] = useState<wishlistItem[]>([]);
   // const [quantity, setQuantity] = useState<number[]>([]);
 
@@ -99,9 +95,7 @@ const Wishlist = ({
                                 <button
                                   onClick={() => removeFromWishlist(product.id)}
                                 >
-                                  <span role="img" aria-label="Remove">
-                                    ❌
-                                  </span>
+                                  <span role="img" aria-label="Remove"></span>
                                 </button>
                               </td>
                               <td className="wishlist-item-image">
@@ -109,7 +103,7 @@ const Wishlist = ({
                                   <img
                                     width={600}
                                     height={600}
-                                    src={product.product.image_product}
+                                    src={`http://127.0.0.1:8000/storage/${product.product.image_product}`}
                                     alt={product.product.name}
                                   />
                                 </a>
@@ -135,7 +129,7 @@ const Wishlist = ({
                                 </div>
                                 <div className="wishlist-item-add">
                                   <div className="" data-title="Add to cart">
-                                    <button onClick={() => addToCart(product)}>
+                                    <button>
                                       <a
                                         rel="nofollow"
                                         href="#"
