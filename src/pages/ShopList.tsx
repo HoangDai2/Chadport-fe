@@ -45,7 +45,7 @@ const ShopList = () => {
         const response = await apisphp.get('getall/categories');
 
         if (Array.isArray(response.data.data)) {
-          setCategories(response.data.data); // Nếu là mảng, cập nhật categories
+          setCategories(response.data.data); // Cập nhật categories
         } else {
           console.error('Dữ liệu không phải là mảng:', response.data);
         }
@@ -133,7 +133,6 @@ const ShopList = () => {
               </div>
             </div>
           </div>
-
           <div id="content" className="site-content" role="main">
             <div className="section-padding">
               <div className="section-container p-l-r">
@@ -145,37 +144,46 @@ const ShopList = () => {
                       <div className="block-title">
                         <h2>Brand</h2>
                       </div>
-                      <ul className="list-group">
-                        {/* All Brand option */}
-                        <li className="list-group-item">
-                          <button
-                            onClick={() => handleCategorySelect(0)}
-                            className="btn btn-outline-dark w-100 text-left rounded-0 fw-bold"
-                          >
-                            All Brands
-                          </button>
-                        </li>
-
-                        {categories.map((category) => (
-                          <li key={category.id} className="list-group-item">
-                            <button
-                              onClick={() => handleCategorySelect(category.id)}
-                              className="btn btn-outline-dark w-100 text-left rounded-0 fw-bold"
-                            >
-                              {category.name}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="block-content">
+                        <div className="product-cats-list">
+                          <ul>
+                            {/* Nút "All Brands" */}
+                            <li className="current">
+                              <button
+                                onClick={() => handleCategorySelect(0)} // Trả về tất cả sản phẩm khi chọn "All Brands"
+                                className="btn btn-light w-100 text-left rounded-0"
+                                style={{ opacity: 0.4, transition: 'opacity 0.3s' }}
+                                onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+                                onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.4')}
+                              >
+                                <a href="#">All Brands
+                                  <span className="count">{products.length} </span>
+                                </a>
+                              </button>
+                            </li>
+                            {categories.map((category) => {
+                              // Đếm số lượng sản phẩm của mỗi danh mục
+                              const productCount = products.filter((product) => product.category_id === category.id).length;
+                              return (
+                                <li key={category.id} className="current">
+                                  <button
+                                    onClick={() => handleCategorySelect(category.id)}
+                                    className="btn btn-light w-100 text-left rounded-0"
+                                    style={{ opacity: 0.4, transition: 'opacity 0.3s' }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.4')}
+                                  >
+                                    <a href="#">{category.name}
+                                      <span className="count">{productCount} </span>
+                                    </a>
+                                  </button>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      </div>
                     </div>
-
-
-
-
-
-
-
-
                     {/* sản phẩm sidebar */}
                     <div className="block block-products">
                       <div className="block-title">
