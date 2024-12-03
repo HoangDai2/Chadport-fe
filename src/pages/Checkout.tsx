@@ -1,9 +1,99 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import apisphp from "../Service/api";
+import CartData from "../Types/TCart";
+import { FaTimes } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
 
 const Checkout = () => {
+  const [checked, setCheckes] = useState<CartData | null>(null);
+
+  // call dữ liệu được chọn từ bên giỏ hàng
+  useEffect(() => {
+    const fetchdataChecked = async () => {
+      try {
+        const token = localStorage.getItem("jwt_token");
+        console.log("Token:", token);
+        if (!token) {
+          console.log("Token not found");
+          return;
+        }
+
+        // Cấu hình header để thêm token vào yêu cầu
+        const headers = {
+          Authorization: `Bearer ${token}`, // Gửi token vào header Authorization
+        };
+
+        const dataChecked = await apisphp.get("/user/getcheckcart", {
+          headers,
+        });
+        setCheckes(dataChecked.data);
+        console.log("data checked", dataChecked.data);
+
+        return dataChecked.data;
+      } catch (error) {}
+    };
+    fetchdataChecked();
+  }, []);
+
+  // bỏ trạng thanh từ false thành true từ bên checkout để k thanh toán
+  const handleRemoveItem = async (cartItemIds: number) => {
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        console.error("Token không hợp lệ");
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await apisphp.post(
+        "/user/updatecheckcart",
+        { cart_item_id: cartItemIds },
+        { headers }
+      );
+      // Kiểm tra xem yêu cầu đã thành công chưa
+      if (response.status === 200) {
+        // Cập nhật lại giỏ hàng sau khi xóa sản phẩm
+        setCheckes((prevChecked) => {
+          if (prevChecked) {
+            // Cập nhật lại state để bỏ sản phẩm vừa bỏ chọn
+            return {
+              ...prevChecked,
+              cart_items: prevChecked.cart_items.filter(
+                (item) => item.cart_item_ids !== cartItemIds
+              ),
+            };
+          }
+          return prevChecked;
+        });
+
+        toast.success("Sản phẩm đã được bỏ chọn!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa sản phẩm", error);
+    }
+  };
+
+  // Kiểm tra dữ liệu và đảm bảo rằng nó đã được tải thành công
+  if (!checked) {
+    return <div>Đang tải dữ liệu...</div>; // Hiển thị thông báo tải nếu chưa có dữ liệu
+  }
+
   return (
     <>
+      <ToastContainer
+        theme="light"
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+        draggable={true}
+      />
+
       <div className="min-w-screen min-h-screen bg-gray-50 py-5">
         {/* tiêu đề  */}
         <div id="title" className="page-title bg-gray-50 py-6 mt-[120px]">
@@ -31,30 +121,67 @@ const Checkout = () => {
             <div className="-mx-3 md:flex items-start">
               <div className="px-3 md:w-7/12 lg:pr-10">
                 {/* hiển thị sản phẩm được chọn từ bên giỏ hàng hoặc mua ngay sản phẩm  */}
-                <div className="w-full mx-auto text-gray-800 font-light mb-6 border-b border-gray-200 pb-6">
-                  <div className="w-full flex items-center">
-                    <div className="overflow-hidden rounded-lg w-16 h-16 bg-gray-50 border border-gray-200">
+                {checked.cart_items?.length > 0 ? (
+                  checked.cart_items.map((item) => (
+                    <li
+                      key={item.product_item_id}
+                      className="relative  flex items-center justify-between gap-6 p-4 border-b border-gray-200"
+                    >
+                      {/* Biểu tượng đóng */}
+                      <div
+                        onClick={() => handleRemoveItem(item.cart_item_ids)} // Hàm xử lý xóa sản phẩm
+                        className="absolute top-[-16px] right-[-15px] p-2 cursor-pointer"
+                      >
+                        <FaTimes />
+                      </div>
+
+                      {/* Hình ảnh sản phẩm */}
                       <img
-                        src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1160&q=80"
-                        alt=""
+                        src={`http://127.0.0.1:8000/storage/${item.image_product}`}
+                        className="h-20 w-20 rounded object-cover"
                       />
-                    </div>
-                    <div className="flex-grow pl-3">
-                      <h6 className="font-semibold uppercase text-gray-600">
-                        Ray Ban Sunglasses.
-                      </h6>
-                      <p className="text-gray-400">x 1</p>
-                    </div>
-                    <div>
-                      <span className="font-semibold text-gray-600 text-xl">
-                        $210
+
+                      {/* Thông tin sản phẩm */}
+                      <div className="flex-1 text-left">
+                        <h3 className="text-sm text-gray-900">
+                          {item.product_name}
+                        </h3>
+                        <dl className="mt-0.5 space-y-px text-xs text-gray-600">
+                          <div>
+                            <dt className="inline">Size:</dt>
+                            <dt className="inline">{item.size.name}</dt>
+                          </div>
+                          <div>
+                            <dt className="inline">Color:</dt>
+                            <dd className="inline">{item.color.name}</dd>
+                          </div>
+                        </dl>
+                      </div>
+
+                      {/* Phần chỉnh sửa số lượng */}
+                      <div className="flex items-center justify-center w-[80px]">
+                        <input
+                          type="number"
+                          value={item.quantity}
+                          className="w-full text-center bg-gray-100 border rounded"
+                          readOnly
+                        />
+                      </div>
+
+                      {/* Giá sản phẩm */}
+                      <span className="w-[120px] text-right tracking-wider font-semibold text-green-600">
+                        {isNaN(Number(item.product_sale_price))
+                          ? "Giá không hợp lệ"
+                          : new Intl.NumberFormat("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            }).format(Number(item.product_sale_price))}
                       </span>
-                      <span className="font-semibold text-gray-600 text-sm">
-                        .00
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                    </li>
+                  ))
+                ) : (
+                  <p>Giỏ hàng của bạn không có sản phẩm nào.</p>
+                )}
 
                 {/* app code giảm giá */}
                 <div className="mb-6 pb-6 border-b border-gray-200">
@@ -83,10 +210,10 @@ const Checkout = () => {
                 <div className="mb-6 pb-6 border-b border-gray-200 text-gray-800 text-left">
                   <div className="w-full flex mb-3 items-center">
                     <div className="flex-grow">
-                      <span className="text-gray-600">Subtotal</span>
+                      <span className="text-gray-600">Giá Gốc</span>
                     </div>
                     <div className="pl-3">
-                      <span className="font-semibold">$190.91</span>
+                      <span className="font-semibold"></span>
                     </div>
                   </div>
                   <div className="w-full flex items-center">
@@ -106,10 +233,12 @@ const Checkout = () => {
                       <span className="text-gray-600">Total</span>
                     </div>
                     <div className="pl-3">
-                      <span className="font-semibold text-gray-400 text-sm">
-                        AUD
-                      </span>{" "}
-                      <span className="font-semibold">$210.00</span>
+                      <span className="font-semibold" style={{ color: "red" }}>
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(checked?.total_amount || 0)}
+                      </span>
                     </div>
                   </div>
                 </div>
