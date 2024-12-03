@@ -3,11 +3,16 @@ import apisphp from "../Service/api";
 import CartData from "../Types/TCart";
 import { FaTimes } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 const ShopCart = () => {
+  const navigate = useNavigate();
   const [cartData, setCartData] = useState<CartData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // State lưu các item được chọn
 
+  console.log(selectedItems);
+
+  // call data cart của user
   useEffect(() => {
     const fetchCartData = async () => {
       try {
@@ -49,7 +54,7 @@ const ShopCart = () => {
     if (!cartData || !cartData.cart_items) return 0;
 
     return cartData.cart_items.reduce((total, item) => {
-      if (selectedItems.includes(item.product_item_id)) {
+      if (selectedItems.includes(item.cart_item_ids)) {
         return (
           total + parseFloat(item.product_sale_price || item.product_price)
         ); // Thêm giá sản phẩm đã chọn
@@ -58,13 +63,48 @@ const ShopCart = () => {
     }, 0);
   };
 
-  // Hàm xử lý khi người dùng thay đổi trạng thái checkbox
-  const handleCheckboxChange = (productItemId: number) => {
-    setSelectedItems((prevSelectedItems) =>
-      prevSelectedItems.includes(productItemId)
-        ? prevSelectedItems.filter((id) => id !== productItemId)
-        : [...prevSelectedItems, productItemId]
-    );
+  // hàn này xử lí chọn, bỏ chọn checkbox
+  const handleItemSelect = (itemId: number) => {
+    setSelectedItems((prevSelectedItems) => {
+      if (prevSelectedItems.includes(itemId)) {
+        // Nếu sản phẩm đã được chọn, bỏ chọn nó
+        return prevSelectedItems.filter((item) => item !== itemId);
+      } else {
+        // Nếu sản phẩm chưa được chọn, chọn nó
+        return [...prevSelectedItems, itemId];
+      }
+    });
+  };
+
+  // hàm này xử lí checked true false
+  const handleSubmit = async () => {
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        toast.error("Bạn cần đăng nhập!");
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await apisphp.post(
+        "user/checkcart",
+        { cart_item_ids: selectedItems }, // Gửi mảng ID sản phẩm đã chọn
+        { headers }
+      );
+
+      if (response.status === 200) {
+        toast.success("Sản phẩm đã được chuyển sang thanh toán!");
+        navigate("/checkout");
+      } else {
+        toast.error("Có lỗi khi chuyển sản phẩm.");
+      }
+    } catch (error) {
+      console.error("Error submitting selected items:", error);
+      toast.warning("Vui lòng chọn ít nhất một sản phẩm để tiếp tục!");
+    }
   };
 
   // Hàm xử lý xóa sản phẩm khỏi giỏ hàng
@@ -162,10 +202,8 @@ const ShopCart = () => {
                       {/* Checkbox */}
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.product_item_id)}
-                        onChange={() =>
-                          handleCheckboxChange(item.product_item_id)
-                        }
+                        checked={selectedItems.includes(item.cart_item_ids)}
+                        onChange={() => handleItemSelect(item.cart_item_ids)}
                         className="h-5 w-5"
                       />
 
@@ -261,15 +299,13 @@ const ShopCart = () => {
                 </div>
 
                 {/* Nút thanh toán */}
-                <a href="/checkout">
-                  <button
-                    type="submit"
-                    disabled={selectedItems.length === 0}
-                    className="w-full bg-black text-white py-2 rounded-lg mt-6 hover:bg-blue-700 transition"
-                  >
-                    Proceed to Checkout
-                  </button>
-                </a>
+                <button
+                  type="submit"
+                  onClick={handleSubmit}
+                  className="w-full bg-black text-white py-2 rounded-lg mt-6 hover:bg-blue-700 transition"
+                >
+                  Proceed to Checkout
+                </button>
               </div>
             </div>
           </div>
