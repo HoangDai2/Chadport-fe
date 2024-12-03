@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { loginValidationSchema } from "../../pages/AuthClient/Validation"; // Import schema
 import apisphp from "../../Service/api"; // Import API
 import { useUserContext } from "../../pages/AuthClient/UserContext"; // Import context để lưu thông tin người dùng
@@ -10,20 +10,26 @@ const LoginAdmin: React.FC = () => {
   const navigate = useNavigate();
   const { setUser } = useUserContext();
 
-  // Kiểm tra token trong localStorage
-  useEffect(() => {
-    const token = localStorage.getItem("jwt_token");
-    if (token) {
-      apisphp.get("/user/validate-token", { headers: { Authorization: `Bearer ${token}` } })
-        .then(response => {
-          if (response.data.valid) {
-            setUser(response.data.user);
-            navigate("/admin");
-          }
-        })
-        .catch(() => localStorage.removeItem("jwt_token")); // Xóa token nếu không hợp lệ
-    }
-  }, [navigate, setUser]);
+// Kiểm tra token trong localStorage
+// useEffect(() => {
+//   const token = localStorage.getItem("jwt_token");
+//   if (token) {
+//     apisphp
+//       .get("/user/validate-token", {
+//         headers: { Authorization: `Bearer ${token}` },
+//       })
+//       .then((response) => {
+//         const user = response.data.user;
+//         if (response.data.valid && [1, 2, 3].includes(user.role_id)) {
+//           setUser(user);
+//           navigate("/admin");
+//         } else {
+//           localStorage.removeItem("jwt_token"); // Xóa token nếu role_id không hợp lệ
+//         }
+//       })
+//       .catch(() => localStorage.removeItem("jwt_token")); // Xóa token nếu không hợp lệ
+//   }
+// }, [navigate, setUser]);
 
   const formik = useFormik({
     initialValues: {

@@ -10,7 +10,7 @@ const HeaderAD = (props: Props) => {
   const { user, setUser } = useUserContext();
   const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState<string>("");
-  
+
   const handleLinkClick = (link: string) => {
     setActiveLink(link);
   };
@@ -26,14 +26,25 @@ const HeaderAD = (props: Props) => {
           .get("/user/profile", { headers: { Authorization: `Bearer ${storedToken}` } })
           .then((response) => {
             if (response.data?.data) {
-              setUser(response.data.data); // Lưu thông tin người dùng vào context
-              navigate("/admin"); // Điều hướng tới trang admin nếu xác thực thành công
+              const userData = response.data.data;
+              setUser(userData); // Lưu thông tin người dùng vào context
+              
+              // Kiểm tra role_id của người dùng
+              if ([1, 2, 3].includes(userData.role_id)) {
+                localStorage.setItem("user", JSON.stringify(userData)); // Lưu thông tin người dùng vào localStorage
+                navigate(location.pathname); // Điều hướng lại trang hiện tại sau khi reload
+              } else {
+                localStorage.removeItem("jwt_token");
+                localStorage.removeItem("user");
+                navigate("/loginadmin"); // Điều hướng đến trang unauthorized nếu không có quyền
+              }
             } else {
               navigate("/loginadmin"); // Nếu không có thông tin người dùng, chuyển về login
             }
           })
           .catch(() => {
             localStorage.removeItem("jwt_token"); // Xóa token nếu có lỗi xác thực
+            localStorage.removeItem("user"); // Xóa thông tin người dùng khỏi localStorage
             navigate("/loginadmin");
           });
       }

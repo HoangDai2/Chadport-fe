@@ -585,30 +585,25 @@ function App() {
           {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
         </Routes>
         <Routes>
+        {/* Route không cần xác thực */}
         <Route path="/loginadmin" element={<LoginAdmin />} />
-        <Route path="/admin" element={<Admin />}>
+
+        {/* Các route yêu cầu xác thực được bọc trong PrivateRoute */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/admin" element={<Admin />}>
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
             <Route path="orders" element={<Orders />} />
             <Route path="profileadmin" element={<ProfileAdmin />} />
             <Route path="products" element={<ProductList />} />
-
             <Route
               path="products/add"
-              element={
-                <ProductAdd onAdd={handleAddProduct} categories={category} />
-              }
+              element={<ProductAdd onAdd={handleAddProduct} categories={category} />}
             />
             <Route
               path="products/edit/:id"
-              element={
-                <ProductUpdate
-                  onEdit={handleEditProduct}
-                  categories={category}
-                />
-              }
+              element={<ProductUpdate onEdit={handleEditProduct} categories={category} />}
             />
-
             <Route
               path="categorieslist"
               element={<CategoriesList listcategories={category} />}
@@ -619,17 +614,13 @@ function App() {
             />
             <Route
               path="categories/edit/:id"
-              element={
-                <CategoriesUpadate onEditCategory={handleEditCategory} />
-              }
+              element={<CategoriesUpadate onEditCategory={handleEditCategory} />}
             />
             <Route path="size" element={<SizeForm />} />
             <Route path="color" element={<ColorForm />} />
-            <Route path="size" element={<SizeForm />} />
-            <Route path="color" element={<ColorForm />} />
-            {/* <Route path="variants" element={<VariantForm />} /> */}
           </Route>
-        </Routes>
+        </Route>
+      </Routes>
       </div>
     </>
   );
