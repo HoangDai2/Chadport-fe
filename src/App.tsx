@@ -68,11 +68,10 @@ import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
 import LoginAdmin from "./admin/pages/LoginAdmin";
 import ProfileAdmin from "./admin/pages/ProfileAdmin";
-import PrivateRoute from "./admin/components/PrivateRoute";
 // import HeaderclientC from "./components/HeaderClient copy";
 // import HeaderClientC from "./components/HeaderClient copy";
 
-// import LoginAdmin from "./admin/pages/LoginAdmin";
+import PrivateRoute from "./admin/components/PrivateRoute";
 // import ProfileAdmin from "./admin/pages/ProfileAdmin";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
@@ -509,9 +508,14 @@ function App() {
               </>
             }
           />
-        </Routes>
-        <Routes>
-          {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
+          {/* <Route
+            path="/loginadmin"
+            element={
+              <>
+                <LoginAdmin />
+              </>
+            }
+          /> */}
         </Routes>
         <Routes>
         {/* Route không cần xác thực */}
