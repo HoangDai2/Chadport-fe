@@ -48,7 +48,7 @@ const HeaderAD = (props: Props) => {
             <input type="text" placeholder="Search" />
           </div>
         </div>
-        <div className="stats-container">
+        {/* <div className="stats-container">
           <div className="stat-box">
             <div className="icon">
               <img
@@ -94,7 +94,7 @@ const HeaderAD = (props: Props) => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );

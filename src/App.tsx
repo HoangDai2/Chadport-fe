@@ -66,16 +66,17 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
-import LoginAdmin from "./admin/pages/LoginAdmin";
-import ProfileAdmin from "./admin/pages/ProfileAdmin";
-import HeaderclientC from "./components/HeaderClient copy";
-import HeaderClientC from "./components/HeaderClient copy";
+// import LoginAdmin2 from "./admin/pages/LoginAdmin";
+// import ProfileAdmin from "./admin/pages/ProfileAdmin";
+// import HeaderclientC from "./components/HeaderClient copy";
+// import HeaderClientC from "./components/HeaderClient copy";
 
 // import LoginAdmin from "./admin/pages/LoginAdmin";
 // import ProfileAdmin from "./admin/pages/ProfileAdmin";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
+import ThongKe from "./admin/pages/ThongKe";
 
 function App() {
   const navigate = useNavigate();
@@ -588,15 +589,15 @@ function App() {
           /> */}
         </Routes>
         <Routes>
-          <Route path="loginadmin" element={<LoginAdmin />} />
           {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
-
+          {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
         </Routes>
         <Routes>
           {/* Router admin */}
           <Route path="/admin" element={<Admin />}>
             <Route index element={<div>Welcome to Admin Dashboard</div>} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
+            <Route path="thongke" element={<ThongKe />} />
             <Route path="orders" element={<Orders />} />
             {/* <Route path="profileadmin" element={<ProfileAdmin />} /> */}
             <Route path="products" element={<ProductList />} />

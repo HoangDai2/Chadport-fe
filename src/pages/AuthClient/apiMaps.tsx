@@ -32,8 +32,8 @@ const AddressInput = ({ formik }) => {
   };
 
   // Hàm xử lý khi người dùng chọn một địa chỉ từ gợi ý
-  const handleSelectSuggestion = (addressDes: any) => {
-    formik.setFieldValue("address", addressDes); // Cập nhật giá trị vào Formik
+  const handleSelectSuggestion = (description: any) => {
+    formik.setFieldValue("address", description); // Cập nhật giá trị vào Formik
     setSuggestions([]); // Ẩn gợi ý sau khi chọn
   };
 
@@ -60,10 +60,10 @@ const AddressInput = ({ formik }) => {
           {suggestions.map((item, index) => (
             <li
               key={index}
-              onClick={() => handleSelectSuggestion(item.addressDes)} // Chọn địa chỉ khi click
+              onClick={() => handleSelectSuggestion(item.description)} // Chọn địa chỉ khi click
               className="p-2 cursor-pointer text-gray-600 font-medium hover:bg-gray-200"
             >
-              {item.addressDes}
+              {item.description}
             </li>
           ))}
         </ul>
