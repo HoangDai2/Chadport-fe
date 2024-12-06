@@ -383,18 +383,24 @@ const ShopDetails = ({
                                 <button
                                   key={variant.color?.name} // Dùng color.name làm key
                                   className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
-                                                  ${
-                                                    selectedColor ===
-                                                    variant.color?.id
-                                                      ? "bg-black text-white "
-                                                      : "bg-white text-gray-700 border-gray-300"
-                                                  }
-                                                  hover:bg-primary hover:text-black`}
+                                            ${
+                                              selectedColor ===
+                                              variant.color?.id
+                                                ? "border-black text-white"
+                                                : `bg-[${variant.color?.hex}] text-white border-gray-300`
+                                            }
+                                            hover:bg-primary hover:text-black`}
+                                  style={{
+                                    backgroundColor:
+                                      selectedColor === variant.color?.hex
+                                        ? "black"
+                                        : variant.color?.hex,
+                                  }}
                                   onClick={() =>
                                     handleColorChange(variant.color?.id || "")
                                   }
                                 >
-                                  {variant.color?.name}
+                                  {}
                                 </button>
                               ))}
                             </div>

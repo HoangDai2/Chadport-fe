@@ -92,11 +92,6 @@ const Profile = (props: Props) => {
           reverseGenderMapping[
             values.gender as keyof typeof reverseGenderMapping
           ] || values.gender;
-
-        // const transformedValues = {
-        //   ...values,
-        //   gender: transformedGender,
-        // };
         const response = await apisphp.post("/user/update", values, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -374,31 +369,6 @@ const Profile = (props: Props) => {
             </div>
           </form>
 
-          {/* phần này là để cho người dùng thây quá trình đơn hàng  */}
-          {/* <div className="flex space-x-8 text-gray-500 text-sm font-medium mb-6">
-              <button className="pb-1 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
-                Tất cả
-              </button>
-              <button className="pb-1 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
-                Chờ Thanh toán
-              </button>
-              <button className="pb-1 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
-                Vận Chuyển
-              </button>
-              <button className="pb-1 border-b-2 border-gray-800 text-gray-900 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
-                Chờ Giao Hàng
-              </button>
-              <button className="pb-1 border-b-2 border-gray-800 text-gray-900 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
-                Hoàn Thành
-              </button>
-              <button className="pb-1 border-b-2 border-gray-800 text-gray-900 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
-                Đã Hủy
-              </button>
-              <button className="pb-1 border-b-2 border-gray-800 text-gray-900 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
-                Trả Hàng/Hoàn Tiền
-              </button>
-            </div> */}
-
           <div className="flex space-x-8 text-gray-500 text-sm font-medium mb-6">
             {/* <button className="pb-1 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
                 Tất cả
@@ -431,26 +401,6 @@ const Profile = (props: Props) => {
           </div>
 
           <div className="grid grid-cols-5 grid-rows-2 gap-4">
-            {/* phần này là nhưng đơn hàng của user đó  */}
-            {/* <div className="col-span-3 row-span-5 space-y-4">
-                <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-between shadow-sm border border-gray-200">
-                  <div>
-                    <p className="text-gray-800 font-semibold">Aptitude Test</p>
-                    <p className="text-sm text-gray-400">
-                      01 Oct | 11:00AM - 12:00AM | with Bogus Fikri
-                    </p>
-                    <p className="text-sm text-green-500 font-medium">
-                      Completed
-                    </p>
-                  </div>
-                  <button className="text-teal-600 font-medium">
-                    View Details
-                  </button>
-                </div>
-                <button className="mt-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300">
-                  + Add Interview
-                </button>
-              </div> */}
             <div className="col-span-3 row-span-3 space-y-4">
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
@@ -637,31 +587,7 @@ const Profile = (props: Props) => {
                         )}
                       </div>
                     </div>
-                    {/* Address */}
-                    {/* <div className="flex items-center">
-                      <label className="w-1/3 text-gray-600 font-medium">
-                        Living Address:
-                      </label>
-                      <div className="w-2/3">
-                        <input
-                          type="text"
-                          name="address"
-                          value={formik.values.address}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className={`bg-gray-100 border ${
-                            formik.touched.address && formik.errors.address
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
-                        />
-                        {formik.touched.address && formik.errors.address && (
-                          <div className="text-red-500 text-sm mt-1">
-                            {formik.errors.address}
-                          </div>
-                        )}
-                      </div>
-                    </div> */}
+
                     <div className="flex items-center">
                       <label className="w-1/3 text-gray-600 font-medium">
                         Living Address:
@@ -672,47 +598,6 @@ const Profile = (props: Props) => {
                     </div>
                   </div>
                 </div>
-
-                {/* thông tin fake */}
-                {/* <div className="mb-6">
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                    Education Information
-                  </h2>
-                  <div className="space-y-2">
-                    <p className="text-gray-600 flex items-center">
-                      <span className="material-icons text-gray-400 mr-2">
-                        University:
-                      </span>
-                      <span className="font-medium text-gray-800 ml-auto">
-                        Boston University
-                      </span>
-                    </p>
-                    <p className="text-gray-600 flex items-center">
-                      <span className="material-icons text-gray-400 mr-2">
-                        Qualification Held:
-                      </span>
-                      <span className="font-medium text-gray-800 ml-auto">
-                        Bachelor of Engineering
-                      </span>
-                    </p>
-                    <p className="text-gray-600 flex items-center">
-                      <span className="material-icons text-gray-400 mr-2">
-                        Year Graduation:
-                      </span>
-                      <span className="font-medium text-gray-800 ml-auto">
-                        2014
-                      </span>
-                    </p>
-                    <p className="text-gray-600 flex items-center">
-                      <span className="material-icons text-gray-400 mr-2">
-                        Referral:
-                      </span>
-                      <span className="font-medium text-gray-800 ml-auto">
-                        Not Provided
-                      </span>
-                    </p>
-                  </div>
-                </div> */}
 
                 {/* Notes Section */}
                 <div className="mt-8">

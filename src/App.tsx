@@ -40,10 +40,10 @@ import "./libs/mmenu/css/mmenu.min.css";
 import LoginRegister from "./pages/AuthClient/Login"; // Only one import
 import ShopDetails from "./pages/ShopDetails";
 import Wishlist from "./pages/Wishlist";
-import ShopCart from "./pages/ShopCart";
+import ShopCart from "./pages/payment/ShopCart";
 import CartList from "./function/CartList";
 import About from "./pages/About";
-import Checkout from "./pages/Checkout";
+import Checkout from "./pages/payment/Checkout";
 import BillOrder from "./pages/BillOrder";
 import MyAccountPage from "./pages/MyAccountPage";
 import { toast } from "react-toastify";
@@ -518,42 +518,51 @@ function App() {
           /> */}
         </Routes>
         <Routes>
-        {/* Route không cần xác thực */}
-        <Route path="/loginadmin" element={<LoginAdmin />} />
+          {/* Route không cần xác thực */}
+          <Route path="/loginadmin" element={<LoginAdmin />} />
 
-        {/* Các route yêu cầu xác thực được bọc trong PrivateRoute */}
-        <Route element={<PrivateRoute />}>
-          <Route path="/admin" element={<Admin />}>
-            <Route index element={<div>Welcome to Admin Dashboard</div>} />
-            <Route path="listuser" element={<ListUser listuser={user} />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="profileadmin" element={<ProfileAdmin />} />
-            <Route path="products" element={<ProductList />} />
-            <Route
-              path="products/add"
-              element={<ProductAdd onAdd={handleAddProduct} categories={category} />}
-            />
-            <Route
-              path="products/edit/:id"
-              element={<ProductUpdate onEdit={handleEditProduct} categories={category} />}
-            />
-            <Route
-              path="categorieslist"
-              element={<CategoriesList listcategories={category} />}
-            />
-            <Route
-              path="categories/add"
-              element={<CategoriesAdd onAddCategory={handleAddCategory} />}
-            />
-            <Route
-              path="categories/edit/:id"
-              element={<CategoriesUpadate onEditCategory={handleEditCategory} />}
-            />
-            <Route path="size" element={<SizeForm />} />
-            <Route path="color" element={<ColorForm />} />
+          {/* Các route yêu cầu xác thực được bọc trong PrivateRoute */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/admin" element={<Admin />}>
+              <Route index element={<div>Welcome to Admin Dashboard</div>} />
+              <Route path="listuser" element={<ListUser listuser={user} />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="profileadmin" element={<ProfileAdmin />} />
+              <Route path="products" element={<ProductList />} />
+              <Route
+                path="products/add"
+                element={
+                  <ProductAdd onAdd={handleAddProduct} categories={category} />
+                }
+              />
+              <Route
+                path="products/edit/:id"
+                element={
+                  <ProductUpdate
+                    onEdit={handleEditProduct}
+                    categories={category}
+                  />
+                }
+              />
+              <Route
+                path="categorieslist"
+                element={<CategoriesList listcategories={category} />}
+              />
+              <Route
+                path="categories/add"
+                element={<CategoriesAdd onAddCategory={handleAddCategory} />}
+              />
+              <Route
+                path="categories/edit/:id"
+                element={
+                  <CategoriesUpadate onEditCategory={handleEditCategory} />
+                }
+              />
+              <Route path="size" element={<SizeForm />} />
+              <Route path="color" element={<ColorForm />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
+        </Routes>
       </div>
     </>
   );

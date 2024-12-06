@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import apisphp from "../Service/api";
-import CartData from "../Types/TCart";
+import apisphp from "../../Service/api";
+import CartData from "../../Types/TCart";
 import { FaTimes } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";

@@ -16,3 +16,12 @@ type TUser = {
   id: number;
 };
 export default TUser;
+
+export type AddressData = {
+  first_name: string;
+  last_name: string;
+  phone_number_address: string;
+  address: string;
+  specific_address: string;
+  isDefault: boolean;
+};

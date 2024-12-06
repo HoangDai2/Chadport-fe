@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-const AddressInput = ({ formik }) => {
+const AddressInput = ({ formik }: any) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const apiKey = "LfP7ge6pky0HxgA3JQNe3z1HosOFBnn3V29ZNcLj";
+  const apiKey = "zvcqGlU5uDKLbJm3CKx8qdXCn4F2BDKl0Qhg5I6G";
   // Hàm xử lý khi người dùng nhập địa chỉ
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     const value = e.target.value;
     formik.handleChange(e); // Đồng bộ với Formik
 
@@ -32,8 +32,8 @@ const AddressInput = ({ formik }) => {
   };
 
   // Hàm xử lý khi người dùng chọn một địa chỉ từ gợi ý
-  const handleSelectSuggestion = (addressDes: any) => {
-    formik.setFieldValue("address", addressDes); // Cập nhật giá trị vào Formik
+  const handleSelectSuggestion = (description: any) => {
+    formik.setFieldValue("address", description); // Cập nhật giá trị vào Formik
     setSuggestions([]); // Ẩn gợi ý sau khi chọn
   };
 
@@ -60,10 +60,10 @@ const AddressInput = ({ formik }) => {
           {suggestions.map((item, index) => (
             <li
               key={index}
-              onClick={() => handleSelectSuggestion(item.addressDes)} // Chọn địa chỉ khi click
+              onClick={() => handleSelectSuggestion(item.description)} // Chọn địa chỉ khi click
               className="p-2 cursor-pointer text-gray-600 font-medium hover:bg-gray-200"
             >
-              {item.addressDes}
+              {item.description}
             </li>
           ))}
         </ul>
