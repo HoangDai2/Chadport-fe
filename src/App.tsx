@@ -76,6 +76,7 @@ import PrivateRoute from "./admin/components/PrivateRoute";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
+import OderConfirm from "./admin/pages/OderConfirm";
 
 function App() {
   const navigate = useNavigate();
@@ -560,6 +561,7 @@ function App() {
               />
               <Route path="size" element={<SizeForm />} />
               <Route path="color" element={<ColorForm />} />
+              <Route path="oderconfirm" element={<OderConfirm />} />
             </Route>
           </Route>
         </Routes>
