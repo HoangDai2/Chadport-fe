@@ -1,14 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import TProduct from "../Types/TProduct";
-import instance from "../Service";
 import { toast, ToastContainer } from "react-toastify";
-import apisphp from "../Service/api";
-import CommentSection from "./Comments/CommentSection";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/cartSlice";
 import "react-toastify/dist/ReactToastify.css";
-
+import { addToCart } from "../../redux/cartSlice";
+import apisphp from "../../Service/api";
+import CommentSection from "../Comments/CommentSection";
+import TProduct from "../../Types/TProduct";
 const ShopDetails = ({
   addToWishlist,
 }: {
@@ -75,7 +73,10 @@ const ShopDetails = ({
       console.error("Variant not found for selected size and color");
       return;
     }
-
+    if (selectedVariant.quantity === 0) {
+      toast.warning("Sản phầm này đã hết");
+      return;
+    }
     console.log("Selected variant:", selectedVariant);
 
     // Đảm bảo rằng dữ liệu gửi đi đủ thông tin mà backend yêu cầu
@@ -92,7 +93,7 @@ const ShopDetails = ({
     // Hiển thị thông báo toast khi thêm thành công
     toast.success("Thêm vào giỏ hàng thành công!", {
       position: "top-right",
-      autoClose: 3000, // Thời gian tự đóng (3 giây)
+      autoClose: 3000,
     });
   };
 
@@ -125,6 +126,7 @@ const ShopDetails = ({
       fetchProductDetails();
     }
   }, [id]);
+
   useEffect(() => {
     const testDetailsFetch = async () => {
       try {
