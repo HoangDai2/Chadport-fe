@@ -38,7 +38,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./libs/mmenu/css/mmenu.min.css";
 import LoginRegister from "./pages/AuthClient/Login"; // Only one import
-import ShopDetails from "./pages/ShopDetails";
 import Wishlist from "./pages/Wishlist";
 import ShopCart from "./pages/payment/ShopCart";
 import CartList from "./function/CartList";
@@ -76,6 +75,7 @@ import PrivateRoute from "./admin/components/PrivateRoute";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
+import ShopDetails from "./pages/payment/ShopDetails";
 
 function App() {
   const navigate = useNavigate();

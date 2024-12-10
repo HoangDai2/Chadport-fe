@@ -9,15 +9,26 @@ import { AddressData } from "../../Types/TUsers";
 import CartData from "../../Types/TCart";
 import { FaSackDollar } from "react-icons/fa6";
 import { MdPayment } from "react-icons/md";
+import PaymentData from "../../Types/TOrder";
+import { checkoutPayment } from "./PaymentService";
+import { useNavigate } from "react-router-dom";
 const Checkout = () => {
   const { user } = useUserContext();
+  const navigate = useNavigate();
+  const [payments, setPayments] = useState({
+    billing_address: "",
+    email: "",
+    payment_method: "",
+    phone: "",
+    shipping_address: "",
+  });
 
   const [checked, setCheckes] = useState<CartData | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   // state này check xem khi nào người dùng thêm địa chỉ mới thì mới hiên dữ liệu
   const [checkdata, setCheckData] = useState(false);
-  console.log(checkdata);
+  // console.log(checkdata);
 
   const [getaddress, setGetaddress] = useState<AddressData | null>(null);
 
@@ -27,6 +38,15 @@ const Checkout = () => {
   // state quản lí khi chọn địa chỉ mặc định hoặc new
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    phone_number: "",
+    address: "",
+  });
+
+  // check lỗi
+  const [errors, setErrors] = useState({
+    payment_method: "",
     first_name: "",
     last_name: "",
     phone_number: "",
@@ -128,7 +148,7 @@ const Checkout = () => {
         });
 
         setGetaddress(dataChecked.data.address);
-        console.log("data address", dataChecked.data.address);
+        // console.log("data address", dataChecked.data.address);
 
         return dataChecked.data;
       } catch (error) {}
@@ -137,7 +157,7 @@ const Checkout = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Address Data:", getaddress);
+    // console.log("Address Data:", getaddress);
     const hasValidAddress = !!(
       getaddress?.first_name &&
       getaddress?.last_name &&
@@ -147,12 +167,17 @@ const Checkout = () => {
     );
 
     setCheckData(hasValidAddress); // Cập nhật trực tiếp trạng thái
-    console.log(hasValidAddress);
+    // console.log(hasValidAddress);
   }, [getaddress]); // Chỉ theo dõi sự thay đổi của getaddress
 
-  // hàm xử lí chọn online và offline
-  const handleFormPayment = (option: any) => {
+  // hàm xử lí chọn online và offline và lấy giá trị của radio
+  const handleFormPayment = (option: "code" | "online") => {
+    setPayments({
+      ...payments,
+      payment_method: option === "code" ? "1" : "2", // "1" cho COD, "2" cho VNPAY
+    });
     setFormPayment(option);
+    setErrors({ ...errors, payment_method: "" });
   };
 
   // Cập nhật dữ liệu vào form khi chọn địa chỉ
@@ -177,6 +202,8 @@ const Checkout = () => {
     }
   };
 
+  // console.log(formData);
+
   // Hàm xử lý khi người dùng thay đổi thông tin trong form
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
@@ -184,6 +211,48 @@ const Checkout = () => {
       ...prevData,
       [name]: value,
     }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "", // Reset lỗi khi người dùng nhập vào trường đó
+    }));
+  };
+
+  const handleCheckout = async (event: any) => {
+    event.preventDefault();
+
+    // Kiểm tra phương thức thanh toán
+    if (!formpayment) {
+      toast.warning("Vui lòng chọn phương thức thanh toán!");
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        payment_method: "Vui lòng chọn phương thức thanh toán!",
+      }));
+      return;
+    }
+
+    // Kiểm tra các trường thông tin
+    const newErrors: any = {};
+    if (!formData.first_name) newErrors.first_name = "Vui lòng nhập tên!";
+    if (!formData.last_name) newErrors.last_name = "Vui lòng nhập họ!";
+    if (!formData.phone_number)
+      newErrors.phone_number = "Vui lòng nhập số điện thoại!";
+    if (!formData.address) newErrors.address = "Vui lòng nhập địa chỉ!";
+
+    setErrors(newErrors);
+
+    const paymentDatas = {
+      // payment_method: payments.payment_method,
+      payment_method: formpayment === "code" ? "1" : "2",
+      phone: formData.phone_number,
+      email: payments.email,
+      shipping_address: formData.address,
+      billing_address: payments.billing_address,
+    };
+    try {
+      await checkoutPayment(paymentDatas);
+      navigate("/profile");
+    } catch (error) {}
+    console.log("dữ liệu gửi đi thanh toán", paymentDatas);
   };
 
   // Kiểm tra dữ liệu và đảm bảo rằng nó đã được tải thành công
@@ -503,7 +572,8 @@ const Checkout = () => {
                             type="radio"
                             className="size-4 rounded border-gray-300"
                             id="Option3"
-                            name="paymentOption"
+                            value="1"
+                            name="payment_method"
                             onChange={() => {
                               handleFormPayment("code");
                             }}
@@ -531,7 +601,8 @@ const Checkout = () => {
                             type="radio"
                             className="size-4 rounded border-gray-300"
                             id="Option4"
-                            name="paymentOption"
+                            value="2"
+                            name="payment_method"
                             onChange={() => {
                               handleFormPayment("online");
                             }}
@@ -548,9 +619,7 @@ const Checkout = () => {
                         </div>
                       </label>
                     </div>
-
                     <div className="border-b mb-[20px]"></div>
-
                     {/* form thanh toán khi nhận hàng */}
                     {formpayment === "code" && (
                       <div className="max-w-4xl mx-auto bg-white rounded-lg">
@@ -566,13 +635,23 @@ const Checkout = () => {
                             </label>
                             <input
                               id="firstName"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                              className={`w-full px-4 py-3 border ${
+                                errors.first_name
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
                               placeholder="John"
                               type="text"
                               name="firt_name"
                               value={formData.first_name}
                               onChange={handleInputChange}
                             />
+
+                            {errors.first_name && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {errors.first_name}
+                              </div>
+                            )}
                           </div>
 
                           {/* Last Name */}
@@ -592,6 +671,11 @@ const Checkout = () => {
                               value={formData.last_name}
                               onChange={handleInputChange}
                             />
+                            {errors.last_name && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {errors.last_name}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -612,13 +696,18 @@ const Checkout = () => {
                             value={formData.phone_number}
                             onChange={handleInputChange}
                           />
+                          {errors.phone_number && (
+                            <div className="text-red-500 text-left text-sm mt-1">
+                              {errors.phone_number}
+                            </div>
+                          )}
                         </div>
 
                         {/* Address */}
                         <div className="mb-6">
                           <label
                             htmlFor="cardNumber"
-                            className="text-left text-sm font-semibold text-gray-700 mb-2 block"
+                            className="text-left  text-sm font-semibold text-gray-700 mb-2 block"
                           >
                             Address
                           </label>
@@ -631,6 +720,11 @@ const Checkout = () => {
                             value={formData.address}
                             onChange={handleInputChange}
                           />
+                          {errors.address && (
+                            <div className="text-red-500 text-left text-sm mt-1">
+                              {errors.address}
+                            </div>
+                          )}
                         </div>
 
                         {/* code giảm giá  */}
@@ -650,14 +744,16 @@ const Checkout = () => {
                         </div>
                       </div>
                     )}
-
                     {/* form thanh toán online */}
                     {formpayment === "online" && <div>VNPAY</div>}
                   </div>
                 </div>
                 {/* nút thanh toán pay now */}
                 <div className="mt-[55px]">
-                  <button className=" block w-full mx-auto bg-black hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-2 font-semibold">
+                  <button
+                    onClick={handleCheckout}
+                    className=" block w-full mx-auto bg-black hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-2 font-semibold"
+                  >
                     <i className="mdi mdi-lock-outline mr-1"></i> PAY NOW
                   </button>
                 </div>

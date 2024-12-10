@@ -186,72 +186,78 @@ const ShopCart = () => {
             <div className="flex-1 space-y-8">
               {/* Danh sách sản phẩm trong giỏ hàng */}
               <div className="space-y-8">
-                <ul>
-                  {cartData.cart_items.map((item) => (
-                    <li
-                      key={item.product_item_id}
-                      className="relative  flex items-center justify-between gap-6 p-4 border-b border-gray-200"
-                    >
-                      {/* Biểu tượng đóng */}
-                      <div
-                        className="absolute top-[-16px] right-[-35px] p-2 cursor-pointer"
-                        onClick={() => handleRemoveItem(item.product_item_id)} // Hàm xử lý xóa sản phẩm
+                {cartData.cart_items.length === 0 ? (
+                  <div className="flex justify-center ">
+                    Không có sản phẩm nào trong giỏ hàng
+                  </div>
+                ) : (
+                  <ul>
+                    {cartData.cart_items.map((item) => (
+                      <li
+                        key={item.product_item_id}
+                        className="relative flex items-center justify-between gap-6 p-4 border-b border-gray-200"
                       >
-                        <FaTimes />
-                      </div>
-                      {/* Checkbox */}
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item.cart_item_ids)}
-                        onChange={() => handleItemSelect(item.cart_item_ids)}
-                        className="h-5 w-5"
-                      />
-
-                      {/* Hình ảnh sản phẩm */}
-                      <img
-                        src={`http://127.0.0.1:8000/storage/${item.image_product}`}
-                        className="h-20 w-20 rounded object-cover"
-                      />
-
-                      {/* Thông tin sản phẩm */}
-                      <div className="flex-1 text-left">
-                        <h3 className="text-sm text-gray-900">
-                          {item.product_name}
-                        </h3>
-                        <dl className="mt-0.5 space-y-px text-xs text-gray-600">
-                          <div>
-                            <dt className="inline">Size:</dt>
-                            <dt className="inline">{item.size.name}</dt>
-                          </div>
-                          <div>
-                            <dt className="inline">Color:</dt>
-                            <dd className="inline">{item.color.name}</dd>
-                          </div>
-                        </dl>
-                      </div>
-
-                      {/* Phần chỉnh sửa số lượng */}
-                      <div className="flex items-center justify-center w-[80px]">
+                        {/* Biểu tượng đóng */}
+                        <div
+                          className="absolute top-[-16px] right-[-35px] p-2 cursor-pointer"
+                          onClick={() => handleRemoveItem(item.product_item_id)} // Hàm xử lý xóa sản phẩm
+                        >
+                          <FaTimes />
+                        </div>
+                        {/* Checkbox */}
                         <input
-                          type="number"
-                          value={item.quantity}
-                          className="w-full text-center bg-gray-100 border rounded"
-                          readOnly
+                          type="checkbox"
+                          checked={selectedItems.includes(item.cart_item_ids)}
+                          onChange={() => handleItemSelect(item.cart_item_ids)}
+                          className="h-5 w-5"
                         />
-                      </div>
 
-                      {/* Giá sản phẩm */}
-                      <span className="w-[120px] text-right tracking-wider font-semibold text-green-600">
-                        {isNaN(Number(item.product_sale_price))
-                          ? "Giá không hợp lệ"
-                          : new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(Number(item.product_sale_price))}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                        {/* Hình ảnh sản phẩm */}
+                        <img
+                          src={`http://127.0.0.1:8000/storage/${item.image_product}`}
+                          className="h-20 w-20 rounded object-cover"
+                        />
+
+                        {/* Thông tin sản phẩm */}
+                        <div className="flex-1 text-left">
+                          <h3 className="text-sm text-gray-900">
+                            {item.product_name}
+                          </h3>
+                          <dl className="mt-0.5 space-y-px text-xs text-gray-600">
+                            <div>
+                              <dt className="inline">Size:</dt>
+                              <dt className="inline">{item.size.name}</dt>
+                            </div>
+                            <div>
+                              <dt className="inline">Color:</dt>
+                              <dd className="inline">{item.color.name}</dd>
+                            </div>
+                          </dl>
+                        </div>
+
+                        {/* Phần chỉnh sửa số lượng */}
+                        <div className="flex items-center justify-center w-[80px]">
+                          <input
+                            type="number"
+                            value={item.quantity}
+                            className="w-full text-center bg-gray-100 border rounded"
+                            readOnly
+                          />
+                        </div>
+
+                        {/* Giá sản phẩm */}
+                        <span className="w-[120px] text-right tracking-wider font-semibold text-green-600">
+                          {isNaN(Number(item.product_sale_price))
+                            ? "Giá không hợp lệ"
+                            : new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(Number(item.product_sale_price))}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
 
