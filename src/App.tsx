@@ -595,9 +595,9 @@ function App() {
         <Routes>
           {/* Router admin */}
           <Route path="/admin" element={<Admin />}>
-            <Route index element={<div>Welcome to Admin Dashboard</div>} />
+            <Route index element={<ThongKe />} />
             <Route path="listuser" element={<ListUser listuser={user} />} />
-            <Route path="thongke" element={<ThongKe />} />
+            {/* <Route path="thongke" element={<ThongKe />} /> */}
             <Route path="orders" element={<Orders />} />
             {/* <Route path="profileadmin" element={<ProfileAdmin />} /> */}
             <Route path="products" element={<ProductList />} />
