@@ -322,7 +322,7 @@ function App() {
           "http://127.0.0.1:8000/api/getall/categories"
         );
         setCategory(responses.data.data);
-        console.log(responses);
+        // console.log(responses);
       } catch (error) {
         console.error("Error fetching shoes:", error);
       }

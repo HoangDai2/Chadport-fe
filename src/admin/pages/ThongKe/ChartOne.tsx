@@ -1,6 +1,8 @@
 import { ApexOptions } from "apexcharts";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import ReactApexChart from "react-apexcharts";
+
 const options: ApexOptions = {
   legend: {
     show: false,
@@ -20,7 +22,6 @@ const options: ApexOptions = {
       left: 0,
       opacity: 0.1,
     },
-
     toolbar: {
       show: false,
     },
@@ -45,12 +46,8 @@ const options: ApexOptions = {
   ],
   stroke: {
     width: [2, 2],
-    curve: "straight",
+    curve: "smooth",
   },
-  // labels: {
-  //   show: false,
-  //   position: "top",
-  // },
   grid: {
     xaxis: {
       lines: {
@@ -83,18 +80,18 @@ const options: ApexOptions = {
   xaxis: {
     type: "category",
     categories: [
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
+      "Tháng 1",
+      "Tháng 2",
+      "Tháng 3",
+      "Tháng 4",
+      "Tháng 5",
+      "Tháng 6",
+      "Tháng 7",
+      "Tháng 8",
+      "Tháng 9",
+      "Tháng 10",
+      "Tháng 11",
+      "Tháng 12",
     ],
     axisBorder: {
       show: false,
@@ -110,73 +107,122 @@ const options: ApexOptions = {
       },
     },
     min: 0,
-    max: 100,
+    labels: {
+      formatter: (value) => {
+        // Format numbers with commas
+        return value.toLocaleString("vi-VN"); // Adjust currency or format as needed
+      },
+    },
+  },
+  tooltip: {
+    y: {
+      formatter: (value) => {
+        return value.toLocaleString("vi-VN"); // Format tooltip values with commas
+      },
+    },
   },
 };
 
 interface ChartOneState {
   series: {
     name: string;
-    data: number[];
+    data: number[]; // Store raw numbers here for the chart
   }[];
 }
 
 const ChartOne: React.FC = () => {
   const [state, setState] = useState<ChartOneState>({
-    series: [
-      {
-        name: "Product One",
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
-      },
-
-      {
-        name: "Product Two",
-        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
-      },
-    ],
+    series: [],
   });
 
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-    }));
+  const [selectedYear, setSelectedYear] = useState<string>(
+    new Date().getFullYear().toString()
+  );
+  const years = Array.from({ length: 5 }, (_, i) =>
+    (new Date().getFullYear() - i).toString()
+  ); // List of years for selection
+
+  const [timeRange, setTimeRange] = useState<string>("All");
+
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
   };
-  handleReset;
+
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/api/showAllOrder")
+      .then((response) => {
+        const orders = response.data.data;
+        const monthlySales = {
+          "Doanh thu": Array(12).fill(0),
+          "Loi Nhuan": Array(12).fill(0),
+        };
+
+        if (orders && orders.length > 0) {
+          orders.forEach((order: any) => {
+            const orderDate = new Date(order.created_at);
+            if (isNaN(orderDate.getTime())) {
+              console.error("Invalid Date:", order.created_at);
+            } else {
+              const orderYear = orderDate.getFullYear();
+              if (orderYear.toString() === selectedYear) {
+                const orderMonth = orderDate.getMonth();
+                if (order.status === "đã hoàn thành") {
+                  monthlySales["Doanh thu"][orderMonth] += order.total_money;
+                  monthlySales["Loi Nhuan"][orderMonth] +=
+                    order.total_money * 0.3;
+                }
+              }
+            }
+          });
+          setState({
+            series: [
+              {
+                name: "Doanh Thu",
+                data: filterData(monthlySales["Doanh thu"], timeRange),
+              },
+              {
+                name: "Loi Nhuan",
+                data: filterData(monthlySales["Loi Nhuan"], timeRange),
+              },
+            ],
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching orders data:", error);
+      });
+  }, [timeRange, selectedYear]);
+
+  const filterData = (data: number[], timeRange: string) => {
+    if (timeRange === "Year") {
+      return data;
+    }
+    return data;
+  };
+
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year); // Update the selected year
+  };
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7 pb-5  drop-shadow-xl dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
+    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7 pb-5 drop-shadow-xl dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-        <div className="flex w-full flex-wrap gap-3 sm:gap-5">
-          <div className="flex min-w-47.5">
-            <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-primary">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-primary">Total Revenue</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
-            </div>
-          </div>
-          <div className="flex min-w-47.5">
-            <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-secondary">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-secondary">Total Sales</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
-            </div>
-          </div>
-        </div>
         <div className="flex w-full max-w-45 justify-end">
           <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
-            <button className="rounded bg-white py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark">
-              Day
-            </button>
-            <button className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
-              Week
-            </button>
-            <button className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
-              Month
-            </button>
+            <select
+              onChange={(e) => handleYearChange(e.target.value)}
+              className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark"
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

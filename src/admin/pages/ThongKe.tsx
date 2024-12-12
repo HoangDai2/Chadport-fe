@@ -5,11 +5,68 @@ import ChartThree from "./ThongKe/ChartThree";
 import ChartTwo from "./ThongKe/ChartTwo";
 import TUser from "../../Types/TUsers";
 import apisphp from "../../Service/api";
+import axios from "axios";
 const ThongKe = () => {
+  const [orders, setOrders] = useState<any[]>([]); // Lưu danh sách đơn hàng
+  const [revenue, setRevenue] = useState<number>(0); // Doanh thu
+  const [profit, setProfit] = useState<number>(0); // Lợi nhuận
+
   const [users, setUsers] = useState<TUser[]>([]);
   const [roleCount, setroleCount] = useState(0);
   const [products, setProducts] = useState([]);
   const [productCount, setProductCount] = useState(0);
+  // Hàm lấy tất cả đơn hàng từ API
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/showAllOrder"
+      );
+      setOrders(response.data.data); // Cập nhật danh sách đơn hàng
+    } catch (error) {
+      console.error("Có lỗi khi lấy dữ liệu đơn hàng:", error);
+    }
+  };
+  // console.log(orders);
+  // Hàm tính doanh thu khi trạng thái đơn hàng là "đã hoàn thành"
+  const calculateRevenue = () => {
+    const completedOrders = orders.filter(
+      (order) => order.status === "đã hoàn thành"
+    );
+    const totalRevenue = completedOrders.reduce(
+      (total: number, order: any) => total + order.total_money,
+      0
+    );
+    setRevenue(totalRevenue);
+  };
+  // console.log(revenue);
+  // Hàm tính lợi nhuận
+  const calculateProfit = () => {
+    const totalProfit = revenue - revenue * 0.7; // Trừ đi 70% doanh thu để tính lợi nhuận
+    setProfit(totalProfit);
+  };
+
+  useEffect(() => {
+    fetchOrders(); // Lấy dữ liệu đơn hàng khi component mount
+  }, []);
+
+  useEffect(() => {
+    if (orders.length > 0) {
+      calculateRevenue(); // Tính doanh thu khi đơn hàng đã được lấy
+    }
+  }, [orders]);
+
+  useEffect(() => {
+    if (revenue > 0) {
+      calculateProfit(); // Tính lợi nhuận khi doanh thu thay đổi
+    }
+  }, [revenue]);
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
+
   const listUser = async () => {
     try {
       const res = await apisphp.get("/user/getall"); // Gọi API
@@ -60,32 +117,39 @@ const ThongKe = () => {
       <>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
           <CardDataStats
-            title="Total views"
-            total={""}
-            // rate="0.43%"
+            title="Tổng Doanh Thu"
+            total={formatCurrency(revenue)}
+            // rate=""
             levelUp
           >
             <svg
-              className="fill-primary dark:fill-white"
-              width="22"
-              height="16"
-              viewBox="0 0 22 16"
+              width="100"
+              height="100"
+              viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
+              <circle cx="12" cy="12" r="10" fill="#DBEAFE" />
+
               <path
-                d="M11 15.1156C4.19376 15.1156 0.825012 8.61876 0.687512 8.34376C0.584387 8.13751 0.584387 7.86251 0.687512 7.65626C0.825012 7.38126 4.19376 0.918762 11 0.918762C17.8063 0.918762 21.175 7.38126 21.3125 7.65626C21.4156 7.86251 21.4156 8.13751 21.3125 8.34376C21.175 8.61876 17.8063 15.1156 11 15.1156ZM2.26876 8.00001C3.02501 9.27189 5.98126 13.5688 11 13.5688C16.0188 13.5688 18.975 9.27189 19.7313 8.00001C18.975 6.72814 16.0188 2.43126 11 2.43126C5.98126 2.43126 3.02501 6.72814 2.26876 8.00001Z"
-                fill=""
+                d="M12 7C10.8954 7 10 7.89543 10 9C10 10.1046 10.8954 11 12 11H13C14.1046 11 15 11.8954 15 13C15 14.1046 14.1046 15 13 15C11.8954 15 11 14.1046 11 13"
+                stroke="#000000"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               />
               <path
-                d="M11 10.9219C9.38438 10.9219 8.07812 9.61562 8.07812 8C8.07812 6.38438 9.38438 5.07812 11 5.07812C12.6156 5.07812 13.9219 6.38438 13.9219 8C13.9219 9.61562 12.6156 10.9219 11 10.9219ZM11 6.625C10.2437 6.625 9.625 7.24375 9.625 8C9.625 8.75625 10.2437 9.375 11 9.375C11.7563 9.375 12.375 8.75625 12.375 8C12.375 7.24375 11.7563 6.625 11 6.625Z"
-                fill=""
+                d="M12 6V18"
+                stroke="#000000"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               />
             </svg>
           </CardDataStats>
           <CardDataStats
-            title="Total Profit"
-            total="$45,2K"
+            title="Lợi Nhuận"
+            total={formatCurrency(profit)}
             // rate="4.35%"
             levelUp
           >
@@ -112,7 +176,7 @@ const ThongKe = () => {
             </svg>
           </CardDataStats>
           <CardDataStats
-            title="Total Product"
+            title="Tổng Sản Phẩm"
             total={productCount}
             // rate="2.59%"
             levelUp
@@ -136,7 +200,7 @@ const ThongKe = () => {
             </svg>
           </CardDataStats>
           <CardDataStats
-            title="Total Users"
+            title="Tổng Người Dùng  "
             total={roleCount}
             // rate="0.95%"
             levelDown
@@ -167,7 +231,7 @@ const ThongKe = () => {
 
         <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
           <ChartOne />
-          <ChartTwo />
+          {/* <ChartTwo /> */}
           <ChartThree />
         </div>
       </>
