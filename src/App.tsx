@@ -508,14 +508,6 @@ function App() {
               </>
             }
           />
-          {/* <Route
-            path="/loginadmin"
-            element={
-              <>
-                <LoginAdmin />
-              </>
-            }
-          /> */}
         </Routes>
         <Routes>
           {/* Route không cần xác thực */}
