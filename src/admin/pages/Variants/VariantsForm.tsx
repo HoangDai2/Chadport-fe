@@ -109,10 +109,12 @@ const VariantsForm: React.FC<Props> = ({
       const updatedVariants = prevVariants.map((variant) => {
         if (variant.id !== id) return variant; // Nếu không phải biến thể cần chỉnh sửa, trả về như cũ
 
-        // Thêm hoặc xóa giá trị khỏi danh sách kích thước/màu sắc
-        const updatedField = variant[field].includes(value)
-          ? (variant[field] as string[]).filter((v) => v !== value) // Bỏ giá trị nếu đã chọn
-          : [...(variant[field] as string[]), value]; // Thêm giá trị nếu chưa chọn
+        // Kiểm tra xem variant[field] có phải là mảng string[] hoặc number[] không
+        const updatedField = Array.isArray(variant[field]) // Kiểm tra nếu là mảng
+          ? (variant[field] as string[]).includes(value)
+            ? (variant[field] as string[]).filter((v) => v !== value) // Bỏ giá trị nếu đã chọn
+            : [...(variant[field] as string[]), value] // Thêm giá trị nếu chưa chọn
+          : variant[field]; // Nếu không phải mảng, giữ nguyên giá trị
 
         return {
           ...variant,
@@ -247,14 +249,7 @@ const VariantsForm: React.FC<Props> = ({
           </div>
         ))}
 
-        <div className="flex justify-center items-center space-x-4">
-          <button
-            type="submit"
-            className="border text-gray-700 py-2 px-4 rounded-lg flex items-center"
-          >
-            <FaSave className="mr-2" />
-            Lưu
-          </button>
+        <div className="flex items-center space-x-4">
           <button
             type="button"
             onClick={addVariant}

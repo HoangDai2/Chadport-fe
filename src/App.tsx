@@ -38,12 +38,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./libs/mmenu/css/mmenu.min.css";
 import LoginRegister from "./pages/AuthClient/Login"; // Only one import
-import ShopDetails from "./pages/ShopDetails";
 import Wishlist from "./pages/Wishlist";
-import ShopCart from "./pages/ShopCart";
+import ShopCart from "./pages/payment/ShopCart";
 import CartList from "./function/CartList";
 import About from "./pages/About";
-import Checkout from "./pages/Checkout";
+import Checkout from "./pages/payment/Checkout";
 import BillOrder from "./pages/BillOrder";
 import MyAccountPage from "./pages/MyAccountPage";
 import { toast } from "react-toastify";
@@ -66,17 +65,25 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
+
 // import LoginAdmin2 from "./admin/pages/LoginAdmin";
 // import ProfileAdmin from "./admin/pages/ProfileAdmin";
+
+import LoginAdmin from "./admin/pages/LoginAdmin";
+import ProfileAdmin from "./admin/pages/ProfileAdmin";
+
 // import HeaderclientC from "./components/HeaderClient copy";
 // import HeaderClientC from "./components/HeaderClient copy";
 
-// import LoginAdmin from "./admin/pages/LoginAdmin";
+import PrivateRoute from "./admin/components/PrivateRoute";
 // import ProfileAdmin from "./admin/pages/ProfileAdmin";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
 import ThongKe from "./admin/pages/ThongKe";
+
+import OderConfirm from "./admin/pages/OderConfirm";
+import ShopDetails from "./pages/payment/ShopDetails";
 
 function App() {
   const navigate = useNavigate();
@@ -85,18 +92,7 @@ function App() {
   const [category, setCategory] = useState<Tcategory[]>([]);
   const [carCount, setCarCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const fetchCartCount = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/carts");
-      const cartItems = await res.json();
-      setCarCount(cartItems.length);
-    } catch (error) {
-      console.error("Error fetching cart count:", error);
-    }
-  };
-  useEffect(() => {
-    fetchCartCount();
-  }, []);
+
   const fetchWihsListCount = async () => {
     try {
       const res = await fetch("http://localhost:3000/wishlist");
@@ -163,63 +159,6 @@ function App() {
     }
   };
 
-  // add cart
-  const addToCart = async (product: TProduct) => {
-    try {
-      // const cartResponse = await fetch("http://127.0.0.1:8000/api/user/cart");
-      // const cartItems = await cartResponse.json();
-      // const isProductInCart = cartItems.some(
-      //   (item: { product: TProduct }) => item.product.id === product.id
-      // );
-      // if (isProductInCart) {
-      //   toast.info(`${product.name} đã có trong giỏ hàng!`, {
-      //     position: "top-right",
-      //     autoClose: 1000,
-      //     hideProgressBar: false,
-      //     closeOnClick: true,
-      //     pauseOnHover: true,
-      //     draggable: true,
-      //     progress: undefined,
-      //   });
-      //   return;
-      // }
-
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/user/add_to_cart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ product }),
-        }
-      );
-
-      if (response.ok) {
-        setCarCount((prevCount) => prevCount + 1);
-        toast.success(`${product.name} đã được thêm vào giỏ hàng!`, {
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
-        toast.error("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.", {
-          position: "top-right",
-          autoClose: 1000,
-        });
-      }
-    } catch (error) {
-      toast.error("Không thể kết nối đến server.", {
-        position: "top-right",
-        autoClose: 1000,
-      });
-      console.error("Error:", error);
-    }
-  };
   // call data user
   useEffect(() => {
     const fetchUser = async () => {
@@ -280,8 +219,9 @@ function App() {
 
         const newProduct = await createProduct(formData);
         setProduct((prev) => [...prev, newProduct]);
-        // navigate("/admin/products"); // Điều hướng sau khi thêm thành công
-        // window.location.reload(); // Tải lại trang nếu cần thiết
+        toast.success("Thêm sản phẩm thành công!");
+        navigate("/admin/products"); // Điều hướng sau khi thêm thành công
+        window.location.reload(); // Tải lại trang nếu cần thiết
       } catch (error) {
         console.error("Error adding product:", error);
       }
@@ -388,7 +328,7 @@ function App() {
                 <div style={{ padding: "70px", marginTop: "80px" }}>
                   <Category />
                 </div>
-                <Home addToCart={addToCart} addToWishlist={addToWishlist} />
+                <Home addToWishlist={addToWishlist} />
                 <ProductSale />
                 <FooterClient />
               </>
@@ -415,10 +355,7 @@ function App() {
                   wishlisCount={wishlistCount}
                   carCount={carCount}
                 />
-                <ShopDetails
-                  addToCart={addToCart}
-                  addToWishlist={addToWishlist}
-                />
+                <ShopDetails addToWishlist={addToWishlist} />
                 <FooterClient />
               </>
             }
@@ -504,7 +441,7 @@ function App() {
                   wishlisCount={wishlistCount}
                   carCount={carCount}
                 />
-                <Wishlist addToCart={addToCart} />
+                <Wishlist />
                 <FooterClient />
               </>
             }
@@ -589,6 +526,7 @@ function App() {
           /> */}
         </Routes>
         <Routes>
+
           {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
           {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
         </Routes>
@@ -637,6 +575,52 @@ function App() {
             <Route path="size" element={<SizeForm />} />
             <Route path="color" element={<ColorForm />} />
             {/* <Route path="variants" element={<VariantForm />} /> */}
+
+          {/* Route không cần xác thực */}
+          <Route path="/loginadmin" element={<LoginAdmin />} />
+
+          {/* Các route yêu cầu xác thực được bọc trong PrivateRoute */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/admin" element={<Admin />}>
+              <Route index element={<div>Welcome to Admin Dashboard</div>} />
+              <Route path="listuser" element={<ListUser listuser={user} />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="profileadmin" element={<ProfileAdmin />} />
+              <Route path="products" element={<ProductList />} />
+              <Route
+                path="products/add"
+                element={
+                  <ProductAdd onAdd={handleAddProduct} categories={category} />
+                }
+              />
+              <Route
+                path="products/edit/:id"
+                element={
+                  <ProductUpdate
+                    onEdit={handleEditProduct}
+                    categories={category}
+                  />
+                }
+              />
+              <Route
+                path="categorieslist"
+                element={<CategoriesList listcategories={category} />}
+              />
+              <Route
+                path="categories/add"
+                element={<CategoriesAdd onAddCategory={handleAddCategory} />}
+              />
+              <Route
+                path="categories/edit/:id"
+                element={
+                  <CategoriesUpadate onEditCategory={handleEditCategory} />
+                }
+              />
+              <Route path="size" element={<SizeForm />} />
+              <Route path="color" element={<ColorForm />} />
+              <Route path="oderconfirm" element={<OderConfirm />} />
+            </Route>
+
           </Route>
         </Routes>
       </div>

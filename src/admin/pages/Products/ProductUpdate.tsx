@@ -10,6 +10,9 @@ import { useForm } from "react-hook-form";
 import apisphp from "../../../Service/api";
 import { FaSave, FaCheck } from "react-icons/fa";
 import { AiFillProduct } from "react-icons/ai";
+import { productValidationSchema } from "./ValidateProduct";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 type Props = {
   onEdit: (product: FormData) => void;
   categories: Tcategory[];
@@ -35,9 +38,11 @@ function ProductUpdate({ onEdit, categories }: Props) {
     register,
     handleSubmit,
     setValue,
-    formState: {},
-  } = useForm<TProduct>({});
-
+    watch,
+    formState: { errors },
+  } = useForm<TProduct>({
+    resolver: yupResolver(productValidationSchema),
+  });
   useEffect(() => {
     if (id) {
       (async () => {
@@ -52,12 +57,12 @@ function ProductUpdate({ onEdit, categories }: Props) {
           setValue("price", data.price);
           setValue("title", data.title);
           setValue("price_sale", data.price_sale);
-          setValue("quantity", data.quantity);
+          setValue("total_quatity", data.total_quatity);
           setValue("status", data.status);
           setValue("description", data.description);
           setValue("type", data.type);
           setValue("image_product", data.image_product); // Lấy ảnh chính
-          setValue("cat_id", data.cat_id);
+          setValue("category_id", data.category_id);
 
           // Cập nhật ảnh chính preview nếu có
           setImageProductPreview(
@@ -148,11 +153,11 @@ function ProductUpdate({ onEdit, categories }: Props) {
     formData.append("price", data.price.toString());
     formData.append("title", data.title);
     formData.append("price_sale", data.price_sale.toString());
-    formData.append("quantity", data.quantity.toString());
+    formData.append("total_quatity", data.total_quatity.toString());
     formData.append("status", data.status);
     formData.append("description", data.description);
     formData.append("type", data.type);
-    formData.append("cat_id", data.cat_id.toString());
+    formData.append("category_id", data.category_id.toString());
     // Kiểm tra và thêm ảnh chính (image_product)
     if (imageProduct) {
       formData.append("image_product", imageProduct);
@@ -178,41 +183,39 @@ function ProductUpdate({ onEdit, categories }: Props) {
   // fake;
   const [activeSize, setActiveSize] = useState(null);
 
+
   const handleSizeClick = (size: any) => {
     setActiveSize(size);
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen flex justify-center">
+    (
+       <div className="p-8 bg-gray-50 min-h-screen flex justify-center">
       <form action="" className="w-[100%]" onSubmit={handleSubmit(onSubmit)}>
         {/* nút thêm sản phẩm */}
         <div className="grid grid-cols-4 grid-rows-1 gap-4 p-4">
-          {/* Ô đầu tiên */}
-          <div className=" flex items-center text-black font-bold text-[25px]">
-            <AiFillProduct className="mr-2  " />
+          <div className="flex items-center text-black font-bold text-[25px]">
             Update Products
           </div>
-
-          {/* Ô thứ hai - đặt tại vị trí riêng theo col-start và col-span */}
           <div className="col-span-2 col-start-4 flex space-x-4">
             <button className="flex items-center border border-gray-300 text-gray-700 py-2 px-4 rounded-full text-sm font-medium">
-              <FaSave className="mr-2" />
               Save Draft
             </button>
-
-            <button className="flex items-center bg-black text-white py-2 px-4 rounded-full text-sm font-medium">
-              <FaCheck className="mr-2" />
+            <button
+              type="submit"
+              className="flex items-center bg-black text-white py-2 px-4 rounded-full text-sm font-medium"
+            >
               Update Product
             </button>
           </div>
         </div>
+
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* General Information */}
-          <div className="p-6 bg-white rounded-lg  text-left">
+          <div className="p-6 bg-white rounded-lg text-left">
             <h2 className="text-lg font-semibold mb-5 text-gray-800">
               Thông tin chung
             </h2>
-            {/* Name Product */}
             <div className="mb-5">
               <label className="block text-gray-600 text-sm font-medium mb-1">
                 Name Product
@@ -221,15 +224,15 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 type="text"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
                 placeholder="Nhập Name Products"
-                id="name"
-                required
-                {...register("name", { required: true })}
+                {...register("name")}
               />
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
-
-            {/* title */}
             <div className="flex space-x-4 mb-5">
-              {/* Ô Title Product */}
               <div className="flex-1">
                 <label className="block text-gray-600 text-sm font-medium mb-1">
                   Title Product
@@ -238,31 +241,33 @@ function ProductUpdate({ onEdit, categories }: Props) {
                   type="text"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
                   placeholder="Nhập Title Product"
-                  id="title"
-                  {...register("title", { required: true })}
-                  required
+                  {...register("title")}
                 />
+                {errors.title && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.title.message}
+                  </p>
+                )}
               </div>
-
-              {/* Ô Status */}
               <div className="flex-1">
                 <label className="block text-gray-600 text-sm font-medium mb-1">
                   Status
                 </label>
                 <select
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  id="status"
-                  {...register("status", { required: true })}
-                  required
+                  {...register("status")}
                 >
                   <option value="">Chọn trạng thái</option>
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
+                {errors.status && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.status.message}
+                  </p>
+                )}
               </div>
             </div>
-
-            {/* Description Product */}
             <div className="mb-5">
               <label className="block text-gray-600 text-sm font-medium mb-1">
                 Description Product
@@ -271,47 +276,21 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
                 rows={4}
                 placeholder="Nhập Mô tả sản phẩm"
-                id="description"
-                {...register("description", { required: true })}
-                required
+                {...register("description")}
               ></textarea>
-            </div>
-            {/* Size  */}
-            <div className="flex items-start justify-between space-x-6">
-              {/* Size Section */}
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Size
-                </label>
-                <p className="text-gray-400 text-xs mb-2">
-                  Pick Available Size
+              {errors.description && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.description.message}
                 </p>
-                <div className="flex space-x-2">
-                  {["XS", "S", "M", "XL", "XXL"].map((size, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSizeClick(size)}
-                      className={`px-4 py-2 border rounded-lg text-sm font-medium cursor-pointer ${
-                        activeSize === size
-                          ? "bg-black text-white border-green-500"
-                          : "bg-gray-100 text-gray-600 border-gray-300"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
           {/* Upload Image */}
-          <div className="p-6 bg-white rounded-lg  text-left">
+          <div className="p-6 bg-white rounded-lg text-left">
             <h2 className="text-lg font-semibold mb-4 text-gray-800">
               Upload Img
             </h2>
-
-            {/* Main Image Display */}
             <div className="mb-4">
               <div className="border-2 border-dashed border-gray-300 w-full h-[26rem] bg-gray-100 rounded-lg flex items-center justify-center relative">
                 {imageProductPreview ? (
@@ -328,51 +307,19 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 <input
                   type="file"
                   className="absolute inset-0 opacity-0 cursor-pointer"
-                  id="image_product"
-                  {...register("image_product", {
-                    required: !imageProductPreview,
-                  })}
-                  onChange={handleImageProductChange}
+                  {...register("image_product")}
                 />
               </div>
-            </div>
-
-            {/* Thumbnails */}
-            <div className="flex space-x-4">
-              {/* Nút chọn ảnh mô tả */}
-              <div className="relative">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={onFileUploadHandle} // Xử lý ảnh được tải lên
-                  className="absolute opacity-0 cursor-pointer"
-                  id="image_description"
-                />
-                <label
-                  htmlFor="image_description"
-                  className="flex items-center justify-center w-24 h-24 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer"
-                >
-                  <span className="text-gray-400 text-3xl">+</span>
-                </label>
-              </div>
-
-              {/* Hiển thị ảnh mô tả */}
-              {imagePreviews.length > 0 ? (
-                <div className="flex flex-wrap space-x-4">
-                  {renderImagePreviews()}{" "}
-                  {/* Hiển thị ảnh từ `imagePreviews` */}
-                </div>
-              ) : (
-                <div className="text-center text-gray-400">
-                  Không có ảnh nào được chọn
-                </div> // Nếu không có ảnh nào
+              {errors.image_product && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.image_product.message}
+                </p>
               )}
             </div>
           </div>
 
-          {/* giá và số lượng */}
-          <div className="p-6 bg-white rounded-lg  text-left">
+          {/* Giá và Số Lượng */}
+          <div className="p-6 bg-white rounded-lg text-left">
             <h2 className="text-lg font-semibold mb-4 text-gray-800">
               Giá và Số Lượng
             </h2>
@@ -384,23 +331,31 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 <input
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="77"
-                  id="price"
-                  {...register("price", { required: true })}
-                  required
+                  placeholder="Nhập giá cơ bản"
+                  {...register("price")}
                 />
+                {errors.price && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.price.message}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-gray-600 text-sm font-medium mb-1">
                   Hàng tồn kho
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="$47.55"
+                  placeholder="Nhập hàng tồn kho"
+                  {...register("inventory")}
                 />
+                {errors.inventory && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.inventory.message}
+                  </p>
+                )}
               </div>
-
               <div>
                 <label className="block text-gray-600 text-sm font-medium mb-1">
                   Giảm giá
@@ -408,11 +363,14 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 <input
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="10%"
-                  id="price_sale"
-                  {...register("price_sale", { required: true })}
-                  required
+                  placeholder="Nhập giảm giá (%)"
+                  {...register("price_sale")}
                 />
+                {errors.price_sale && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.price_sale.message}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-gray-600 text-sm font-medium mb-1">
@@ -421,43 +379,21 @@ function ProductUpdate({ onEdit, categories }: Props) {
                 <input
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                  placeholder="Chinese New Year Discount"
-                  id="quantity"
-                  {...register("quantity", { required: true })}
-                  required
+                  placeholder="Nhập số lượng"
+                  {...register("total_quatity")}
                 />
+                {errors.total_quatity && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.total_quatity.message}
+                  </p>
+                )}
               </div>
-            </div>
-          </div>
-
-          {/* Category */}
-          <div className="p-6 bg-white rounded-lg  text-left">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              Category
-            </h2>
-            <div className="mb-4">
-              <label className="block text-gray-600 text-sm font-medium mb-1">
-                Product Category
-              </label>
-              <select
-                className="form-select"
-                id="category"
-                {...register("cat_id", { required: true })} // Cập nhật danh mục khi chọn
-                required
-              >
-                <option value="">Chọn danh mục</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
         </div>
       </form>
     </div>
-  );
+  ))
 }
 
 export default ProductUpdate;

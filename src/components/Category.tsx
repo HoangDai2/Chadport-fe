@@ -10,7 +10,7 @@ const Category = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const responses = await apisphp.get("/categories"); // Thay URL bằng endpoint API của bạn
+        const responses = await apisphp.get("getall/categories"); // Thay URL bằng endpoint API của bạn
         setCategories(responses.data.data); // Gán dữ liệu danh mục vào state
       } catch (error) {
         console.error("Lỗi khi gọi API danh mục:", error);

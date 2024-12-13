@@ -32,9 +32,8 @@ export interface TProduct {
   title: string;
   name: string;
   status: string;
-  brand_id: number;
   description: string;
-  quantity: number;
+  total_quatity: number;
   image_product: string;
   image_description?: string[];
   price: number;

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-const AddressInput = ({ formik }) => {
+const AddressInput = ({ formik }: any) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const apiKey = "LfP7ge6pky0HxgA3JQNe3z1HosOFBnn3V29ZNcLj";
+  const apiKey = "zvcqGlU5uDKLbJm3CKx8qdXCn4F2BDKl0Qhg5I6G";
   // Hàm xử lý khi người dùng nhập địa chỉ
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     const value = e.target.value;
     formik.handleChange(e); // Đồng bộ với Formik
 

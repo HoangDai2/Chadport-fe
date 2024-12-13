@@ -2,9 +2,8 @@ import React from "react";
 import SideBarAD from "./components/SideBarAD";
 import HeaderAD from "./components/HeaderAD";
 import { Outlet } from "react-router-dom";
-type Props = {};
 
-const admin = (props: Props) => {
+const Admin: React.FC = () => {
   return (
     <>
       <main>
@@ -19,5 +18,5 @@ const admin = (props: Props) => {
     </>
   );
 };
-
-export default admin;
+ 
+export default Admin;

@@ -1,38 +1,60 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import TProduct from "../Types/TProduct";
-import instance from "../Service";
-import { ToastContainer } from "react-toastify";
-import apisphp from "../Service/api";
-import CommentSection from "./Comments/CommentSection";
-
+import { toast, ToastContainer } from "react-toastify";
+import { useDispatch } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
+import { addToCart } from "../../redux/cartSlice";
+import apisphp from "../../Service/api";
+import CommentSection from "../Comments/CommentSection";
+import TProduct from "../../Types/TProduct";
 const ShopDetails = ({
-  addToCart,
   addToWishlist,
 }: {
-  addToCart: (product: TProduct) => void;
   addToWishlist: (product: TProduct) => void;
 }) => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch();
   const [product, setProduct] = useState<TProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<TProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  // State để quản lý số lượng sản phẩm
+  const [quantity, setQuantity] = useState(1);
+  const [availableColors, setAvailableColors] = useState<string[]>([]); // State để quản lý màu sắc tương ứng với size đã chọn
 
-  // Function to handle size change
-  const handleSizeChange = (size: string) => {
-    setSelectedSize(size);
-  };
-
-  // Function to handle color change
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color);
-  };
   const navigate = useNavigate();
-  const handleBuyNow = () => {
+
+  // Hàm xử lý khi thay đổi size
+  const handleSizeChange = (sizeId: string) => {
+    setSelectedSize(sizeId);
+
+    // Lọc các màu có sẵn cho size đã chọn
+    const colorsForSelectedSize = product?.variants
+      ?.filter((variant) => variant.size?.id === sizeId)
+      .map((variant) => variant.color?.name);
+
+    setAvailableColors(colorsForSelectedSize || []); // Cập nhật danh sách màu sắc tương ứng
+  };
+
+  // Hàm xử lý khi thay đổi màu
+  const handleColorChange = (colorId: string) => {
+    setSelectedColor(colorId);
+  };
+
+  const handleIncrement = () => setQuantity((prev) => prev + 1);
+  const handleDecrement = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const [mainImage, setMainImage] = useState<string | null>(null);
+
+  const handleAddToCart = (event: any) => {
+    event.preventDefault();
+
     if (!selectedSize || !selectedColor) {
-      alert("Please select size and color");
+      toast.error("Bắt buộc phải chọn size và color", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
@@ -41,25 +63,39 @@ const ShopDetails = ({
       return;
     }
 
+    // Tìm variant phù hợp với size và color đã chọn
+    const selectedVariant = product.variants.find(
+      (variant) =>
+        variant.size?.id === selectedSize && variant.color?.id === selectedColor
+    );
+
+    if (!selectedVariant) {
+      console.error("Variant not found for selected size and color");
+      return;
+    }
+    if (selectedVariant.quantity === 0) {
+      toast.warning("Sản phầm này đã hết");
+      return;
+    }
+    console.log("Selected variant:", selectedVariant);
+
+    // Đảm bảo rằng dữ liệu gửi đi đủ thông tin mà backend yêu cầu
     const productDetails = {
-      ...product,
-      quantity,
-      size: selectedSize,
-      color: selectedColor,
+      product_item_id: selectedVariant.id,
+      quantity: quantity,
     };
 
-    addToCart(productDetails);
-    navigate("/checkout", { state: { product: productDetails } });
+    console.log("Payload gửi đi:", productDetails);
+
+    // Gửi yêu cầu API với dữ liệu đã chuẩn bị
+    dispatch(addToCart(productDetails));
+
+    // Hiển thị thông báo toast khi thêm thành công
+    toast.success("Thêm vào giỏ hàng thành công!", {
+      position: "top-right",
+      autoClose: 3000,
+    });
   };
-
-
-  // State để quản lý số lượng sản phẩm
-  const [quantity, setQuantity] = useState(1);
-
-  const handleIncrement = () => setQuantity((prev) => prev + 1);
-  const handleDecrement = () =>
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  const [mainImage, setMainImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -90,8 +126,7 @@ const ShopDetails = ({
       fetchProductDetails();
     }
   }, [id]);
-  // console.log(product);
-  // start hung test details
+
   useEffect(() => {
     const testDetailsFetch = async () => {
       try {
@@ -124,22 +159,16 @@ const ShopDetails = ({
     if (id) {
       testDetailsFetch();
     }
-  }, [id]); // Chạy lại khi id thay đổi
-  console.log("relatedProducts", relatedProducts);
-
-  // end hung test details
+  }, [id]);
+  // console.log("relatedProducts", relatedProducts);
 
   if (!product) {
     return <div>Loading...</div>;
   }
 
-
-
-
-
-
   return (
     <>
+      {/* Đặt ToastContainer trong component để hiển thị các thông báo */}
       <div id="site-main" className="site-main">
         <ToastContainer
           theme="light"
@@ -209,7 +238,7 @@ const ShopDetails = ({
                                 >
                                   <div className="product-gallery">
                                     {product.image_description &&
-                                      Array.isArray(product.image_description) ? (
+                                    Array.isArray(product.image_description) ? (
                                       product.image_description.map(
                                         (image, index) => (
                                           <div
@@ -226,8 +255,9 @@ const ShopDetails = ({
                                                 width={100}
                                                 height={100}
                                                 src={`http://127.0.0.1:8000/storage/${image}`}
-                                                alt={`Additional image ${index + 1
-                                                  }`}
+                                                alt={`Additional image ${
+                                                  index + 1
+                                                }`}
                                               />
                                             </span>
                                           </div>
@@ -260,72 +290,127 @@ const ShopDetails = ({
                         </div>
                         <div className="product-info col-lg-5 col-md-12 col-12 ">
                           <h1 className="title text-left">{product.name}</h1>
-                          <span className="price">
-                            <del aria-hidden="true">
-                              <span>${product.price}</span>
+                          {/* Giá gốc và giảm giá */}
+                          <span className="price flex items-center space-x-6 text-left">
+                            <del className="text-sm text-gray-500 ">
+                              <span style={{ fontSize: "20px" }}>
+                                {new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(product.price)}
+                              </span>
                             </del>
-                            <ins>
-                              <span>${product.price_sale}</span>
+
+                            <ins className="text-2xl font-bold text-red-600">
+                              <span
+                                style={{ fontSize: "30px", color: "#d63838" }}
+                              >
+                                {new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(product.price_sale)}
+                              </span>
                             </ins>
                           </span>
-                          <div className="rating">
+
+                          {/* star sản phẩm chính */}
+                          <div className="rating text-left">
                             <div className="star star-5" />
                             <div className="review-count">
                               (3<span> reviews</span>)
                             </div>
                           </div>
+
+                          {/* mổ tả sản phẩm chính */}
                           <div className="description text-left">
                             <p>{product.description}</p>
                           </div>
+
                           {/* Size selection */}
                           <div className="mb-3">
-                            <label className="form-label">Size</label>
-                            <div className="btn-group">
-                              {/* Lọc ra các size duy nhất */}
+                            <label className="block text-sm text-left font-medium text-gray-700">
+                              Size:
+                            </label>
+                            <div className="flex flex-wrap gap-2">
                               {[
-                                ...new Set(product.variants?.map((variant) => variant.size?.name).filter(Boolean)),
-                              ].map((size) => (
+                                ...new Map(
+                                  product.variants
+                                    ?.filter((variant) => variant.size?.name)
+                                    .map((variant) => [
+                                      variant.size?.name,
+                                      variant,
+                                    ])
+                                ).values(),
+                              ].map((variant) => (
                                 <button
-                                  key={size}
-                                  className={`btn btn-outline-primary m-1 ${selectedSize === size ? "bg-primary text-white" : ""
-                                    }`}
-                                  onClick={() => handleSizeChange(size || "")}
+                                  key={variant.size?.name} // Dùng size.name làm key
+                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
+                                                  ${
+                                                    selectedSize ===
+                                                    variant.size?.id
+                                                      ? "bg-black text-white "
+                                                      : "bg-white text-gray-700 border-gray-300"
+                                                  }
+                                                  hover:bg-primary hover:text-black`}
+                                  onClick={() =>
+                                    handleSizeChange(variant.size?.id || "")
+                                  }
                                 >
-                                  {size}
+                                  {variant.size?.name}
                                 </button>
                               ))}
                             </div>
                           </div>
+
                           {/* Color selection */}
                           <div className="mb-3">
-                            <label className="form-label">Color</label>
-                            <div className="btn-group">
-                              {/* Lọc ra các màu duy nhất */}
+                            <label className="block text-sm text-left font-medium text-gray-700">
+                              Color:
+                            </label>
+                            <div className="flex gap-2">
                               {[
-                                ...new Set(product.variants?.map((variant) => variant.color?.name).filter(Boolean)),
-                              ].map((color) => {
-                                const hex = product.variants?.find(
-                                  (variant) => variant.color?.name === color
-                                )?.color?.hex; // Lấy mã màu từ variant tương ứng
-                                return (
-                                  <button
-                                    key={color}
-                                    className="btn m-1"
-                                    style={{
-                                      backgroundColor: hex || "#ccc",
-                                      borderColor: selectedColor === color ? "blue" : "#ccc", // Viền chỉ hiển thị khi chọn màu
-                                      boxShadow: selectedColor === color ? "0 0 10px blue" : "none", // Tạo bóng khi chọn
-                                    }}
-                                    onClick={() => handleColorChange(color || "")}
-                                  />
-                                );
-                              })}
+                                ...new Map(
+                                  product.variants
+                                    ?.filter(
+                                      (variant) =>
+                                        variant.size?.id === selectedSize &&
+                                        variant.color?.name
+                                    )
+                                    .map((variant) => [
+                                      variant.color?.name,
+                                      variant,
+                                    ])
+                                ).values(),
+                              ].map((variant) => (
+                                <button
+                                  key={variant.color?.name} // Dùng color.name làm key
+                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
+                                            ${
+                                              selectedColor ===
+                                              variant.color?.id
+                                                ? "border-black text-white"
+                                                : `bg-[${variant.color?.hex}] text-white border-gray-300`
+                                            }
+                                            hover:bg-primary hover:text-black`}
+                                  style={{
+                                    backgroundColor:
+                                      selectedColor === variant.color?.hex
+                                        ? "black"
+                                        : variant.color?.hex,
+                                  }}
+                                  onClick={() =>
+                                    handleColorChange(variant.color?.id || "")
+                                  }
+                                >
+                                  {}
+                                </button>
+                              ))}
                             </div>
                           </div>
 
-
                           <div className="buttons">
                             <div className="add-to-cart-wrap">
+                              {/* số lượng tăng giảm */}
                               <div className="quantity">
                                 <button
                                   type="button"
@@ -358,29 +443,11 @@ const ShopDetails = ({
                                   -
                                 </button>
                               </div>
+
+                              {/* nút add cart */}
                               <div className="btn-add-to-cart">
                                 <a
-                                  onClick={() => {
-                                    // Kiểm tra nếu chưa chọn size và color
-                                    if (!selectedSize || !selectedColor) {
-                                      alert("Please select size and color");
-                                      return;
-                                    }
-
-                                    // Tìm variant phù hợp với size và color đã chọn
-                                    const selectedVariant = product.variants?.find(
-                                      (variant) =>
-                                        variant.size?.name === selectedSize && variant.color?.hex === selectedColor
-                                    );
-
-                                    if (!selectedVariant) {
-                                      alert("Variant not found!");
-                                      return;
-                                    }
-
-                                    // Thêm vào giỏ hàng với thông tin variant
-                                    
-                                  }}
+                                  onClick={handleAddToCart}
                                   href="#"
                                   className="button"
                                   tabIndex={0}
@@ -388,16 +455,12 @@ const ShopDetails = ({
                                   Add to cart
                                 </a>
                               </div>
-
                             </div>
                             <div
                               className="btn-quick-buy"
                               data-title="Wishlist"
                             >
-                              <button
-                                className="product-btn"
-                                onClick={handleBuyNow}
-                              >
+                              <button className="product-btn">
                                 Buy It Now
                               </button>
                             </div>
@@ -413,6 +476,7 @@ const ShopDetails = ({
                               <button className="product-btn">Compare</button>
                             </div>
                           </div>
+
                           <div className="product-meta">
                             <span className="sku-wrapper">
                               SKU: <span className="sku">D2300-3-2-2</span>
@@ -434,6 +498,7 @@ const ShopDetails = ({
                               </a>
                             </span>
                           </div>
+
                           <div className="social-share">
                             <a
                               href="#"
@@ -501,39 +566,23 @@ const ShopDetails = ({
                                           <div className="product-lable">
                                             <div className="hot">Hot</div>
                                           </div>
-                                          <div className="product-thumb-hover">
-                                            <a
-                                              href={`/shop-details/${relatedProduct.id}`}
-                                            >
-                                              <img
-                                                width={600}
-                                                height={600}
-                                                src={
-                                                  relatedProduct.image_product
-                                                }
-                                                className="post-image"
-                                                alt={relatedProduct.name}
-                                              />
-                                              <img
-                                                width={600}
-                                                height={600}
-                                                src={
-                                                  relatedProduct.image_product
-                                                }
-                                                className="hover-image back"
-                                                alt={relatedProduct.name}
-                                              />
-                                            </a>
-                                          </div>
+                                          <a
+                                            href={`/shop-details/${relatedProduct.id}`}
+                                          >
+                                            <img
+                                              width={600}
+                                              height={600}
+                                              src={`http://127.0.0.1:8000/storage/${product.image_product}`}
+                                              className="post-image"
+                                              alt={relatedProduct.name}
+                                            />
+                                          </a>
                                           <div className="product-button">
                                             <div
                                               className="cart_default"
                                               data-title="Add to cart"
                                             >
                                               <a
-                                                onClick={() => {
-                                                  addToCart(relatedProduct);
-                                                }}
                                                 rel="nofollow"
                                                 // href="#"
                                                 className="product-btn"
@@ -588,8 +637,11 @@ const ShopDetails = ({
                                             <div className="rating">
                                               <div className="star star-5" />
                                             </div>
-                                            <span className="price">
-                                              ${relatedProduct.price}
+                                            <span className="tracking-wider text-2xl font-semibold text-gray-900">
+                                              {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                              }).format(product.price)}
                                             </span>
                                           </div>
                                         </div>

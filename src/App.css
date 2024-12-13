@@ -522,7 +522,6 @@ li.selected {
 .header {
   background-color: #fff;
   border-bottom: 1px solid #e1e1e1;
-  position: fixed;
   width: 100%;
   top: 0;
   z-index: 1000;

@@ -193,7 +193,7 @@ const CategoriesClient = (props: Props) => {
                                             }
                                           >
                                             <img
-                                              src={product.image_product}
+                                              src={`http://127.0.0.1:8000/storage/${product.image_product}`}
                                               alt={product.name}
                                             />
                                           </a>
@@ -202,14 +202,40 @@ const CategoriesClient = (props: Props) => {
                                           <h2 className="product-title">
                                             <a>{productName}</a>
                                           </h2>
-                                          <span className="price">
-                                            <del aria-hidden="true">
-                                              <span>${product.price}</span>
-                                            </del>
-                                            <ins>
-                                              <span>${product.price_sale}</span>
+
+                                          {/* Giá và giảm giá */}
+                                          <span className="price flex flex-col items-start space-y-2 text-left">
+                                            <ins
+                                              className="text-2xl font-bold text-red-600"
+                                              style={{ color: "#d63838" }}
+                                            >
+                                              <span
+                                                style={{ fontSize: "25px" }}
+                                              >
+                                                {new Intl.NumberFormat(
+                                                  "vi-VN",
+                                                  {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                  }
+                                                ).format(product.price_sale)}
+                                              </span>
                                             </ins>
+                                            <del className="text-sm text-gray-500">
+                                              <span
+                                                style={{ fontSize: "15px" }}
+                                              >
+                                                {new Intl.NumberFormat(
+                                                  "vi-VN",
+                                                  {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                  }
+                                                ).format(product.price)}
+                                              </span>
+                                            </del>
                                           </span>
+
                                           <div className="product-action">
                                             <a href="#" className="add-to-cart">
                                               <span className="icon-cart"></span>

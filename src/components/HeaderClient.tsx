@@ -5,6 +5,7 @@ import TProduct from "../Types/TProduct";
 import Tcategory from "../Types/TCategories";
 import apisphp from "../Service/api";
 import { useUserContext } from "../pages/AuthClient/UserContext";
+import CartData from "../Types/TCart";
 const HeaderClientC = ({
   carCount,
   wishlisCount,
@@ -17,7 +18,6 @@ const HeaderClientC = ({
   // console.log("Current user in header:", user);
 
   const [loading, setLoading] = useState(false);
-  const [wishlistCount, setWishlistCount] = useState(0);
   const [token, setToken] = useState(null);
   // const [carCount, setCarCount] = useState(0);
   const [userName, setUserName] = useState<string | null>(null);
@@ -29,6 +29,8 @@ const HeaderClientC = ({
   const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
   const [categories, setCategories] = useState<Tcategory[]>([]); // Khai báo kiểu dữ liệu cho sản phẩm đã lọc
   const [recentSearches, setRecentSearches] = useState<string[]>([]); // Lưu các từ khóa vừa tìm
+  const [cart, setCart] = useState<CartData[]>([]);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]); // State lưu các item được chọn
   const navigate = useNavigate();
 
   // Lấy dữ liệu sản phẩm từ API để làm chức năng tìm kiếm sản phẩm theo từ khóa
@@ -44,11 +46,12 @@ const HeaderClientC = ({
 
     fetchProducts();
   }, []);
+
   // Lấy dữ liệu danh mục từ API để làm chức năng hiển thị ở tìm kiếm
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const cate = await apisphp.get("/categories");
+        const cate = await apisphp.get("getall/categories");
         setCategories(cate.data.data);
         // console.log(cate);
       } catch (error) {
@@ -196,6 +199,7 @@ const HeaderClientC = ({
   const toggleSubmenu = () => {
     setIsSubmenuOpen(!isSubmenuOpen);
   };
+
   const isActive = (path: string) => {
     const location = useLocation();
     return location.pathname === path;
@@ -205,6 +209,38 @@ const HeaderClientC = ({
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // hàm này call data giỏ hàng của user
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        const token = localStorage.getItem("jwt_token");
+        // console.log("Token:", token);
+        if (!token) {
+          console.log("Token not found");
+          setLoading(false); // Set loading false khi không tìm thấy token
+          return;
+        }
+
+        // Cấu hình header để thêm token vào yêu cầu
+        const headers = {
+          Authorization: `Bearer ${token}`, // Gửi token vào header Authorization
+        };
+
+        // Lấy dữ liệu giỏ hàng với header token
+        const response = await apisphp.get("user/cart", { headers });
+        console.log(response);
+
+        setCart(response.data); // Lưu dữ liệu vào state cartData
+        setLoading(false); // Dừng trạng thái loading sau khi lấy dữ liệu
+      } catch (error) {
+        console.error("Error fetching cart data:", error);
+        setLoading(false); // Dừng trạng thái loading khi có lỗi
+      }
+    };
+
+    fetchCartData();
+  }, []);
 
   return (
     <>
@@ -258,8 +294,9 @@ const HeaderClientC = ({
                   <div className="site-navigation">
                     <nav id="main-navigation">
                       <ul id="menu-main-menu" className="menu">
+                        {/* home */}
                         <li
-                          className={`level-0 menu-item ${
+                          className={`level-0  ${
                             isActive("/") ? "current-menu-item" : ""
                           }`}
                         >
@@ -268,8 +305,10 @@ const HeaderClientC = ({
                             Home
                           </Link>
                         </li>
+
+                        {/* list menu */}
                         <li
-                          className={`level-0 menu-item ${
+                          className={`level-0  ${
                             isActive("/shoplist") ? "current-menu-item" : ""
                           }`}
                         >
@@ -277,12 +316,12 @@ const HeaderClientC = ({
                             <span className="menu-item-text">Shop</span>
                           </a>
                           <ul className="sub-menu " style={{ top: "111px" }}>
-                            <li className="level-1 menu-item">
+                            <li className="level-1 ">
                               <a href="/loginadmin">
                                 <span className="menu-item-text">Admin</span>
                               </a>
                             </li>
-                            <li className="level-1 menu-item">
+                            <li className="level-1 ">
                               <a href="shop-grid-left.html">
                                 <span className="menu-item-text">
                                   Adidas Shoes
@@ -315,8 +354,10 @@ const HeaderClientC = ({
                             </li>
                           </ul>
                         </li>
+
+                        {/* blog */}
                         <li
-                          className={`level-0 menu-item ${
+                          className={`level-0  ${
                             isActive("/blog") ? "current-menu-item" : ""
                           }`}
                         >
@@ -324,8 +365,10 @@ const HeaderClientC = ({
                             <span className="menu-item-text">Blog</span>
                           </a>
                         </li>
+
+                        {/* about */}
                         <li
-                          className={`level-0 menu-item ${
+                          className={`level-0  ${
                             isActive("/about") ? "current-menu-item" : ""
                           }`}
                         >
@@ -333,8 +376,10 @@ const HeaderClientC = ({
                             <span className="menu-item-text">About</span>
                           </a>
                         </li>
+
+                        {/* contact */}
                         <li
-                          className={`level-0 menu-item ${
+                          className={`level-0  ${
                             isActive("/contact") ? "current-menu-item" : ""
                           }`}
                         >
@@ -672,7 +717,7 @@ const HeaderClientC = ({
                       >
                         <div className="flex flex-col">
                           <img
-                            src={product.image_product}
+                            src={`http://127.0.0.1:8000/storage/${product.image_product}`}
                             alt={product.name}
                             className="w-full h-32 object-cover"
                           />

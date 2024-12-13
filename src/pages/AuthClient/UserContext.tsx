@@ -7,6 +7,7 @@ type UserContextType = {
   token: string | null;
   setUser: (user: Partial<TUser> | null) => void;
   setToken: (token: string | null) => void;
+  logout: () => void; // Thêm chức năng logout
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -38,18 +39,29 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           });
           if (response.data?.data) {
             setUser(response.data.data);
+          } else {
+            setUser(null);
+            setToken(null); // Xóa token nếu không hợp lệ
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
           setUser(null);
+          setToken(null); // Xóa token nếu xảy ra lỗi
         }
       }
     };
     fetchUserData();
   }, [token]);
 
+  // Hàm logout
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("jwt_token");
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser, token, setToken }}>
+    <UserContext.Provider value={{ user, setUser, token, setToken, logout }}>
       {children}
     </UserContext.Provider>
   );
