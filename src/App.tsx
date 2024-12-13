@@ -65,13 +65,8 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
-
-// import LoginAdmin2 from "./admin/pages/LoginAdmin";
-// import ProfileAdmin from "./admin/pages/ProfileAdmin";
-
 import LoginAdmin from "./admin/pages/LoginAdmin";
 import ProfileAdmin from "./admin/pages/ProfileAdmin";
-
 // import HeaderclientC from "./components/HeaderClient copy";
 // import HeaderClientC from "./components/HeaderClient copy";
 
@@ -80,10 +75,8 @@ import PrivateRoute from "./admin/components/PrivateRoute";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
-import ThongKe from "./admin/pages/ThongKe";
-
-import OderConfirm from "./admin/pages/OderConfirm";
 import ShopDetails from "./pages/payment/ShopDetails";
+import ThongKe from "./admin/pages/ThongKe";
 
 function App() {
   const navigate = useNavigate();
@@ -151,7 +144,7 @@ function App() {
         });
       }
     } catch (error) {
-      toast.error("Không thể kết nối đến server.", {
+toast.error("Không thể kết nối đến server.", {
         position: "top-right",
         autoClose: 1000,
       });
@@ -237,7 +230,7 @@ function App() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-          },
+},
         }
       );
 
@@ -340,7 +333,7 @@ function App() {
               <>
                 <HeaderClient
                   wishlisCount={wishlistCount}
-                  carCount={carCount}
+carCount={carCount}
                 />
                 <ShopList />
                 <FooterClient />
@@ -452,7 +445,7 @@ function App() {
             element={
               <>
                 <HeaderClient
-                  wishlisCount={wishlistCount}
+wishlisCount={wishlistCount}
                   carCount={carCount}
                 />
                 <div style={{ marginTop: "100px" }}>
@@ -516,73 +509,15 @@ function App() {
               </>
             }
           />
-          {/* <Route
-            path="/loginadmin"
-            element={
-              <>
-                <LoginAdmin />
-              </>
-            }
-          /> */}
         </Routes>
         <Routes>
-
-          {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
-          {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
-        </Routes>
-        <Routes>
-          {/* Router admin */}
-          <Route path="/admin" element={<Admin />}>
-            <Route index element={<ThongKe />} />
-            <Route path="listuser" element={<ListUser listuser={user} />} />
-            {/* <Route path="thongke" element={<ThongKe />} /> */}
-            <Route path="orders" element={<Orders />} />
-            {/* <Route path="profileadmin" element={<ProfileAdmin />} /> */}
-            <Route path="products" element={<ProductList />} />
-
-            <Route
-              path="products/add"
-              element={
-                <ProductAdd onAdd={handleAddProduct} categories={category} />
-              }
-            />
-            <Route
-              path="products/edit/:id"
-              element={
-                <ProductUpdate
-                  onEdit={handleEditProduct}
-                  categories={category}
-                />
-              }
-            />
-
-            <Route
-              path="categorieslist"
-              element={<CategoriesList listcategories={category} />}
-            />
-            <Route
-              path="categories/add"
-              element={<CategoriesAdd onAddCategory={handleAddCategory} />}
-            />
-            <Route
-              path="categories/edit/:id"
-              element={
-                <CategoriesUpadate onEditCategory={handleEditCategory} />
-              }
-            />
-            <Route path="size" element={<SizeForm />} />
-            <Route path="color" element={<ColorForm />} />
-            <Route path="size" element={<SizeForm />} />
-            <Route path="color" element={<ColorForm />} />
-            {/* <Route path="variants" element={<VariantForm />} /> */}
-
           {/* Route không cần xác thực */}
           <Route path="/loginadmin" element={<LoginAdmin />} />
 
           {/* Các route yêu cầu xác thực được bọc trong PrivateRoute */}
           <Route element={<PrivateRoute />}>
             <Route path="/admin" element={<Admin />}>
-              <Route index element={<div>Welcome to Admin Dashboard</div>} />
+              <Route index element={<ThongKe/>} />
               <Route path="listuser" element={<ListUser listuser={user} />} />
               <Route path="orders" element={<Orders />} />
               <Route path="profileadmin" element={<ProfileAdmin />} />
@@ -608,7 +543,7 @@ function App() {
               />
               <Route
                 path="categories/add"
-                element={<CategoriesAdd onAddCategory={handleAddCategory} />}
+element={<CategoriesAdd onAddCategory={handleAddCategory} />}
               />
               <Route
                 path="categories/edit/:id"
@@ -618,9 +553,7 @@ function App() {
               />
               <Route path="size" element={<SizeForm />} />
               <Route path="color" element={<ColorForm />} />
-              <Route path="oderconfirm" element={<OderConfirm />} />
             </Route>
-
           </Route>
         </Routes>
       </div>

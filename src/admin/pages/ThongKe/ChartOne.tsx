@@ -170,7 +170,7 @@ const ChartOne: React.FC = () => {
               const orderYear = orderDate.getFullYear();
               if (orderYear.toString() === selectedYear) {
                 const orderMonth = orderDate.getMonth();
-                if (order.status === "đã hoàn thành") {
+                if (order.status === "đã thanh toán") {
                   monthlySales["Doanh thu"][orderMonth] += order.total_money;
                   monthlySales["Loi Nhuan"][orderMonth] +=
                     order.total_money * 0.3;
