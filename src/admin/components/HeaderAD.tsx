@@ -92,6 +92,21 @@ const HeaderAD = (props: Props) => {
           </div>
           <Notification />
         </div>
+
+        {/* <div className="stats-container">
+          <div className="stat-box">
+            <div className="icon">
+              <img
+                src="https://img.icons8.com/ios-filled/50/4caf50/user-male-circle.png"
+                alt="User Icon"
+              />
+            </div>
+            <div className="stat-content">
+              <h2>5,423</h2>
+              <p>Tổng Người Dùng</p>
+              <span className="increase">▲ 18% this month</span>
+            </div>
+
       </div>
       <div className="stats-container">
         <div className="stat-box">
@@ -100,6 +115,7 @@ const HeaderAD = (props: Props) => {
               src="https://img.icons8.com/ios-filled/50/4caf50/user-male-circle.png"
               alt="User Icon"
             />
+
           </div>
           <div className="stat-content">
             <h2>5,423</h2>
@@ -138,7 +154,7 @@ const HeaderAD = (props: Props) => {
               <img src="https://i.pravatar.cc/30?img=5" alt="User 5" />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

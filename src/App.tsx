@@ -65,8 +65,13 @@ import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
 import Orders from "./admin/pages/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
+
+// import LoginAdmin2 from "./admin/pages/LoginAdmin";
+// import ProfileAdmin from "./admin/pages/ProfileAdmin";
+
 import LoginAdmin from "./admin/pages/LoginAdmin";
 import ProfileAdmin from "./admin/pages/ProfileAdmin";
+
 // import HeaderclientC from "./components/HeaderClient copy";
 // import HeaderClientC from "./components/HeaderClient copy";
 
@@ -75,6 +80,7 @@ import PrivateRoute from "./admin/components/PrivateRoute";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
+import ThongKe from "./admin/pages/ThongKe";
 
 import OderConfirm from "./admin/pages/OderConfirm";
 import ShopDetails from "./pages/payment/ShopDetails";
@@ -520,6 +526,56 @@ function App() {
           /> */}
         </Routes>
         <Routes>
+
+          {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
+          {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
+        </Routes>
+        <Routes>
+          {/* Router admin */}
+          <Route path="/admin" element={<Admin />}>
+            <Route index element={<ThongKe />} />
+            <Route path="listuser" element={<ListUser listuser={user} />} />
+            {/* <Route path="thongke" element={<ThongKe />} /> */}
+            <Route path="orders" element={<Orders />} />
+            {/* <Route path="profileadmin" element={<ProfileAdmin />} /> */}
+            <Route path="products" element={<ProductList />} />
+
+            <Route
+              path="products/add"
+              element={
+                <ProductAdd onAdd={handleAddProduct} categories={category} />
+              }
+            />
+            <Route
+              path="products/edit/:id"
+              element={
+                <ProductUpdate
+                  onEdit={handleEditProduct}
+                  categories={category}
+                />
+              }
+            />
+
+            <Route
+              path="categorieslist"
+              element={<CategoriesList listcategories={category} />}
+            />
+            <Route
+              path="categories/add"
+              element={<CategoriesAdd onAddCategory={handleAddCategory} />}
+            />
+            <Route
+              path="categories/edit/:id"
+              element={
+                <CategoriesUpadate onEditCategory={handleEditCategory} />
+              }
+            />
+            <Route path="size" element={<SizeForm />} />
+            <Route path="color" element={<ColorForm />} />
+            <Route path="size" element={<SizeForm />} />
+            <Route path="color" element={<ColorForm />} />
+            {/* <Route path="variants" element={<VariantForm />} /> */}
+
           {/* Route không cần xác thực */}
           <Route path="/loginadmin" element={<LoginAdmin />} />
 
@@ -564,6 +620,7 @@ function App() {
               <Route path="color" element={<ColorForm />} />
               <Route path="oderconfirm" element={<OderConfirm />} />
             </Route>
+
           </Route>
         </Routes>
       </div>
