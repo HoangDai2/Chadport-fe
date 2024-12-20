@@ -8,6 +8,7 @@ import CommentSection from "./Comments/CommentSection";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 import "react-toastify/dist/ReactToastify.css";
+import ProductReviewForm from "./ProductReviewForm";
 
 const ShopDetails = ({
   addToWishlist,
@@ -529,7 +530,8 @@ const ShopDetails = ({
                     </div>
                   </div>
                 </div>
-
+                {/* Product Review */}
+                <ProductReviewForm />
                 {/* Related Products */}
                 <div className="product-related">
                   <div className="section-padding">
