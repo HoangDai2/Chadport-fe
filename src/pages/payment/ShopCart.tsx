@@ -10,7 +10,7 @@ const ShopCart = () => {
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // State lưu các item được chọn
 
-  console.log(selectedItems);
+  // console.log(selectedItems);
 
   // call data cart của user
   useEffect(() => {

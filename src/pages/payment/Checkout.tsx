@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import apisphp from "../../Service/api";
-import axios from "axios";
 import { FaTimes } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import { MdLocationOn } from "react-icons/md";
@@ -10,15 +9,34 @@ import { AddressData } from "../../Types/TUsers";
 import CartData from "../../Types/TCart";
 import { FaSackDollar } from "react-icons/fa6";
 import { MdPayment } from "react-icons/md";
+import PaymentData from "../../Types/TOrder";
+import { checkoutPayment } from "./PaymentService";
 import { useNavigate } from "react-router-dom";
+import { validateForm, Errors } from "./ValidateFormCheckOut";
 const Checkout = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
+  const [payments, setPayments] = useState({
+    billing_address: "",
+    email: "",
+    payment_method: "",
+    phone: "",
+    shipping_address: "",
+  });
+
   const [checked, setCheckes] = useState<CartData | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
+
+  // state này check xem khi nào người dùng thêm địa chỉ mới thì mới hiên dữ liệu
   const [checkdata, setCheckData] = useState(false);
+  // console.log(checkdata);
+
   const [getaddress, setGetaddress] = useState<AddressData | null>(null);
+
+  // state quản lí trạng thái form thanh toán online và offline
   const [formpayment, setFormPayment] = useState("");
+
+  // state quản lí khi chọn địa chỉ mặc định hoặc new
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [formData, setFormData] = useState({
     first_name: "",
@@ -33,9 +51,15 @@ const Checkout = () => {
     order_id: 0,
   });
 
-  const handleAddAddressClick = () => setIsFormVisible(true);
+  // check lỗi
+  const [errors, setErrors] = useState<Errors>({});
 
-  // Xử lý xóa sản phẩm khỏi giỏ hàng
+  // Hàm xử lý khi ấn nút "Thêm địa chỉ"
+  const handleAddAddressClick = () => {
+    setIsFormVisible(true); // Hiển thị form thêm địa chỉ
+  };
+
+  // bỏ trạng thanh từ false thành true từ bên checkout để k thanh toán
   const handleRemoveItem = async (cartItemIds: number) => {
     try {
       const token = localStorage.getItem("jwt_token");
@@ -44,12 +68,21 @@ const Checkout = () => {
         return;
       }
 
-      const headers = { Authorization: `Bearer ${token}` };
-      const response = await apisphp.post("/user/updatecheckcart", { cart_item_id: cartItemIds }, { headers });
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
 
+      const response = await apisphp.post(
+        "/user/updatecheckcart",
+        { cart_item_id: cartItemIds },
+        { headers }
+      );
+      // Kiểm tra xem yêu cầu đã thành công chưa
       if (response.status === 200) {
+        // Cập nhật lại giỏ hàng sau khi xóa sản phẩm
         setCheckes((prevChecked) => {
           if (prevChecked) {
+            // Cập nhật lại state để bỏ sản phẩm vừa bỏ chọn
             return {
               ...prevChecked,
               cart_items: prevChecked.cart_items.filter(
@@ -59,6 +92,7 @@ const Checkout = () => {
           }
           return prevChecked;
         });
+
         toast.success("Sản phẩm đã được bỏ chọn!");
       }
     } catch (error) {
@@ -66,39 +100,65 @@ const Checkout = () => {
     }
   };
 
+  // call dữ liệu được chọn từ bên giỏ hàng
   useEffect(() => {
     const fetchdataChecked = async () => {
       try {
         const token = localStorage.getItem("jwt_token");
-        if (!token) return;
+        // console.log("Token:", token);
+        if (!token) {
+          console.log("Token not found");
+          return;
+        }
 
-        const headers = { Authorization: `Bearer ${token}` };
-        const dataChecked = await apisphp.get("/user/getcheckcart", { headers });
+        // Cấu hình header để thêm token vào yêu cầu
+        const headers = {
+          Authorization: `Bearer ${token}`, // Gửi token vào header Authorization
+        };
+
+        const dataChecked = await apisphp.get("/user/getcheckcart", {
+          headers,
+        });
         setCheckes(dataChecked.data);
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu giỏ hàng", error);
-      }
+        // console.log("data checked", dataChecked.data);
+
+        return dataChecked.data;
+      } catch (error) {}
     };
     fetchdataChecked();
   }, []);
 
+  // call data address mới
   useEffect(() => {
     const fetchNewAddress = async () => {
       try {
         const token = localStorage.getItem("jwt_token");
-        if (!token) return;
+        // console.log("Token:", token);
+        if (!token) {
+          console.log("Token not found");
+          return;
+        }
 
-        const headers = { Authorization: `Bearer ${token}` };
-        const dataChecked = await apisphp.get("/user/getadress", { headers });
+        // Cấu hình header để thêm token vào yêu cầu
+        const headers = {
+          Authorization: `Bearer ${token}`, // Gửi token vào header Authorization
+        };
+
+        const dataChecked = await apisphp.get("/user/getadress", {
+          headers,
+        });
+
         setGetaddress(dataChecked.data.address);
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu địa chỉ", error);
-      }
+        // console.log("data address", dataChecked.data.address);
+
+        return dataChecked.data;
+      } catch (error) {}
     };
     fetchNewAddress();
   }, []);
 
   useEffect(() => {
+    // console.log("Address Data:", getaddress);
     const hasValidAddress = !!(
       getaddress?.first_name &&
       getaddress?.last_name &&
@@ -106,13 +166,28 @@ const Checkout = () => {
       getaddress?.phone_number_address &&
       getaddress?.specific_address
     );
-    setCheckData(hasValidAddress);
-  }, [getaddress]);
 
-  const handleFormPayment = (option: any) => setFormPayment(option);
+    setCheckData(hasValidAddress); // Cập nhật trực tiếp trạng thái
+    // console.log(hasValidAddress);
+  }, [getaddress]); // Chỉ theo dõi sự thay đổi của getaddress
 
+  // hàm xử lí chọn online và offline và lấy giá trị của radio
+  const handleFormPayment = (option: "code" | "online") => {
+    const updatedPayments = {
+      ...payments,
+      payment_method: option === "code" ? "1" : "2", // "1" cho COD, "2" cho VNPAY
+    };
+
+    setPayments(updatedPayments); // Cập nhật state
+    setFormPayment(option); // Cập nhật form state nếu cần
+    console.log("Updated Payments:", updatedPayments); // Log giá trị chính xác
+  };
+
+  // Cập nhật dữ liệu vào form khi chọn địa chỉ
   const handleAddressChange = (addressType: any) => {
     setSelectedAddress(addressType);
+
+    // Cập nhật thông tin form tương ứng với địa chỉ chọn
     if (addressType === "default") {
       setFormData({
         first_name: user?.firt_name || "",
@@ -130,106 +205,144 @@ const Checkout = () => {
     }
   };
 
+  // console.log(formData);
+
+  // Hàm xử lý khi người dùng thay đổi thông tin trong form
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "", // Reset lỗi khi người dùng nhập vào trường đó
+    }));
   };
 
   const handleVNPayPayment = async () => {
     try {
       const token = localStorage.getItem("jwt_token");
       if (!token) return toast.error("Vui lòng đăng nhập");
-      
+
       try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          const isExpired = payload.exp * 1000 < Date.now();
-          if (isExpired) return toast.error("Phiên đã hết hạn, vui lòng đăng nhập lại.");
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const isExpired = payload.exp * 1000 < Date.now();
+        if (isExpired)
+          return toast.error("Phiên đã hết hạn, vui lòng đăng nhập lại.");
       } catch (error) {
-          return toast.error("Token không hợp lệ, vui lòng đăng nhập lại.");
+        return toast.error("Token không hợp lệ, vui lòng đăng nhập lại.");
       }
-      
 
-        const totalAmount = Number(checked?.total_amount ?? 0);
-        if (isNaN(totalAmount) || totalAmount <= 0) {
-            return toast.error("Tổng tiền không hợp lệ. Vui lòng kiểm tra giỏ hàng.");
+      const totalAmount = Number(checked?.total_amount ?? 0);
+      if (isNaN(totalAmount) || totalAmount <= 0) {
+        return toast.error(
+          "Tổng tiền không hợp lệ. Vui lòng kiểm tra giỏ hàng."
+        );
+      }
+
+      const orderResponse = await apisphp.post(
+        "/user/payment",
+        {
+          shipping_address: user?.address || "",
+          billing_address: user?.address || "",
+          payment_method: "2",
+          phone: user?.phone_number || "",
+          email: user?.email || "",
+          total_money: totalAmount, // Đảm bảo giá trị không null
+          ...formData,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
-        
-        const orderResponse = await apisphp.post("/user/payment", {
-            shipping_address: user?.address || "",
-            billing_address: user?.address || "",
-            payment_method: "2",
-            phone: user?.phone_number || "",
-            email: user?.email || "",
-            total_money: totalAmount, // Đảm bảo giá trị không null
-            ...formData
-        }, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+      );
 
-        const orderData = orderResponse.data;
-        setOrderDetails({ order_number: orderData.order_number, order_id: orderData.id });
+      const orderData = orderResponse.data;
+      setOrderDetails({
+        order_number: orderData.order_number,
+        order_id: orderData.id,
+      });
 
-        const vnpayResponse = await apisphp.post('/user/create_paymentVnPay', {
-            amount: totalAmount,
-            order_number: orderData.order_number,
-            order_id: orderData.id,
-        }, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+      const vnpayResponse = await apisphp.post(
+        "/user/create_paymentVnPay",
+        {
+          amount: totalAmount,
+          order_number: orderData.order_number,
+          order_id: orderData.id,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-        if (vnpayResponse.data.url_payment) {
-          window.location.href = vnpayResponse.data.url_payment;
+      if (vnpayResponse.data.url_payment) {
+        window.location.href = vnpayResponse.data.url_payment;
       } else {
-          toast.error("Không thể tìm thấy URL thanh toán. Vui lòng thử lại.");
+        toast.error("Không thể tìm thấy URL thanh toán. Vui lòng thử lại.");
       }
-      
     } catch (error) {
-        console.error("Lỗi trong quá trình thanh toán VNPay", error);
-        toast.error("Không thể thực hiện thanh toán. Vui lòng thử lại.");
+      console.error("Lỗi trong quá trình thanh toán VNPay", error);
+      toast.error("Không thể thực hiện thanh toán. Vui lòng thử lại.");
     }
-    
-    
-};
+  };
 
-const handleCODPayment = async () => {
-  try {
+  const handleCODPayment = async () => {
+    try {
       const token = localStorage.getItem("jwt_token");
       if (!token) return toast.error("Vui lòng đăng nhập");
 
-      const orderResponse = await apisphp.post("/user/payment", {
+      const orderResponse = await apisphp.post(
+        "/user/payment",
+        {
           shipping_address: user?.address || "",
           billing_address: user?.address || "",
           payment_method: "1",
           phone: user?.phone_number || "",
           email: user?.email || "",
           total_money: checked?.total_amount || "",
-          ...formData
-      }, {
-          headers: { Authorization: `Bearer ${token}` }
-      });
+          ...formData,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       toast.success("Đơn hàng đã được đặt thành công!", {
-          onClose: () => navigate("/profile") 
+        onClose: () => navigate("/profile"),
       });
-  } catch (error) {
+    } catch (error) {
       console.error("Lỗi đặt hàng", error);
       toast.error("Không thể đặt hàng. Vui lòng thửom lại.");
-  }
-};
-
+    }
+  };
 
   const handlePayment = () => {
-    if (!selectedAddress) return toast.error("Vui lòng chọn địa chỉ giao hàng");
+    if (!payments.payment_method) {
+      return toast.error("Vui lòng chọn phương thức thanh toán ");
+    }
+
+    if (!selectedAddress) {
+      return toast.error("Vui lòng chọn địa chỉ giao hàng");
+    }
+
+    if (!validateForm(formData, setErrors)) {
+      return;
+    }
+
     formpayment === "online" ? handleVNPayPayment() : handleCODPayment();
   };
 
-  if (!checked) return <div>Đang tải dữ liệu...</div>;
+  // Kiểm tra dữ liệu và đảm bảo rằng nó đã được tải thành công
+  if (!checked) {
+    return <div>Đang tải dữ liệu...</div>; // Hiển thị thông báo tải nếu chưa có dữ liệu
+  }
+
   return (
     <>
       <ToastContainer
         theme="light"
         position="top-right"
-        autoClose={1000}
+        autoClose={2000}
         hideProgressBar={false}
         closeOnClick={true}
         pauseOnHover={true}
@@ -270,7 +383,7 @@ const handleCODPayment = async () => {
               <div className="text-right">
                 <button
                   onClick={handleAddAddressClick}
-                  className="font-semibold text-blue-500"
+                  className="font-semibold text-blue-500 font-bold"
                 >
                   Thêm địa chỉ
                 </button>
@@ -536,7 +649,8 @@ const handleCODPayment = async () => {
                             type="radio"
                             className="size-4 rounded border-gray-300"
                             id="Option3"
-                            name="paymentOption"
+                            value="1"
+                            name="payment_method"
                             onChange={() => {
                               handleFormPayment("code");
                             }}
@@ -564,7 +678,8 @@ const handleCODPayment = async () => {
                             type="radio"
                             className="size-4 rounded border-gray-300"
                             id="Option4"
-                            name="paymentOption"
+                            value="2"
+                            name="payment_method"
                             onChange={() => {
                               handleFormPayment("online");
                             }}
@@ -581,9 +696,7 @@ const handleCODPayment = async () => {
                         </div>
                       </label>
                     </div>
-
                     <div className="border-b mb-[20px]"></div>
-
                     {/* form thanh toán khi nhận hàng */}
                     {formpayment === "code" && (
                       <div className="max-w-4xl mx-auto bg-white rounded-lg">
@@ -599,13 +712,23 @@ const handleCODPayment = async () => {
                             </label>
                             <input
                               id="firstName"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                              className={`w-full px-4 py-3 border ${
+                                errors.first_name
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
                               placeholder="John"
                               type="text"
-                              name="firt_name"
+                              name="first_name"
                               value={formData.first_name}
                               onChange={handleInputChange}
                             />
+
+                            {errors.first_name && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {errors.first_name}
+                              </div>
+                            )}
                           </div>
 
                           {/* Last Name */}
@@ -625,6 +748,11 @@ const handleCODPayment = async () => {
                               value={formData.last_name}
                               onChange={handleInputChange}
                             />
+                            {errors.last_name && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {errors.last_name}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -645,13 +773,18 @@ const handleCODPayment = async () => {
                             value={formData.phone_number}
                             onChange={handleInputChange}
                           />
+                          {errors.phone_number && (
+                            <div className="text-red-500 text-left text-sm mt-1">
+                              {errors.phone_number}
+                            </div>
+                          )}
                         </div>
 
                         {/* Address */}
                         <div className="mb-6">
                           <label
                             htmlFor="cardNumber"
-                            className="text-left text-sm font-semibold text-gray-700 mb-2 block"
+                            className="text-left  text-sm font-semibold text-gray-700 mb-2 block"
                           >
                             Address
                           </label>
@@ -664,6 +797,11 @@ const handleCODPayment = async () => {
                             value={formData.address}
                             onChange={handleInputChange}
                           />
+                          {errors.address && (
+                            <div className="text-red-500 text-left text-sm mt-1">
+                              {errors.address}
+                            </div>
+                          )}
                         </div>
 
                         {/* code giảm giá  */}
@@ -686,115 +824,139 @@ const handleCODPayment = async () => {
 
                     {/* form thanh toán online */}
                     {formpayment === "online" && (
-                    <div className="max-w-4xl mx-auto bg-white rounded-lg">
-                    {/* First Name and Last Name */}
-                    <div className=" mb-6 grid grid-cols-2 gap-6">
-                      {/* First Name */}
-                      <div className="input-group">
-                        <label
-                          htmlFor="firstName"
-                          className=" text-sm font-semibold text-gray-700 mb-2 block"
-                        >
-                          First Name
-                        </label>
-                        <input
-                          id="firstName"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                          placeholder="John"
-                          type="text"
-                          name="firt_name"
-                          value={formData.first_name}
-                          onChange={handleInputChange}
-                        />
+                      <div className="max-w-4xl mx-auto bg-white rounded-lg">
+                        {/* First Name and Last Name */}
+                        <div className=" mb-6 grid grid-cols-2 gap-6">
+                          {/* First Name */}
+                          <div className="input-group">
+                            <label
+                              htmlFor="firstName"
+                              className=" text-sm font-semibold text-gray-700 mb-2 block"
+                            >
+                              First Name
+                            </label>
+                            <input
+                              id="firstName"
+                              className={`w-full px-4 py-3 border ${
+                                errors.first_name
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
+                              placeholder="John"
+                              type="text"
+                              name="firt_name"
+                              value={formData.first_name}
+                              onChange={handleInputChange}
+                            />
+
+                            {errors.first_name && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {errors.first_name}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Last Name */}
+                          <div className="input-group">
+                            <label
+                              htmlFor="lastName"
+                              className="text-sm font-semibold text-gray-700 mb-2 block"
+                            >
+                              Last Name
+                            </label>
+                            <input
+                              id="lastName"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                              placeholder="Smith"
+                              type="text"
+                              name="last_name"
+                              value={formData.last_name}
+                              onChange={handleInputChange}
+                            />
+                            {errors.last_name && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {errors.last_name}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Phone Number */}
+                        <div className="mb-6">
+                          <label
+                            htmlFor="nameOnCard"
+                            className="text-left text-sm font-semibold text-gray-700 mb-2 block"
+                          >
+                            Phone Number
+                          </label>
+                          <input
+                            id="nameOnCard"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="PhoneNumber"
+                            type="text"
+                            name="phone_number"
+                            value={formData.phone_number}
+                            onChange={handleInputChange}
+                          />
+                          {errors.phone_number && (
+                            <div className="text-red-500 text-left text-sm mt-1">
+                              {errors.phone_number}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Address */}
+                        <div className="mb-6">
+                          <label
+                            htmlFor="cardNumber"
+                            className="text-left  text-sm font-semibold text-gray-700 mb-2 block"
+                          >
+                            Address
+                          </label>
+                          <input
+                            id="cardNumber"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="Address"
+                            type="text"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleInputChange}
+                          />
+                          {errors.address && (
+                            <div className="text-red-500 text-left text-sm mt-1">
+                              {errors.address}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* code giảm giá  */}
+                        <div className="mb-6">
+                          <label
+                            htmlFor="cardNumber"
+                            className="text-left text-sm font-semibold text-gray-700 mb-2 block"
+                          >
+                            Have a promo code
+                          </label>
+                          <input
+                            id="cardNumber"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="Code"
+                            type="text"
+                          />
+                        </div>
                       </div>
-
-                      {/* Last Name */}
-                      <div className="input-group">
-                        <label
-                          htmlFor="lastName"
-                          className="text-sm font-semibold text-gray-700 mb-2 block"
-                        >
-                          Last Name
-                        </label>
-                        <input
-                          id="lastName"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                          placeholder="Smith"
-                          type="text"
-                          name="last_name"
-                          value={formData.last_name}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Phone Number */}
-                    <div className="mb-6">
-                      <label
-                        htmlFor="nameOnCard"
-                        className="text-left text-sm font-semibold text-gray-700 mb-2 block"
-                      >
-                        Phone Number
-                      </label>
-                      <input
-                        id="nameOnCard"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        placeholder="PhoneNumber"
-                        type="text"
-                        name="phone_number"
-                        value={formData.phone_number}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-
-                    {/* Address */}
-                    <div className="mb-6">
-                      <label
-                        htmlFor="cardNumber"
-                        className="text-left text-sm font-semibold text-gray-700 mb-2 block"
-                      >
-                        Address
-                      </label>
-                      <input
-                        id="cardNumber"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        placeholder="Address"
-                        type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-
-                    {/* code giảm giá  */}
-                    <div className="mb-6">
-                      <label
-                        htmlFor="cardNumber"
-                        className="text-left text-sm font-semibold text-gray-700 mb-2 block"
-                      >
-                        Have a promo code
-                      </label>
-                      <input
-                        id="cardNumber"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        placeholder="Code"
-                        type="text"
-                      />
-                    </div>
-                  </div>
-                
                     )}
                   </div>
                 </div>
                 {/* nút thanh toán pay now */}
                 <div className="mt-[55px]">
-        <button 
-          onClick={handlePayment}
-          className="block w-full mx-auto bg-black hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-2 font-semibold"
-        >
-          <i className="mdi mdi-lock-outline mr-1"></i> PAY NOW
-        </button>
-      </div>
+                  <button
+                    onClick={handlePayment}
+                    className=" block w-full mx-auto bg-black hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-2 font-semibold"
+                  >
+                    <i className="mdi mdi-lock-outline mr-1"></i> PAY NOW
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -805,6 +967,3 @@ const handleCODPayment = async () => {
 };
 
 export default Checkout;
-
-
-
