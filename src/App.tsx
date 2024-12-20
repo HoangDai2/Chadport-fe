@@ -76,6 +76,7 @@ import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
 import ShopDetails from "./pages/payment/ShopDetails";
+import ThongKe from "./admin/pages/ThongKe";
 
 function App() {
   const navigate = useNavigate();
@@ -143,7 +144,7 @@ function App() {
         });
       }
     } catch (error) {
-      toast.error("Không thể kết nối đến server.", {
+toast.error("Không thể kết nối đến server.", {
         position: "top-right",
         autoClose: 1000,
       });
@@ -229,7 +230,7 @@ function App() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-          },
+},
         }
       );
 
@@ -332,7 +333,7 @@ function App() {
               <>
                 <HeaderClient
                   wishlisCount={wishlistCount}
-                  carCount={carCount}
+carCount={carCount}
                 />
                 <ShopList />
                 <FooterClient />
@@ -444,7 +445,7 @@ function App() {
             element={
               <>
                 <HeaderClient
-                  wishlisCount={wishlistCount}
+wishlisCount={wishlistCount}
                   carCount={carCount}
                 />
                 <div style={{ marginTop: "100px" }}>
@@ -508,14 +509,6 @@ function App() {
               </>
             }
           />
-          {/* <Route
-            path="/loginadmin"
-            element={
-              <>
-                <LoginAdmin />
-              </>
-            }
-          /> */}
         </Routes>
         <Routes>
           {/* Route không cần xác thực */}
@@ -524,7 +517,7 @@ function App() {
           {/* Các route yêu cầu xác thực được bọc trong PrivateRoute */}
           <Route element={<PrivateRoute />}>
             <Route path="/admin" element={<Admin />}>
-              <Route index element={<div>Welcome to Admin Dashboard</div>} />
+              <Route index element={<ThongKe/>} />
               <Route path="listuser" element={<ListUser listuser={user} />} />
               <Route path="orders" element={<Orders />} />
               <Route path="profileadmin" element={<ProfileAdmin />} />
@@ -550,7 +543,7 @@ function App() {
               />
               <Route
                 path="categories/add"
-                element={<CategoriesAdd onAddCategory={handleAddCategory} />}
+element={<CategoriesAdd onAddCategory={handleAddCategory} />}
               />
               <Route
                 path="categories/edit/:id"
