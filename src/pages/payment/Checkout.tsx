@@ -12,7 +12,8 @@ import { MdPayment } from "react-icons/md";
 import PaymentData from "../../Types/TOrder";
 import { checkoutPayment } from "./PaymentService";
 import { useNavigate } from "react-router-dom";
-import { validateForm, Errors } from "./ValidateFormCheckOut";
+import { validateForm, Errors } from "./ValidateFormCheckOut.tsx";
+
 const Checkout = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();

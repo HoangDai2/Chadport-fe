@@ -1,3 +1,4 @@
+
 export interface Errors {
   first_name?: string;
   last_name?: string;
@@ -35,3 +36,4 @@ export const validateForm = (
   setErrors(newErrors);
   return Object.keys(newErrors).length === 0;
 };
+

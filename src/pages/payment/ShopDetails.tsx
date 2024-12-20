@@ -7,6 +7,7 @@ import { addToCart } from "../../redux/cartSlice";
 import apisphp from "../../Service/api";
 import CommentSection from "../Comments/CommentSection";
 import TProduct from "../../Types/TProduct";
+
 const ShopDetails = ({
   addToWishlist,
 }: {
@@ -19,37 +20,28 @@ const ShopDetails = ({
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  // State để quản lý số lượng sản phẩm
   const [quantity, setQuantity] = useState(1);
-  const [availableColors, setAvailableColors] = useState<string[]>([]); // State để quản lý màu sắc tương ứng với size đã chọn
-
+  const [availableColors, setAvailableColors] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  // Hàm xử lý khi thay đổi size
   const handleSizeChange = (sizeId: string) => {
     setSelectedSize(sizeId);
-
-    // Lọc các màu có sẵn cho size đã chọn
     const colorsForSelectedSize = product?.variants
       ?.filter((variant) => variant.size?.id === sizeId)
       .map((variant) => variant.color?.name);
-
-    setAvailableColors(colorsForSelectedSize || []); // Cập nhật danh sách màu sắc tương ứng
+    setAvailableColors(colorsForSelectedSize || []);
   };
 
-  // Hàm xử lý khi thay đổi màu
   const handleColorChange = (colorId: string) => {
     setSelectedColor(colorId);
   };
 
   const handleIncrement = () => setQuantity((prev) => prev + 1);
-  const handleDecrement = () =>
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const handleDecrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   const [mainImage, setMainImage] = useState<string | null>(null);
 
   const handleAddToCart = (event: any) => {
     event.preventDefault();
-
     if (!selectedSize || !selectedColor) {
       toast.error("Bắt buộc phải chọn size và color", {
         position: "top-right",
@@ -57,18 +49,14 @@ const ShopDetails = ({
       });
       return;
     }
-
     if (!product?.id) {
       console.error("Product ID is missing");
       return;
     }
-
-    // Tìm variant phù hợp với size và color đã chọn
     const selectedVariant = product.variants.find(
       (variant) =>
         variant.size?.id === selectedSize && variant.color?.id === selectedColor
     );
-
     if (!selectedVariant) {
       console.error("Variant not found for selected size and color");
       return;
@@ -77,24 +65,85 @@ const ShopDetails = ({
       toast.warning("Sản phầm này đã hết");
       return;
     }
-    console.log("Selected variant:", selectedVariant);
-
-    // Đảm bảo rằng dữ liệu gửi đi đủ thông tin mà backend yêu cầu
     const productDetails = {
       product_item_id: selectedVariant.id,
       quantity: quantity,
     };
-
-    console.log("Payload gửi đi:", productDetails);
-
-    // Gửi yêu cầu API với dữ liệu đã chuẩn bị
     dispatch(addToCart(productDetails));
-
-    // Hiển thị thông báo toast khi thêm thành công
     toast.success("Thêm vào giỏ hàng thành công!", {
       position: "top-right",
       autoClose: 3000,
     });
+  };
+
+  const handleBuyNow = async (event: any) => {
+    event.preventDefault();
+    if (!selectedSize || !selectedColor) {
+      toast.error("Bắt buộc phải chọn size và color", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+    if (!product?.id) {
+      console.error("Product ID is missing");
+      return;
+    }
+    const selectedVariant = product.variants.find(
+      (variant) =>
+        variant.size?.id === selectedSize && variant.color?.id === selectedColor
+    );
+    if (!selectedVariant) {
+      console.error("Variant not found for selected size and color");
+      return;
+    }
+    if (selectedVariant.quantity === 0) {
+      toast.warning("Sản phầm này đã hết");
+      return;
+    }
+    const productDetails = {
+      product_item_id: selectedVariant.id,
+      quantity: quantity,
+      checked: 1,
+    };
+
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        toast.error("Bạn chưa đăng nhập", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await apisphp.post("/user/buynows", productDetails, {
+        headers,
+      });
+
+      if (response.status === 200) {
+        toast.success("Thêm vào giỏ hàng thành công! Chuyển đến trang thanh toán", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/checkout");
+      } else {
+        toast.error("Không thể thêm vào giỏ hàng, vui lòng thử lại", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error processing Buy It Now request", error);
+      toast.error("Có lỗi xảy ra khi xử lý yêu cầu", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   useEffect(() => {
@@ -102,70 +151,30 @@ const ShopDetails = ({
       try {
         const res = await apisphp.get(`/showdetail/products/${id}`);
         const fetchedProduct = res.data;
-        // console.log(fetchedProduct, "fet");
-
         let images: string[] = [];
         if (typeof fetchedProduct.image_description === "string") {
           try {
             images = JSON.parse(fetchedProduct.image_description);
           } catch (error) {
-            console.error("Error parsing image_description:", error);
+            console.error("Error parsing image_description", error);
           }
         } else if (Array.isArray(fetchedProduct.image_description)) {
           images = fetchedProduct.image_description;
         }
-
         setProduct({ ...fetchedProduct, image_description: images });
-        setMainImage(fetchedProduct.image_product); // Đặt ảnh chính ban đầu
+        setMainImage(fetchedProduct.image_product);
       } catch (error) {
-        console.error("Error fetching product details:", error);
+        console.error("Error fetching product details", error);
       }
     };
-
     if (id) {
       fetchProductDetails();
     }
   }, [id]);
 
-  useEffect(() => {
-    const testDetailsFetch = async () => {
-      try {
-        // Gọi API để lấy chi tiết sản phẩm
-        const res = await apisphp.get(`/showdetail/products/${id}`);
-        const fetchedProduct = res.data;
-
-        // Kiểm tra nếu mảng `products` đã có sản phẩm với cùng `id`
-        setRelatedProducts((prevProducts) => {
-          // Kiểm tra xem sản phẩm có tồn tại trong mảng chưa
-          const existingProduct = prevProducts.find(
-            (product) => product.id === fetchedProduct.id
-          );
-
-          if (existingProduct) {
-            // Nếu sản phẩm đã có, không thêm vào mà giữ nguyên mảng cũ
-            return prevProducts;
-          } else {
-            // Nếu sản phẩm chưa có, thêm sản phẩm vào mảng
-            return [...prevProducts, fetchedProduct];
-          }
-        });
-      } catch (error) {
-        console.error("Error fetching product details:", error);
-      } finally {
-        setLoading(false); // Đảm bảo loading được tắt sau khi lấy dữ liệu xong
-      }
-    };
-
-    if (id) {
-      testDetailsFetch();
-    }
-  }, [id]);
-  // console.log("relatedProducts", relatedProducts);
-
   if (!product) {
     return <div>Loading...</div>;
   }
-
   return (
     <>
       {/* Đặt ToastContainer trong component để hiển thị các thông báo */}
@@ -456,11 +465,8 @@ const ShopDetails = ({
                                 </a>
                               </div>
                             </div>
-                            <div
-                              className="btn-quick-buy"
-                              data-title="Wishlist"
-                            >
-                              <button className="product-btn">
+                            <div className="btn-quick-buy" data-title="Buy it now">
+                              <button className="product-btn" onClick={handleBuyNow}>
                                 Buy It Now
                               </button>
                             </div>
