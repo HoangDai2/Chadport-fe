@@ -5,6 +5,7 @@ import TUser from "../../Types/TUsers";
 import { profileValidationSchema } from "./Validation";
 import { useFormik } from "formik";
 import AddressInput from "./apiMaps";
+import axios from "axios";
 
 type Props = {};
 const genderMapping = {
@@ -127,49 +128,51 @@ const Profile = (props: Props) => {
     }
   }, [user]);
   // trạng thái đơn hàng trong profile
-  const [activeFilter, setFilter] = useState("Tất cả"); // Data giả cho các đơn hàng
-  const orders = [
-    {
-      id: 1,
-      name: "test bill 1",
-      price: 1000,
-      quantity: 2,
-      total: 2000,
-      status: "Completed",
-    },
-    {
-      id: 2,
-      name: "test bill 2",
-      price: 1000,
-      quantity: 2,
-      total: 2000,
-      status: "Chờ Thanh toán",
-    },
-    {
-      id: 3,
-      name: "test bill 3",
-      price: 1000,
-      quantity: 2,
-      total: 2000,
-      status: "Vận Chuyển",
-    },
-    {
-      id: 4,
-      name: "test bill 4",
-      price: 1000,
-      quantity: 2,
-      total: 2000,
-      status: "Chờ Giao Hàng",
-    },
-    {
-      id: 5,
-      name: "test bill 5",
-      price: 1000,
-      quantity: 2,
-      total: 2000,
-      status: "Đã Hủy",
-    },
-  ];
+  const [orders, setOrders] = useState([]); // Danh sách đơn hàng
+  const [error, setError] = useState(null); // Trạng thái lỗi
+  const [loading1, setLoading1] = useState(true); // Trạng thái loading
+  const [activeFilter, setFilter] = useState("Tất cả"); // Bộ lọc trạng thái
+  const [isModalOpen, setIsModalOpen] = useState(false); // State để điều khiển hiển thị modal
+  const [selectedOrder, setSelectedOrder] = useState(null); // State để lưu đơn hàng chọn
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading1(true);
+        const token = localStorage.getItem("jwt_token");
+        if (!token) {
+          throw new Error("User is not authenticated!");
+        }
+
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/user-status",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            params: {
+              status: activeFilter === "Tất cả" ? "" : activeFilter,
+            },
+          }
+        );
+
+        setOrders(response.data.data); // Gán dữ liệu đơn hàng từ API
+      } catch (err) {
+        setError(
+          err.response?.data?.message ||
+            "Bạn cần đăng nhập để xem chi tiết đơn hàng!"
+        );
+      } finally {
+        setLoading1(false);
+      }
+    };
+    // console.log(error);
+
+    fetchOrders();
+  }, [activeFilter]);
+
+  if (loading1) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   // Lọc dữ liệu dựa trên trạng thái
   const filteredOrders =
@@ -177,12 +180,8 @@ const Profile = (props: Props) => {
       ? orders
       : orders.filter((order) => order.status === activeFilter);
 
-  // Hàm mở modal
-  const [selectedOrder, setSelectedOrder] = useState(null); // State để lưu đơn hàng chọn
-  const [isModalOpen, setIsModalOpen] = useState(false); // State để điều khiển hiển thị modal
-
   // Hàm mở modal và chọn đơn hàng
-  const handleViewDetails = (order: React.SetStateAction<null>) => {
+  const handleViewDetails = (order) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
@@ -192,16 +191,14 @@ const Profile = (props: Props) => {
     setIsModalOpen(false);
     setSelectedOrder(null);
   };
-  console.log(orders);
-  const steps = [
-    { key: "Chờ Thanh toán", label: "Chờ Thanh toán" },
-    { key: "Vận Chuyển", label: "Vận Chuyển" },
-    { key: "Chờ Giao Hàng", label: "Chờ Giao Hàng" },
-    { key: "Completed", label: "Hoàn Thành" },
-    { key: "Đã Hủy", label: "Đã Hủy" },
-  ];
 
-  const selectedOrder1 = orders.find((order) => order.id === 2);
+  const steps = [
+    { key: "chờ xử lí", label: "chờ xử lí" },
+    { key: "đã thanh toán", label: "đã thanh toán" },
+    { key: "đang giao", label: "đang giao" },
+    { key: "đã hoàn thành", label: "đã hoàn thành" },
+    { key: "bị hủy", label: "bị hủy" },
+  ];
 
   return (
     <>
@@ -380,15 +377,13 @@ const Profile = (props: Props) => {
           </form>
 
           <div className="flex space-x-8 text-gray-500 text-sm font-medium mb-6">
-            {/* <button className="pb-1 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-800 focus:outline-none focus:border-gray-800 focus:text-gray-900">
-                Tất cả
-              </button> */}
             {[
               "Tất cả",
-              "Chờ Thanh toán",
-              "Vận Chuyển",
-              "Chờ Giao Hàng",
-              "Đã Hủy",
+              "chờ xử lí",
+              "đã thanh toán",
+              "đang giao",
+              "bị hủy",
+              "đã hoàn thành",
             ].map((status) => (
               <button
                 key={status}
@@ -413,22 +408,33 @@ const Profile = (props: Props) => {
           <div className="grid grid-cols-5 grid-rows-2 gap-4">
             <div className="col-span-3 row-span-3 space-y-4">
               {filteredOrders.length > 0 ? (
+                // console.log(filteredOrders),
                 filteredOrders.map((order) => (
                   <div
-                    key={order.id}
+                    key={order.order_id}
                     className="bg-gray-50 rounded-lg p-4 flex items-center justify-between shadow-sm border border-gray-200"
                   >
-                    <p className="text-sm text-gray-400">STT {order.id}</p>
-                    <p>img</p>
-
+                    <img
+                      src={
+                        order.products[0]?.product_image
+                          ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
+                          : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+                      }
+                      className="w-16 h-16 object-cover rounded-lg shadow-md"
+                    />
                     <div>
                       <p className="text-gray-800 font-semibold">
-                        {order.name}
+                        {order.products[0]?.product_name.length > 30
+                          ? `${order.products[0]?.product_name.substring(
+                              0,
+                              30
+                            )}...`
+                          : order.products[0]?.product_name}
                       </p>
                     </div>
                     <p className="text-sm text-gray-400">
-                      Giá: {order.price}
-                      <p> SL: {order.quantity}</p>
+                      Giá: {Math.ceil(order.products[0].price)} VND{" "}
+                      <p> SL: {order.products[0]?.quantity}</p>
                     </p>
                     <p className="text-sm text-green-500 font-medium">
                       {order.status}
@@ -438,7 +444,12 @@ const Profile = (props: Props) => {
                       onClick={() => handleViewDetails(order)}
                     >
                       View Details
-                      <p>Tổng thanh toán {order.total}</p>
+                      <p>
+                        Tổng thanh toán{" "}
+                        <span className="text-rose-600">
+                          {order.total_money}
+                        </span>
+                      </p>
                     </button>
                   </div>
                 ))
@@ -448,38 +459,110 @@ const Profile = (props: Props) => {
             </div>
             {/* Modal hiển thị thông tin chi tiết đơn hàng */}
             {isModalOpen && selectedOrder && (
-              <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-                <div className="bg-white rounded-lg w-1/2 p-6">
-                  <h3 className="text-xl font-semibold mb-4">
+              <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center mt-20 z-50">
+                <div className="bg-white rounded-lg w-3/4 lg:w-1/2 p-6 overflow-y-auto max-h-[80vh] shadow-lg">
+                  <h3 className="text-2xl font-semibold mb-6 text-gray-800 mt-10">
                     Chi tiết đơn hàng
                   </h3>
-                  <div className="space-y-4">
-                    {selectedOrder1 && (
-                      <div className="order-status">
-                        <h3>
-                          {selectedOrder.name} - Tổng: {selectedOrder.total} VND
-                        </h3>
-                        <ol className="steps">
-                          {steps.map((step) => (
-                            <li
-                              key={step.key}
-                              className={`step ${
-                                selectedOrder.status === step.key
-                                  ? "active"
-                                  : ""
-                              }`}
-                            >
-                              {step.label}
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-                    )}
+                  <div className="relative after:absolute after:inset-x-0 after:top-1/2 after:block after:h-0.5 after:-translate-y-1/2 after:rounded-lg after:bg-gray-100">
+                    <ol className="relative z-10 flex justify-between text-sm font-medium text-gray-500">
+                      {steps.map((step, index) => (
+                        <li
+                          key={step.key}
+                          className={`flex items-center gap-2 bg-white p-2 ${
+                            selectedOrder.status === step.key
+                              ? "bg-blue-100"
+                              : ""
+                          }`}
+                        >
+                          <span
+                            className={`size-6 rounded-full text-center text-[10px]/6 font-bold ${
+                              selectedOrder.status === step.key
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-100"
+                            }`}
+                          >
+                            {index + 1}
+                          </span>
+                          <span className="hidden sm:block">{step.label}</span>
+                        </li>
+                      ))}
+                    </ol>
                   </div>
+
+                  <div className="mt-6 space-y-6">
+                    <div className="flex space-x-8">
+                      <div className="w-1/2">
+                        <div>
+                          <p className="text-lg font-semibold text-gray-800">
+                            Sản phẩm trong đơn hàng
+                          </p>
+                          <div className="space-y-4 mt-4">
+                            {selectedOrder.products.map((item) => (
+                              <div
+                                key={item.product_id}
+                                className="flex items-center space-x-4 border-b pb-4"
+                              >
+                                <img
+                                  src={`http://127.0.0.1:8000/storage/${item.product_image}`}
+                                  alt={item.product_name}
+                                  className="w-16 h-16 object-cover rounded-md"
+                                />
+                                <div>
+                                  <p className="text-sm text-gray-800">
+                                    {item.product_name}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    SL: {item.quantity} - Size {item.size_name}{" "}
+                                    - màu:
+                                    <span className="mr-1">
+                                      {item.color_name}
+                                    </span>{" "}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    Giá: {Math.ceil(item.price)} VND{" "}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-1/2 text-left">
+                        <p className="text-lg font-semibold text-gray-800">
+                          Thông tin đơn hàng
+                        </p>
+                        <div className="space-y-2 mt-2">
+                          <p className="text-sm text-gray-500">
+                            Địa chỉ giao hàng: {selectedOrder.shipping_address}
+                          </p>
+                          {/* <p className="text-sm text-gray-500">
+                        Địa chỉ thanh toán: {selectedOrder.billing_address}
+                      </p> */}
+
+                          <p className="text-sm text-gray-400">
+                            Ngày tạo:{" "}
+                            {new Date(
+                              selectedOrder.created_at
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <p className="text-lg font-semibold text-gray-800">
+                        Tổng thanh toán:{" "}
+                        <span className="text-green-500 font-semibold">
+                          {selectedOrder.total_money} VND
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="mt-6 flex justify-end">
                     <button
+                      onClick={handleCloseModal}
                       className="bg-gray-600 text-white px-4 py-2 rounded-md"
-                      onClick={handleCloseModal} // Đóng modal
                     >
                       Đóng
                     </button>
