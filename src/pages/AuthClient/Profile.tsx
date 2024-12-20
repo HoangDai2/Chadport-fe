@@ -192,6 +192,16 @@ const Profile = (props: Props) => {
     setIsModalOpen(false);
     setSelectedOrder(null);
   };
+  console.log(orders);
+  const steps = [
+    { key: "Chờ Thanh toán", label: "Chờ Thanh toán" },
+    { key: "Vận Chuyển", label: "Vận Chuyển" },
+    { key: "Chờ Giao Hàng", label: "Chờ Giao Hàng" },
+    { key: "Completed", label: "Hoàn Thành" },
+    { key: "Đã Hủy", label: "Đã Hủy" },
+  ];
+
+  const selectedOrder1 = orders.find((order) => order.id === 2);
 
   return (
     <>
@@ -444,24 +454,27 @@ const Profile = (props: Props) => {
                     Chi tiết đơn hàng
                   </h3>
                   <div className="space-y-4">
-                    <p>
-                      <strong>STT:</strong> {selectedOrder.id}
-                    </p>
-                    <p>
-                      <strong>Tên sản phẩm:</strong> {selectedOrder.name}
-                    </p>
-                    <p>
-                      <strong>Giá:</strong> {selectedOrder.price}
-                    </p>
-                    <p>
-                      <strong>Số lượng:</strong> {selectedOrder.quantity}
-                    </p>
-                    <p>
-                      <strong>Tổng thanh toán:</strong> {selectedOrder.total}
-                    </p>
-                    <p>
-                      <strong>Trạng thái:</strong> {selectedOrder.status}
-                    </p>
+                    {selectedOrder1 && (
+                      <div className="order-status">
+                        <h3>
+                          {selectedOrder.name} - Tổng: {selectedOrder.total} VND
+                        </h3>
+                        <ol className="steps">
+                          {steps.map((step) => (
+                            <li
+                              key={step.key}
+                              className={`step ${
+                                selectedOrder.status === step.key
+                                  ? "active"
+                                  : ""
+                              }`}
+                            >
+                              {step.label}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
                   </div>
                   <div className="mt-6 flex justify-end">
                     <button
