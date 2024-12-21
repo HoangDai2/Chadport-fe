@@ -131,7 +131,7 @@ const Profile = (props: Props) => {
   const [orders, setOrders] = useState([]); // Danh sách đơn hàng
   const [error, setError] = useState(null); // Trạng thái lỗi
   const [loading1, setLoading1] = useState(true); // Trạng thái loading
-  const [activeFilter, setFilter] = useState("Tất cả"); // Bộ lọc trạng thái
+  const [activeFilter, setFilter] = useState("chờ xử lí"); // Bộ lọc trạng thái
   const [isModalOpen, setIsModalOpen] = useState(false); // State để điều khiển hiển thị modal
   const [selectedOrder, setSelectedOrder] = useState(null); // State để lưu đơn hàng chọn
 
@@ -151,7 +151,7 @@ const Profile = (props: Props) => {
               Authorization: `Bearer ${token}`,
             },
             params: {
-              status: activeFilter === "Tất cả" ? "" : activeFilter,
+              status: activeFilter === "chờ xử lí" ? "" : activeFilter,
             },
           }
         );
@@ -181,7 +181,7 @@ const Profile = (props: Props) => {
       : orders.filter((order) => order.status === activeFilter);
 
   // Hàm mở modal và chọn đơn hàng
-  const handleViewDetails = (order) => {
+  const handleViewDetails = (order: any) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
@@ -376,6 +376,7 @@ const Profile = (props: Props) => {
             </div>
           </form>
 
+          {/* thanh chọn trạng thái */}
           <div className="flex space-x-8 text-gray-500 text-sm font-medium mb-6">
             {[
               "Tất cả",
@@ -388,75 +389,101 @@ const Profile = (props: Props) => {
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`pb-1 ${
+                className={`relative pb-1 ${
                   activeFilter === status
-                    ? "text-white bg-gray-900 rounded-lg p-1"
-                    : "text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-800"
+                    ? "text-gray-900 after:content-[''] after:block after:w-full after:h-[2px] after:bg-gray-800 after:absolute after:bottom-0 after:left-0 after:transition-all after:duration-300"
+                    : "text-gray-600 hover:text-gray-900 after:content-[''] after:block after:w-0 after:h-[2px] after:bg-gray-400 after:absolute after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
                 }`}
               >
                 {status}
               </button>
             ))}
-            <p>
-              ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
-            </p>
-            <h2 className="text-lg font-semibold text-gray-800">
-              Personal Information
-            </h2>
           </div>
 
           <div className="grid grid-cols-5 grid-rows-2 gap-4">
+            {/* show dữ liệu khi check out xong */}
             <div className="col-span-3 row-span-3 space-y-4">
-              {filteredOrders.length > 0 ? (
-                // console.log(filteredOrders),
+              {filteredOrders && filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
                   <div
+                    onClick={() => handleViewDetails(order)}
                     key={order.order_id}
-                    className="bg-gray-50 rounded-lg p-4 flex items-center justify-between shadow-sm border border-gray-200"
+                    className="bg-white rounded-lg p-6 border border-gray-300 hover:shadow-lg transition-shadow duration-200"
                   >
-                    <img
-                      src={
-                        order.products[0]?.product_image
-                          ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
-                          : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
-                      }
-                      className="w-16 h-16 object-cover rounded-lg shadow-md"
-                    />
-                    <div>
-                      <p className="text-gray-800 font-semibold">
-                        {order.products[0]?.product_name.length > 30
-                          ? `${order.products[0]?.product_name.substring(
-                              0,
-                              30
-                            )}...`
-                          : order.products[0]?.product_name}
+                    <div className="">
+                      <p className=" leading-[24px] text-right uppercase whitespace-nowrap  text-end text-black font-medium">
+                        {order.status}
                       </p>
                     </div>
-                    <p className="text-sm text-gray-400">
-                      Giá: {Math.ceil(order.products[0].price)} VND{" "}
-                      <p> SL: {order.products[0]?.quantity}</p>
-                    </p>
-                    <p className="text-sm text-green-500 font-medium">
-                      {order.status}
-                    </p>
-                    <button
-                      className="text-teal-600 font-medium"
-                      onClick={() => handleViewDetails(order)}
-                    >
-                      View Details
-                      <p>
-                        Tổng thanh toán{" "}
-                        <span className="text-rose-600">
-                          {order.total_money}
-                        </span>
+
+                    <hr className="border-t border-dashed border-gray-600 my-6" />
+
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <img
+                        src={
+                          order.products[0]?.product_image
+                            ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
+                            : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+                        }
+                        className="w-24 h-24 object-cover rounded-lg  border-gray-200"
+                        alt="Product"
+                      />
+                      <div className="flex flex-col text-left flex-1">
+                        <p className="text-base  text-gray-800 font-semibold">
+                          {order.products[0]?.product_name}
+                        </p>
+                        <p className="text-sm  text-gray-500 mt-1">
+                          Phân loại hàng: Be,S (40-52kg)
+                        </p>
+                        <p className="text-sm  text-gray-500 mt-1">
+                          Số lượng: {order.products[0]?.quantity}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end justify-center">
+                        <p className="text-sm text-gray-500 line-through">
+                          Giá:{" "}
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(Math.ceil(order.products[0].price))}
+                        </p>
+                        <p className="text-lg text-red-600 font-semibold">
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(Math.ceil(order.products[0].price))}
+                        </p>
+                      </div>
+                    </div>
+
+                    <hr className="border-t border-dashed border-gray-600 my-6" />
+
+                    <div className="flex justify-end">
+                      <p className="text-sm text-gray-500 mt-1">
+                        Số tiền phải trả:{" "}
                       </p>
-                    </button>
+                      <p className="text-lg text-red-600 font-bold">
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(order.total_money)}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap justify-end gap-4">
+                      <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                        Hủy Đơn Hàng
+                      </button>
+                    </div>
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500">Không có đơn hàng nào.</p>
+                <p className="text-gray-500 text-center mt-6">
+                  Không có sản phẩm nào trong trạng thái "{activeFilter}".
+                </p>
               )}
             </div>
+
             {/* Modal hiển thị thông tin chi tiết đơn hàng */}
             {isModalOpen && selectedOrder && (
               <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center mt-20 z-50">
@@ -464,32 +491,6 @@ const Profile = (props: Props) => {
                   <h3 className="text-2xl font-semibold mb-6 text-gray-800 mt-10">
                     Chi tiết đơn hàng
                   </h3>
-                  <div className="relative after:absolute after:inset-x-0 after:top-1/2 after:block after:h-0.5 after:-translate-y-1/2 after:rounded-lg after:bg-gray-100">
-                    <ol className="relative z-10 flex justify-between text-sm font-medium text-gray-500">
-                      {steps.map((step, index) => (
-                        <li
-                          key={step.key}
-                          className={`flex items-center gap-2 bg-white p-2 ${
-                            selectedOrder.status === step.key
-                              ? "bg-blue-100"
-                              : ""
-                          }`}
-                        >
-                          <span
-                            className={`size-6 rounded-full text-center text-[10px]/6 font-bold ${
-                              selectedOrder.status === step.key
-                                ? "bg-blue-600 text-white"
-                                : "bg-gray-100"
-                            }`}
-                          >
-                            {index + 1}
-                          </span>
-                          <span className="hidden sm:block">{step.label}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-
                   <div className="mt-6 space-y-6">
                     <div className="flex space-x-8">
                       <div className="w-1/2">
