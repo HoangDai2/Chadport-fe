@@ -12,6 +12,8 @@ import { MdPayment } from "react-icons/md";
 import PaymentData from "../../Types/TOrder";
 import { checkoutPayment } from "./PaymentService";
 import { useNavigate } from "react-router-dom";
+import { validateForm, Errors } from "./ValidateFormCheckOut.tsx";
+
 const Checkout = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
@@ -44,14 +46,14 @@ const Checkout = () => {
     address: "",
   });
 
-  // check lỗi
-  const [errors, setErrors] = useState({
-    payment_method: "",
-    first_name: "",
-    last_name: "",
-    phone_number: "",
-    address: "",
+  // State for order details
+  const [orderDetails, setOrderDetails] = useState({
+    order_number: "",
+    order_id: 0,
   });
+
+  // check lỗi
+  const [errors, setErrors] = useState<Errors>({});
 
   // Hàm xử lý khi ấn nút "Thêm địa chỉ"
   const handleAddAddressClick = () => {
@@ -172,12 +174,14 @@ const Checkout = () => {
 
   // hàm xử lí chọn online và offline và lấy giá trị của radio
   const handleFormPayment = (option: "code" | "online") => {
-    setPayments({
+    const updatedPayments = {
       ...payments,
       payment_method: option === "code" ? "1" : "2", // "1" cho COD, "2" cho VNPAY
-    });
-    setFormPayment(option);
-    setErrors({ ...errors, payment_method: "" });
+    };
+
+    setPayments(updatedPayments); // Cập nhật state
+    setFormPayment(option); // Cập nhật form state nếu cần
+    console.log("Updated Payments:", updatedPayments); // Log giá trị chính xác
   };
 
   // Cập nhật dữ liệu vào form khi chọn địa chỉ
@@ -217,42 +221,116 @@ const Checkout = () => {
     }));
   };
 
-  const handleCheckout = async (event: any) => {
-    event.preventDefault();
+  const handleVNPayPayment = async () => {
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) return toast.error("Vui lòng đăng nhập");
 
-    // Kiểm tra phương thức thanh toán
-    if (!formpayment) {
-      toast.warning("Vui lòng chọn phương thức thanh toán!");
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        payment_method: "Vui lòng chọn phương thức thanh toán!",
-      }));
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const isExpired = payload.exp * 1000 < Date.now();
+        if (isExpired)
+          return toast.error("Phiên đã hết hạn, vui lòng đăng nhập lại.");
+      } catch (error) {
+        return toast.error("Token không hợp lệ, vui lòng đăng nhập lại.");
+      }
+
+      const totalAmount = Number(checked?.total_amount ?? 0);
+      if (isNaN(totalAmount) || totalAmount <= 0) {
+        return toast.error(
+          "Tổng tiền không hợp lệ. Vui lòng kiểm tra giỏ hàng."
+        );
+      }
+
+      const orderResponse = await apisphp.post(
+        "/user/payment",
+        {
+          shipping_address: user?.address || "",
+          billing_address: user?.address || "",
+          payment_method: "2",
+          phone: user?.phone_number || "",
+          email: user?.email || "",
+          total_money: totalAmount, // Đảm bảo giá trị không null
+          ...formData,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const orderData = orderResponse.data;
+      setOrderDetails({
+        order_number: orderData.order_number,
+        order_id: orderData.id,
+      });
+
+      const vnpayResponse = await apisphp.post(
+        "/user/create_paymentVnPay",
+        {
+          amount: totalAmount,
+          order_number: orderData.order_number,
+          order_id: orderData.id,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (vnpayResponse.data.url_payment) {
+        window.location.href = vnpayResponse.data.url_payment;
+      } else {
+        toast.error("Không thể tìm thấy URL thanh toán. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error("Lỗi trong quá trình thanh toán VNPay", error);
+      toast.error("Không thể thực hiện thanh toán. Vui lòng thử lại.");
+    }
+  };
+
+  const handleCODPayment = async () => {
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) return toast.error("Vui lòng đăng nhập");
+
+      const orderResponse = await apisphp.post(
+        "/user/payment",
+        {
+          shipping_address: user?.address || "",
+          billing_address: user?.address || "",
+          payment_method: "1",
+          phone: user?.phone_number || "",
+          email: user?.email || "",
+          total_money: checked?.total_amount || "",
+          ...formData,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      toast.success("Đơn hàng đã được đặt thành công!", {
+        onClose: () => navigate("/profile"),
+      });
+    } catch (error) {
+      console.error("Lỗi đặt hàng", error);
+      toast.error("Không thể đặt hàng. Vui lòng thửom lại.");
+    }
+  };
+
+  const handlePayment = () => {
+    if (!payments.payment_method) {
+      return toast.error("Vui lòng chọn phương thức thanh toán ");
+    }
+
+    if (!selectedAddress) {
+      return toast.error("Vui lòng chọn địa chỉ giao hàng");
+    }
+
+    if (!validateForm(formData, setErrors)) {
       return;
     }
 
-    // Kiểm tra các trường thông tin
-    const newErrors: any = {};
-    if (!formData.first_name) newErrors.first_name = "Vui lòng nhập tên!";
-    if (!formData.last_name) newErrors.last_name = "Vui lòng nhập họ!";
-    if (!formData.phone_number)
-      newErrors.phone_number = "Vui lòng nhập số điện thoại!";
-    if (!formData.address) newErrors.address = "Vui lòng nhập địa chỉ!";
-
-    setErrors(newErrors);
-
-    const paymentDatas = {
-      // payment_method: payments.payment_method,
-      payment_method: formpayment === "code" ? "1" : "2",
-      phone: formData.phone_number,
-      email: payments.email,
-      shipping_address: formData.address,
-      billing_address: payments.billing_address,
-    };
-    try {
-      await checkoutPayment(paymentDatas);
-      navigate("/profile");
-    } catch (error) {}
-    console.log("dữ liệu gửi đi thanh toán", paymentDatas);
+    formpayment === "online" ? handleVNPayPayment() : handleCODPayment();
   };
 
   // Kiểm tra dữ liệu và đảm bảo rằng nó đã được tải thành công
@@ -265,7 +343,7 @@ const Checkout = () => {
       <ToastContainer
         theme="light"
         position="top-right"
-        autoClose={1000}
+        autoClose={2000}
         hideProgressBar={false}
         closeOnClick={true}
         pauseOnHover={true}
@@ -642,6 +720,131 @@ const Checkout = () => {
                               } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
                               placeholder="John"
                               type="text"
+                              name="first_name"
+                              value={formData.first_name}
+                              onChange={handleInputChange}
+                            />
+
+                            {errors.first_name && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {errors.first_name}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Last Name */}
+                          <div className="input-group">
+                            <label
+                              htmlFor="lastName"
+                              className="text-sm font-semibold text-gray-700 mb-2 block"
+                            >
+                              Last Name
+                            </label>
+                            <input
+                              id="lastName"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                              placeholder="Smith"
+                              type="text"
+                              name="last_name"
+                              value={formData.last_name}
+                              onChange={handleInputChange}
+                            />
+                            {errors.last_name && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {errors.last_name}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Phone Number */}
+                        <div className="mb-6">
+                          <label
+                            htmlFor="nameOnCard"
+                            className="text-left text-sm font-semibold text-gray-700 mb-2 block"
+                          >
+                            Phone Number
+                          </label>
+                          <input
+                            id="nameOnCard"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="PhoneNumber"
+                            type="text"
+                            name="phone_number"
+                            value={formData.phone_number}
+                            onChange={handleInputChange}
+                          />
+                          {errors.phone_number && (
+                            <div className="text-red-500 text-left text-sm mt-1">
+                              {errors.phone_number}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Address */}
+                        <div className="mb-6">
+                          <label
+                            htmlFor="cardNumber"
+                            className="text-left  text-sm font-semibold text-gray-700 mb-2 block"
+                          >
+                            Address
+                          </label>
+                          <input
+                            id="cardNumber"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="Address"
+                            type="text"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleInputChange}
+                          />
+                          {errors.address && (
+                            <div className="text-red-500 text-left text-sm mt-1">
+                              {errors.address}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* code giảm giá  */}
+                        <div className="mb-6">
+                          <label
+                            htmlFor="cardNumber"
+                            className="text-left text-sm font-semibold text-gray-700 mb-2 block"
+                          >
+                            Have a promo code
+                          </label>
+                          <input
+                            id="cardNumber"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="Code"
+                            type="text"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* form thanh toán online */}
+                    {formpayment === "online" && (
+                      <div className="max-w-4xl mx-auto bg-white rounded-lg">
+                        {/* First Name and Last Name */}
+                        <div className=" mb-6 grid grid-cols-2 gap-6">
+                          {/* First Name */}
+                          <div className="input-group">
+                            <label
+                              htmlFor="firstName"
+                              className=" text-sm font-semibold text-gray-700 mb-2 block"
+                            >
+                              First Name
+                            </label>
+                            <input
+                              id="firstName"
+                              className={`w-full px-4 py-3 border ${
+                                errors.first_name
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
+                              placeholder="John"
+                              type="text"
                               name="firt_name"
                               value={formData.first_name}
                               onChange={handleInputChange}
@@ -744,14 +947,12 @@ const Checkout = () => {
                         </div>
                       </div>
                     )}
-                    {/* form thanh toán online */}
-                    {formpayment === "online" && <div>VNPAY</div>}
                   </div>
                 </div>
                 {/* nút thanh toán pay now */}
                 <div className="mt-[55px]">
                   <button
-                    onClick={handleCheckout}
+                    onClick={handlePayment}
                     className=" block w-full mx-auto bg-black hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-2 font-semibold"
                   >
                     <i className="mdi mdi-lock-outline mr-1"></i> PAY NOW

@@ -21,7 +21,8 @@ const ThongKe = () => {
       const response = await axios.get(
         "http://127.0.0.1:8000/api/showAllOrder"
       );
-      setOrders(response.data.data); // Cập nhật danh sách đơn hàng
+      setOrders(response.data.data);  // Cập nhật danh sách đơn hàng
+      // console.log(response.data)
     } catch (error) {
       console.error("Có lỗi khi lấy dữ liệu đơn hàng:", error);
     }
@@ -30,8 +31,9 @@ const ThongKe = () => {
   // Hàm tính doanh thu khi trạng thái đơn hàng là "đã hoàn thành"
   const calculateRevenue = () => {
     const completedOrders = orders.filter(
-      (order) => order.status === "đã hoàn thành"
+      (order) => order.status === "đã thanh toán"
     );
+    console.log(completedOrders)
     const totalRevenue = completedOrders.reduce(
       (total: number, order: any) => total + order.total_money,
       0

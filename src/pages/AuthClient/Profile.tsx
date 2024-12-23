@@ -138,7 +138,7 @@ const Profile = (props: Props) => {
   const [orders, setOrders] = useState<Order[]>([]); // Danh sách đơn hàng
   const [error, setError] = useState(null); // Trạng thái lỗi
   const [loading1, setLoading1] = useState(true); // Trạng thái loading
-  const [activeFilter, setFilter] = useState("Tất cả"); // Bộ lọc trạng thái
+  const [activeFilter, setFilter] = useState("chờ xử lí"); // Bộ lọc trạng thái
   const [isModalOpen, setIsModalOpen] = useState(false); // State để điều khiển hiển thị modal
   const [selectedOrder, setSelectedOrder] = useState(null); // State để lưu đơn hàng chọn
 
@@ -161,7 +161,7 @@ const Profile = (props: Props) => {
               Authorization: `Bearer ${token}`,
             },
             params: {
-              status: activeFilter === "Tất cả" ? "" : activeFilter,
+              status: activeFilter === "chờ xử lí" ? "" : activeFilter,
             },
           }
         );
@@ -485,6 +485,7 @@ const Profile = (props: Props) => {
                   // console.log(order),
                   <div
                     onClick={() => handleViewDetails(order)}
+
                     key={order.id}
                     className="bg-white rounded-lg px-4 py-2 border border-gray-300 hover:shadow-lg transition-shadow duration-200"
                   >
@@ -533,6 +534,55 @@ const Profile = (props: Props) => {
                             : "null"}
                         </p>
                       </div>
+                    key={order.order_id}
+                    className="bg-white rounded-lg p-6 border border-gray-300 hover:shadow-lg transition-shadow duration-200"
+                  >
+                    <div className="">
+                      <p className=" leading-[24px] text-right uppercase whitespace-nowrap  text-end text-black font-medium">
+                        {order.status}
+                      </p>
+                    </div>
+
+                    <hr className="border-t border-dashed border-gray-600 my-6" />
+
+
+
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <img
+                        src={
+                          order.products[0]?.product_image
+                            ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
+                            : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+                        }
+                        className="w-24 h-24 object-cover rounded-lg  border-gray-200"
+                        alt="Product"
+                      />
+                      <div className="flex flex-col text-left flex-1">
+                        <p className="text-base  text-gray-800 font-semibold">
+                          {order.products[0]?.product_name}
+                        </p>
+                        <p className="text-sm  text-gray-500 mt-1">
+                          Phân loại hàng: Be,S (40-52kg)
+                        </p>
+                        <p className="text-sm  text-gray-500 mt-1">
+                          Số lượng: {order.products[0]?.quantity}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end justify-center">
+                        <p className="text-sm text-gray-500 line-through">
+                          Giá:{" "}
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(Math.ceil(order.products[0].price))}
+                        </p>
+                        <p className="text-lg text-red-600 font-semibold">
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(Math.ceil(order.products[0].price))}
+                        </p>
+                      </div>
                     </div>
 
                     <hr className="border-t border-dashed border-gray-600 my-6" />
@@ -550,6 +600,7 @@ const Profile = (props: Props) => {
                     </div>
 
                     <div className="mt-4 flex flex-wrap justify-end gap-4">
+
                       <button
                         className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                         onClick={(e) => {
@@ -557,6 +608,9 @@ const Profile = (props: Props) => {
                           cancelOrder(order.id);
                         }}
                       >
+
+                      <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+
                         Hủy Đơn Hàng
                       </button>
                     </div>
@@ -577,6 +631,7 @@ const Profile = (props: Props) => {
                     Chi tiết đơn hàng
                   </h3>
                   <div className="mt-6 space-y-6">
+
                     <ol className="relative z-10 flex justify-between text-sm font-medium text-gray-500">
                       {steps.map((step, index) => (
                         <li
@@ -600,6 +655,7 @@ const Profile = (props: Props) => {
                         </li>
                       ))}
                     </ol>
+
                     <div className="flex space-x-8">
                       <div className="w-1/2">
                         <div>
