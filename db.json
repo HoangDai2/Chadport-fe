@@ -91,44 +91,5 @@
       "id": "32ae"
     }
   ],
-  "wishlist": [
-    {
-      "id": "67db",
-      "product": {
-        "id": 73,
-        "category_id": 6,
-        "brand_id": null,
-        "name": "Giày Thể Thao Nam Nike SB React Leo Skateboarding Shoes DX4361-302 Màu Xanh Lá",
-        "total_quatity": 99,
-        "description": "Giày Thể Thao Nam Nike SB React Leo Skateboarding Shoes DX4361-302 Màu Xanh Lá là mẫu giày mới ra mắt của thương hiệu Nike nổi tiếng tại Mỹ. Đôi giày với phong cách mới lạ, hiện đại và không kém phần mạnh mẽ",
-        "title": "Nike",
-        "status": "active",
-        "price": 2730000,
-        "price_sale": 2511600,
-        "image_product": "images/5qvEQ1cnpfC5A3hxp9QIVaj2u4UuvFCWE1njBupT.webp",
-        "image_description": "[\"images\\/s8IkSuKl8ABnD5lXG4AZpgh25o2BkgOQhZXE6yOv.webp\",\"images\\/1XBcIjmmB5RGLV13Cci05ymNLGYdJeVXWkjyOg2O.webp\",\"images\\/tGfMp9DceoT71MUpuaDAORvaA4f8l7VSIkyC3UNl.webp\",\"images\\/PyCaIF7j2ARp86Nr2B68H7tf5uy4JHdqWCqm41pP.webp\"]",
-        "created_at": "2024-11-29T16:47:59.000000Z",
-        "updated_at": "2024-11-29T16:47:59.000000Z"
-      }
-    },
-    {
-      "id": "d906",
-      "product": {
-        "id": 53,
-        "category_id": 2,
-        "brand_id": null,
-        "name": "test name",
-        "total_quatity": null,
-        "description": "Giày Thể Thao Adidas Galaxy 6 Black GW3848 Màu Đen được thiết kế hiện đại đến từ thương hiệu Adidas nổi tiếng. Với gam màu năng động và khỏe khoắn, đôi giày mang đến cho bạn vẻ ngoài cá tính và cuốn hút",
-        "title": "titile",
-        "status": "active",
-        "price": 999,
-        "price_sale": 10,
-        "image_product": "images/Tfh8vwe0Rj2eAlCUuWAg3Qd5t07IvgtgWzXOkZ8U.jpg",
-        "image_description": "[\"images\\/UerJBOnqoCjDHXXqHQoRhIxKmjcYmEFkLRMng12H.jpg\",\"images\\/4suNF8mcDV205wXe2mLovnepevB7nEL8nYzS5lio.jpg\"]",
-        "created_at": "2024-11-25T16:55:35.000000Z",
-        "updated_at": "2024-11-25T16:55:35.000000Z"
-      }
-    }
-  ]
+  "wishlist": []
 }
