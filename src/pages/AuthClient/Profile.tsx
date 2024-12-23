@@ -6,6 +6,8 @@ import { profileValidationSchema } from "./Validation";
 import { useFormik } from "formik";
 import AddressInput from "./apiMaps";
 import axios from "axios";
+import { PuffLoader } from "react-spinners";
+import { toast, ToastContainer } from "react-toastify";
 
 type Props = {};
 const genderMapping = {
@@ -127,13 +129,21 @@ const Profile = (props: Props) => {
       });
     }
   }, [user]);
+  interface Order {
+    id: number;
+    status: string;
+    [key: string]: any; // Nếu đơn hàng có nhiều trường khác, bạn có thể thay thế bằng kiểu cụ thể
+  }
   // trạng thái đơn hàng trong profile
-  const [orders, setOrders] = useState([]); // Danh sách đơn hàng
+  const [orders, setOrders] = useState<Order[]>([]); // Danh sách đơn hàng
   const [error, setError] = useState(null); // Trạng thái lỗi
   const [loading1, setLoading1] = useState(true); // Trạng thái loading
   const [activeFilter, setFilter] = useState("Tất cả"); // Bộ lọc trạng thái
   const [isModalOpen, setIsModalOpen] = useState(false); // State để điều khiển hiển thị modal
   const [selectedOrder, setSelectedOrder] = useState(null); // State để lưu đơn hàng chọn
+
+  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
+  const ordersPerPage = 4; // Số đơn hàng mỗi trang
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -145,7 +155,7 @@ const Profile = (props: Props) => {
         }
 
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/user-status",
+          "http://127.0.0.1:8000/api/profile/status",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -169,10 +179,15 @@ const Profile = (props: Props) => {
     // console.log(error);
 
     fetchOrders();
-  }, [activeFilter]);
+  }, []);
+  console.log(orders);
 
-  if (loading1) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading1)
+    return (
+      <div className="flex items-center justify-center ">
+        <PuffLoader color="#36d7b7" size={60} />
+      </div>
+    );
 
   // Lọc dữ liệu dựa trên trạng thái
   const filteredOrders =
@@ -181,7 +196,7 @@ const Profile = (props: Props) => {
       : orders.filter((order) => order.status === activeFilter);
 
   // Hàm mở modal và chọn đơn hàng
-  const handleViewDetails = (order) => {
+  const handleViewDetails = (order: any) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
@@ -199,10 +214,72 @@ const Profile = (props: Props) => {
     { key: "đã hoàn thành", label: "đã hoàn thành" },
     { key: "bị hủy", label: "bị hủy" },
   ];
+  // phân trang
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+  const startIndex = (currentPage - 1) * ordersPerPage;
+  const endIndex = startIndex + ordersPerPage;
+  const currentOrders = filteredOrders.slice(startIndex, endIndex);
+
+  // Hàm chuyển sang trang kế tiếp
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  // Hàm quay lại trang trước
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+  // huy don hang
+  const cancelOrder = async (orderId: number) => {
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        throw new Error("User is not authenticated!");
+      }
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/user/huydonhang",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ id: orderId }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success("Đã hủy đơn hàng thành công");
+        console.log(data);
+        // Cập nhật trạng thái đơn hàng trong danh sách
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.id === orderId ? { ...order, status: "bị hủy" } : order
+          )
+        );
+      } else {
+        const error = await response.json();
+        alert(error.message || "Không thể hủy đơn hàng.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi hủy đơn hàng:", error);
+      alert("Đã xảy ra lỗi khi kết nối đến server.");
+    }
+  };
 
   return (
     <>
       <div id="title" className="page-title py-6 mt-[120px]">
+        <ToastContainer
+          theme="light"
+          position="top-right"
+          autoClose={1000}
+          hideProgressBar={false}
+          closeOnClick={true}
+          pauseOnHover={true}
+          draggable={true}
+        />
         <div className="section-container max-w-7xl mx-auto px-6">
           <div className="content-title-heading mb-4">
             <h1 className="text-title-heading" style={{ fontSize: "50px" }}>
@@ -376,6 +453,7 @@ const Profile = (props: Props) => {
             </div>
           </form>
 
+          {/* thanh chọn trạng thái */}
           <div className="flex space-x-8 text-gray-500 text-sm font-medium mb-6">
             {[
               "Tất cả",
@@ -388,75 +466,109 @@ const Profile = (props: Props) => {
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`pb-1 ${
+                className={`relative pb-1 ${
                   activeFilter === status
-                    ? "text-white bg-gray-900 rounded-lg p-1"
-                    : "text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-gray-800"
+                    ? "text-gray-900 after:content-[''] after:block after:w-full after:h-[2px] after:bg-gray-800 after:absolute after:bottom-0 after:left-0 after:transition-all after:duration-300"
+                    : "text-gray-600 hover:text-gray-900 after:content-[''] after:block after:w-0 after:h-[2px] after:bg-gray-400 after:absolute after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
                 }`}
               >
                 {status}
               </button>
             ))}
-            <p>
-              ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
-            </p>
-            <h2 className="text-lg font-semibold text-gray-800">
-              Personal Information
-            </h2>
           </div>
 
           <div className="grid grid-cols-5 grid-rows-2 gap-4">
+            {/* show dữ liệu khi check out xong */}
             <div className="col-span-3 row-span-3 space-y-4">
-              {filteredOrders.length > 0 ? (
-                // console.log(filteredOrders),
+              {filteredOrders && filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
+                  // console.log(order),
                   <div
-                    key={order.order_id}
-                    className="bg-gray-50 rounded-lg p-4 flex items-center justify-between shadow-sm border border-gray-200"
+                    onClick={() => handleViewDetails(order)}
+                    key={order.id}
+                    className="bg-white rounded-lg px-4 py-2 border border-gray-300 hover:shadow-lg transition-shadow duration-200"
                   >
-                    <img
-                      src={
-                        order.products[0]?.product_image
-                          ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
-                          : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
-                      }
-                      className="w-16 h-16 object-cover rounded-lg shadow-md"
-                    />
-                    <div>
-                      <p className="text-gray-800 font-semibold">
-                        {order.products[0]?.product_name.length > 30
-                          ? `${order.products[0]?.product_name.substring(
-                              0,
-                              30
-                            )}...`
-                          : order.products[0]?.product_name}
+                    <hr className="border-t border-dashed border-gray-600 my-6" />
+
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <img
+                        src={
+                          order.products[0]?.product_image
+                            ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
+                            : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+                        }
+                        className="w-24 h-24 object-cover rounded-lg  border-gray-200"
+                        alt="Product"
+                      />
+                      <div className="flex flex-col text-left flex-1">
+                        <p className="text-base  text-gray-800 font-semibold">
+                          {order.products[0]?.product_name}
+                        </p>
+                        <p className="text-sm  text-gray-500 mt-1">
+                          Phân loại hàng: Be,S (40-52kg)
+                        </p>
+                        <p className="text-sm  text-gray-500 mt-1">
+                          Số lượng: {order.products[0]?.quantity}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end justify-center">
+                        <p className="uppercase whitespace-nowrap mb-5  text-end text-black font-medium">
+                          {order.status}
+                        </p>
+                        <p className="text-sm text-gray-500 line-through">
+                          Giá:{" "}
+                          {order.products && order.products[0]?.price
+                            ? new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(Math.ceil(order.products[0].price))
+                            : "null"}
+                        </p>
+                        <p className="text-lg text-red-600 font-semibold">
+                          {order.products && order.products[0]?.price
+                            ? new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(Math.ceil(order.products[0].price))
+                            : "null"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <hr className="border-t border-dashed border-gray-600 my-6" />
+
+                    <div className="flex justify-end">
+                      <p className="text-sm text-gray-500 mt-1">
+                        Số tiền phải trả:{" "}
+                      </p>
+                      <p className="text-lg text-red-600 font-bold">
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(order.total_money)}
                       </p>
                     </div>
-                    <p className="text-sm text-gray-400">
-                      Giá: {Math.ceil(order.products[0].price)} VND{" "}
-                      <p> SL: {order.products[0]?.quantity}</p>
-                    </p>
-                    <p className="text-sm text-green-500 font-medium">
-                      {order.status}
-                    </p>
-                    <button
-                      className="text-teal-600 font-medium"
-                      onClick={() => handleViewDetails(order)}
-                    >
-                      View Details
-                      <p>
-                        Tổng thanh toán{" "}
-                        <span className="text-rose-600">
-                          {order.total_money}
-                        </span>
-                      </p>
-                    </button>
+
+                    <div className="mt-4 flex flex-wrap justify-end gap-4">
+                      <button
+                        className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          cancelOrder(order.id);
+                        }}
+                      >
+                        Hủy Đơn Hàng
+                      </button>
+                    </div>
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500">Không có đơn hàng nào.</p>
+                <p className="text-gray-500 text-center mt-6">
+                  Không có sản phẩm nào trong trạng thái "{activeFilter}".
+                </p>
               )}
             </div>
+
             {/* Modal hiển thị thông tin chi tiết đơn hàng */}
             {isModalOpen && selectedOrder && (
               <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center mt-20 z-50">
@@ -464,7 +576,7 @@ const Profile = (props: Props) => {
                   <h3 className="text-2xl font-semibold mb-6 text-gray-800 mt-10">
                     Chi tiết đơn hàng
                   </h3>
-                  <div className="relative after:absolute after:inset-x-0 after:top-1/2 after:block after:h-0.5 after:-translate-y-1/2 after:rounded-lg after:bg-gray-100">
+                  <div className="mt-6 space-y-6">
                     <ol className="relative z-10 flex justify-between text-sm font-medium text-gray-500">
                       {steps.map((step, index) => (
                         <li
@@ -488,9 +600,6 @@ const Profile = (props: Props) => {
                         </li>
                       ))}
                     </ol>
-                  </div>
-
-                  <div className="mt-6 space-y-6">
                     <div className="flex space-x-8">
                       <div className="w-1/2">
                         <div>
@@ -520,7 +629,11 @@ const Profile = (props: Props) => {
                                     </span>{" "}
                                   </p>
                                   <p className="text-sm text-gray-500">
-                                    Giá: {Math.ceil(item.price)} VND{" "}
+                                    Giá:{" "}
+                                    {new Intl.NumberFormat("vi-VN", {
+                                      style: "currency",
+                                      currency: "VND",
+                                    }).format(item.price)}
                                   </p>
                                 </div>
                               </div>
@@ -553,7 +666,10 @@ const Profile = (props: Props) => {
                       <p className="text-lg font-semibold text-gray-800">
                         Tổng thanh toán:{" "}
                         <span className="text-green-500 font-semibold">
-                          {selectedOrder.total_money} VND
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(selectedOrder.total_money)}
                         </span>
                       </p>
                     </div>
@@ -714,6 +830,19 @@ const Profile = (props: Props) => {
                 </div>
               </div>
             </form>
+          </div>
+
+          <div>
+            <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+              Previous
+            </button>
+            <span>{`Page ${currentPage} of ${totalPages}`}</span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
