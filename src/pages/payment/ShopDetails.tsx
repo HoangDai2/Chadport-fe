@@ -7,12 +7,15 @@ import { addToCart } from "../../redux/cartSlice";
 import apisphp from "../../Service/api";
 import CommentSection from "../Comments/CommentSection";
 import TProduct from "../../Types/TProduct";
-
+import { BsBookmarkHeart } from "react-icons/bs";
+import { useLoading } from "../Loadings/LoadinfContext";
+import tablesize from "../../img/bang-size-giay-1024x571-1.jpg";
 const ShopDetails = ({
   addToWishlist,
 }: {
   addToWishlist: (product: TProduct) => void;
 }) => {
+  const { startLoading, stopLoading } = useLoading();
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
   const [product, setProduct] = useState<TProduct | null>(null);
@@ -20,22 +23,59 @@ const ShopDetails = ({
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [availableColors, setAvailableColors] = useState<
+    { id: string; name: string; hex: string }[]
+  >([]);
+  const [warehouse, setWarehouse] = useState<number>(0); // Số lượng tồn kho
   const [quantity, setQuantity] = useState(1);
-  const [availableColors, setAvailableColors] = useState<string[]>([]);
   const [showAlert, setShowAlert] = useState(false);
   const token = localStorage.getItem("jwt_token");
-  const navigate = useNavigate();
-
-  const handleSizeChange = (sizeId: string) => {
-    setSelectedSize(sizeId);
-    const colorsForSelectedSize = product?.variants
-      ?.filter((variant) => variant.size?.id === sizeId)
-      .map((variant) => variant.color?.name);
-    setAvailableColors(colorsForSelectedSize || []);
+  const [isOpen, setIsOpen] = useState(false); // State quản lý hiển thị modal
+  // Hàm mở và đóng modal
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
   };
 
+  const navigate = useNavigate();
+
+  // Danh sách tất cả màu từ DB
+  const allColors = [
+    { id: "1", name: "Đỏ nhạt", hex: "#FF6B6B" },
+    { id: "2", name: "Xanh nhạt", hex: "#6BCB77" },
+    { id: "3", name: "Cam nhạt", hex: "#FFA500" },
+    { id: "4", name: "Đen nhạt", hex: "#000000" },
+    { id: "5", name: "Vàng nhạt", hex: "#FFFF00" },
+    { id: "6", name: "Trắng", hex: "#FFFFFF" },
+  ];
+
+  // Cập nhật màu khi chọn size
+  const handleSizeChange = (sizeId: string) => {
+    setSelectedSize(sizeId);
+
+    // Lọc màu theo size đã chọn
+    const colorsForSelectedSize = product?.variants
+      ?.filter((variant) => variant.size?.id === sizeId)
+      .map((variant) => ({
+        id: variant.color?.id,
+        name: variant.color?.name,
+        hex: variant.color?.hex,
+      }));
+
+    setAvailableColors(colorsForSelectedSize || allColors); // Nếu không có màu thì hiển thị tất cả
+    setSelectedColor(null); // Reset màu khi đổi size
+    setWarehouse(0); // Reset số lượng khi đổi Size
+  };
+
+  // Cập nhật màu được chọn
   const handleColorChange = (colorId: string) => {
     setSelectedColor(colorId);
+
+    // Lọc số lượng dựa trên Size và Màu đã chọn
+    const selectedVariant = product.variants.find(
+      (variant) =>
+        variant.size?.id === selectedSize && variant.color?.id === colorId
+    );
+    setWarehouse(selectedVariant ? selectedVariant.quantity : 0); // Cập nhật số lượng tồn kho
   };
 
   const handleIncrement = () => setQuantity((prev) => prev + 1);
@@ -166,6 +206,7 @@ const ShopDetails = ({
 
   useEffect(() => {
     const fetchProductDetails = async () => {
+      startLoading();
       try {
         const res = await apisphp.get(`/showdetail/products/${id}`);
         const fetchedProduct = res.data;
@@ -181,8 +222,11 @@ const ShopDetails = ({
         }
         setProduct({ ...fetchedProduct, image_description: images });
         setMainImage(fetchedProduct.image_product);
+        console.log("123", res);
       } catch (error) {
         console.error("Error fetching product details", error);
+      } finally {
+        stopLoading();
       }
     };
     if (id) {
@@ -404,12 +448,68 @@ const ShopDetails = ({
                           <div className="description text-left">
                             <p>{product.description}</p>
                           </div>
-                          {/* Size selection */}
-                          <div className="mb-3">
+                          <div className="mb-3 ">
+                            <div className="flex items-baseline justify-between">
+                              {/* Hiển thị số lượng sản phẩm */}
+                              <div className="flex  text-sm font-medium text-gray-700">
+                                <label className="mr-2">Kho Hàng:</label>
+                                {selectedSize && selectedColor ? (
+                                  <span
+                                    className={`text-sm font-semibold ${
+                                      warehouse > 0
+                                        ? "text-green-600"
+                                        : "text-red-600"
+                                    }`}
+                                  >
+                                    {warehouse > 0 ? "Còn hàng" : "Hết hàng"}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-400"></span>
+                                )}
+                              </div>
+
+                              {/* bảng hướng dẫn chọn size */}
+                              <div>
+                                {/* Nút bấm */}
+                                <button
+                                  onClick={toggleModal}
+                                  className="relative text-black text-base font-medium cursor-pointer p-1 
+                                            after:content-[''] after:block after:w-full after:h-[2px] after:bg-black 
+                                            after:absolute after:bottom-[-2px] after:scale-x-100 after:transition-transform"
+                                >
+                                  Hướng dẫn chọn size
+                                </button>
+
+                                {/* Modal */}
+                                {isOpen && (
+                                  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                                    <div className="relative bg-white p-4 rounded-lg shadow-lg w-[50rem] w-full top-[55px]">
+                                      {/* Nút đóng */}
+                                      <button
+                                        onClick={toggleModal}
+                                        className="absolute top-2 right-2 text-gray-500 hover:text-black"
+                                      >
+                                        ✕
+                                      </button>
+
+                                      {/* Hình ảnh bảng size */}
+                                      <img
+                                        src={tablesize}
+                                        alt="Size Guide"
+                                        className="w-full h-auto rounded-md"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          {/* // Size selection */}
+                          <div className="mb-3 ">
                             <label className="block text-sm text-left font-medium text-gray-700">
                               Size:
                             </label>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 ">
                               {[
                                 ...new Map(
                                   product.variants
@@ -421,15 +521,15 @@ const ShopDetails = ({
                                 ).values(),
                               ].map((variant) => (
                                 <button
-                                  key={variant.size?.name} // Dùng size.name làm key
+                                  key={variant.size?.name}
                                   className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
-                                                  ${
-                                                    selectedSize ===
-                                                    variant.size?.id
-                                                      ? "bg-black text-white "
-                                                      : "bg-white text-gray-700 border-gray-300"
-                                                  }
-                                                  hover:bg-primary hover:text-black`}
+                                              ${
+                                                selectedSize ===
+                                                variant.size?.id
+                                                  ? "bg-black text-white"
+                                                  : "bg-white text-gray-700 border-gray-300"
+                                              }
+                                              hover:bg-primary hover:text-black`}
                                   onClick={() =>
                                     handleSizeChange(variant.size?.id || "")
                                   }
@@ -439,53 +539,41 @@ const ShopDetails = ({
                               ))}
                             </div>
                           </div>
-                          {/* Color selection */}
+                          {/*  // Color selection */}
                           <div className="mb-3">
                             <label className="block text-sm text-left font-medium text-gray-700">
                               Color:
                             </label>
                             <div className="flex gap-2">
-                              {[
-                                ...new Map(
-                                  product.variants
-                                    ?.filter(
-                                      (variant) =>
-                                        variant.size?.id === selectedSize &&
-                                        variant.color?.name
-                                    )
-                                    .map((variant) => [
-                                      variant.color?.name,
-                                      variant,
-                                    ])
-                                ).values(),
-                              ].map((variant) => (
-                                <button
-                                  key={variant.color?.name} // Dùng color.name làm key
-                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
-                                            ${
-                                              selectedColor ===
-                                              variant.color?.id
-                                                ? "border-black text-white"
-                                                : `bg-[${variant.color?.hex}] text-white border-gray-300`
-                                            }
-                                            hover:bg-primary hover:text-black`}
-                                  style={{
-                                    backgroundColor:
-                                      selectedColor === variant.color?.hex
-                                        ? "black"
-                                        : variant.color?.hex,
-                                  }}
-                                  onClick={() =>
-                                    handleColorChange(variant.color?.id || "")
-                                  }
-                                >
-                                  {}
-                                </button>
-                              ))}
+                              {(selectedSize ? availableColors : allColors).map(
+                                (color) => (
+                                  <button
+                                    key={color.id}
+                                    className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 
+                                              ${
+                                                selectedColor === color.id
+                                                  ? "border-black scale-110" // Nổi bật và to hơn khi được chọn
+                                                  : "border-gray-300"
+                                              }`}
+                                    style={{
+                                      backgroundColor: color.hex, // Màu nền từ hex
+                                      color:
+                                        color.hex === "#FFFFFF"
+                                          ? "black"
+                                          : "white", // Đổi chữ nổi bật nếu nền trắng
+                                    }}
+                                    onClick={() =>
+                                      handleColorChange(color.id || "")
+                                    }
+                                  >
+                                    {}
+                                  </button>
+                                )
+                              )}
                             </div>
                           </div>
 
-                          <div className="buttons">
+                          <div className="buttons ">
                             <div className="add-to-cart-wrap">
                               {/* số lượng tăng giảm */}
                               <div className="quantity">
@@ -531,7 +619,19 @@ const ShopDetails = ({
                                   Add to cart
                                 </button>
                               </div>
+
+                              {/* add to wishlist */}
+                              <div className="ml-2">
+                                <button
+                                  className="btn-add-to-wishlist"
+                                  onClick={() => addToWishlist(product)}
+                                >
+                                  <BsBookmarkHeart className="text-lg" />
+                                </button>
+                              </div>
                             </div>
+
+                            {/* buy it now */}
                             <div
                               className="btn-quick-buy"
                               data-title="Buy it now"
@@ -543,19 +643,7 @@ const ShopDetails = ({
                                 Buy It Now
                               </button>
                             </div>
-                            <div className="btn-wishlist btn" data-title="">
-                              <button
-                                className="product-btn"
-                                onClick={() => addToWishlist(product)}
-                              >
-                                Add to wishlist
-                              </button>
-                            </div>
-                            <div className="btn-compare" data-title="Compare">
-                              <button className="product-btn">Compare</button>
-                            </div>
                           </div>
-
                           <div className="product-meta">
                             <span className="sku-wrapper">
                               SKU: <span className="sku">D2300-3-2-2</span>

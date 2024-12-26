@@ -8,7 +8,7 @@ import AddressInput from "./apiMaps";
 import axios from "axios";
 import { PuffLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
-
+import { useLoading } from "../Loadings/LoadinfContext";
 type Props = {};
 const genderMapping = {
   male: 1,
@@ -22,6 +22,7 @@ const reverseGenderMapping = {
 };
 const Profile = (props: Props) => {
   // data bên user context
+  const { startLoading, stopLoading } = useLoading();
   const { user, setUser, token } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -137,7 +138,6 @@ const Profile = (props: Props) => {
   // trạng thái đơn hàng trong profile
   const [orders, setOrders] = useState<Order[]>([]); // Danh sách đơn hàng
   const [error, setError] = useState(null); // Trạng thái lỗi
-  const [loading1, setLoading1] = useState(true); // Trạng thái loading
   const [activeFilter, setFilter] = useState("Tất cả"); // Bộ lọc trạng thái
   const [isModalOpen, setIsModalOpen] = useState(false); // State để điều khiển hiển thị modal
   const [selectedOrder, setSelectedOrder] = useState(null); // State để lưu đơn hàng chọn
@@ -145,17 +145,18 @@ const Profile = (props: Props) => {
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
   const ordersPerPage = 4; // Số đơn hàng mỗi trang
 
+  // call dữ liệu theo trạng thái
   useEffect(() => {
     const fetchOrders = async () => {
+      startLoading();
       try {
-        setLoading1(true);
         const token = localStorage.getItem("jwt_token");
         if (!token) {
           throw new Error("User is not authenticated!");
         }
 
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/profile/status",
+          "http://127.0.0.1:8000/api/user-status",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -173,27 +174,21 @@ const Profile = (props: Props) => {
             "Bạn cần đăng nhập để xem chi tiết đơn hàng!"
         );
       } finally {
-        setLoading1(false);
+        stopLoading();
       }
     };
     // console.log(error);
 
     fetchOrders();
   }, []);
-  console.log(orders);
-
-  if (loading1)
-    return (
-      <div className="flex items-center justify-center ">
-        <PuffLoader color="#36d7b7" size={60} />
-      </div>
-    );
+  console.log("oder", orders);
 
   // Lọc dữ liệu dựa trên trạng thái
   const filteredOrders =
     activeFilter === "Tất cả"
       ? orders
       : orders.filter((order) => order.status === activeFilter);
+  console.log("123", filteredOrders);
 
   // Hàm mở modal và chọn đơn hàng
   const handleViewDetails = (order: any) => {
@@ -481,87 +476,105 @@ const Profile = (props: Props) => {
             {/* show dữ liệu khi check out xong */}
             <div className="col-span-3 row-span-3 space-y-4">
               {filteredOrders && filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => (
-                  // console.log(order),
-                  <div
-                    onClick={() => handleViewDetails(order)}
-                    key={order.id}
-                    className="bg-white rounded-lg px-4 py-2 border border-gray-300 hover:shadow-lg transition-shadow duration-200"
-                  >
-                    <hr className="border-t border-dashed border-gray-600 my-6" />
-
-                    <div className="flex flex-col md:flex-row gap-6">
-                      <img
-                        src={
-                          order.products[0]?.product_image
-                            ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
-                            : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
-                        }
-                        className="w-24 h-24 object-cover rounded-lg  border-gray-200"
-                        alt="Product"
-                      />
-                      <div className="flex flex-col text-left flex-1">
-                        <p className="text-base  text-gray-800 font-semibold">
-                          {order.products[0]?.product_name}
-                        </p>
-                        <p className="text-sm  text-gray-500 mt-1">
-                          Phân loại hàng: Be,S (40-52kg)
-                        </p>
-                        <p className="text-sm  text-gray-500 mt-1">
-                          Số lượng: {order.products[0]?.quantity}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end justify-center">
-                        <p className="uppercase whitespace-nowrap mb-5  text-end text-black font-medium">
-                          {order.status}
-                        </p>
-                        <p className="text-sm text-gray-500 line-through">
-                          Giá:{" "}
-                          {order.products && order.products[0]?.price
-                            ? new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(Math.ceil(order.products[0].price))
-                            : "null"}
-                        </p>
-                        <p className="text-lg text-red-600 font-semibold">
-                          {order.products && order.products[0]?.price
-                            ? new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(Math.ceil(order.products[0].price))
-                            : "null"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <hr className="border-t border-dashed border-gray-600 my-6" />
-
-                    <div className="flex justify-end">
-                      <p className="text-sm text-gray-500 mt-1">
-                        Số tiền phải trả:{" "}
-                      </p>
-                      <p className="text-lg text-red-600 font-bold">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(order.total_money)}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap justify-end gap-4">
-                      <button
-                        className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          cancelOrder(order.id);
-                        }}
+                filteredOrders.map(
+                  (order) => (
+                    console.log(order),
+                    (
+                      <div
+                        onClick={() => handleViewDetails(order)}
+                        key={order.id}
+                        className="bg-white rounded-lg px-4 py-2 border border-gray-300 hover:shadow-lg transition-shadow duration-200"
                       >
-                        Hủy Đơn Hàng
-                      </button>
-                    </div>
-                  </div>
-                ))
+                        <hr className="border-t border-dashed border-gray-600 my-6" />
+
+                        <div className="flex flex-col md:flex-row gap-6">
+                          <img
+                            src={
+                              order.products[0]?.product_image
+                                ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
+                                : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+                            }
+                            className="w-24 h-24 object-cover rounded-lg  border-gray-200"
+                            alt="Product"
+                          />
+                          <div className="flex flex-col text-left flex-1">
+                            <p className="text-base  text-gray-800 font-semibold">
+                              {order.products[0]?.product_name}
+                            </p>
+
+                            <p className="text-sm text-gray-700 mt-1 flex items-center space-x-3">
+                              {/* Hiển thị màu sắc */}
+                              <span
+                                className="inline-block w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm"
+                                style={{
+                                  backgroundColor:
+                                    order.products[0]?.color_hex || "#E5E7EB", // Mặc định màu xám nhạt nếu không có dữ liệu
+                                }}
+                              ></span>
+                              {/* Hiển thị size và màu */}
+                              <span className="font-medium text-gray-800">
+                                Size: {order.products[0]?.size_name} -{" "}
+                                {order.products[0]?.color_name}
+                              </span>
+                            </p>
+
+                            <p className="text-sm text-gray-700 mt-1 flex items-center space-x-3">
+                              Số lượng: {order.products[0]?.quantity}
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end justify-center">
+                            <p className="uppercase whitespace-nowrap mb-5  text-end text-black font-medium">
+                              {order.status}
+                            </p>
+                            <p className="text-sm text-gray-500 line-through">
+                              Giá:{" "}
+                              {order.products && order.products[0]?.price
+                                ? new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }).format(Math.ceil(order.products[0].price))
+                                : "null"}
+                            </p>
+                            <p className="text-lg text-red-600 font-semibold">
+                              {order.products && order.products[0]?.price
+                                ? new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }).format(Math.ceil(order.products[0].price))
+                                : "null"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <hr className="border-t border-dashed border-gray-600 my-6" />
+
+                        <div className="flex justify-end">
+                          <p className="text-sm text-gray-500 mt-1">
+                            Số tiền phải trả:{" "}
+                          </p>
+                          <p className="text-lg text-red-600 font-bold">
+                            {new Intl.NumberFormat("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            }).format(order.total_money)}
+                          </p>
+                        </div>
+
+                        <div className="mt-4 flex flex-wrap justify-end gap-4">
+                          <button
+                            className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              cancelOrder(order.id);
+                            }}
+                          >
+                            Hủy Đơn Hàng
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  )
+                )
               ) : (
                 <p className="text-gray-500 text-center mt-6">
                   Không có sản phẩm nào trong trạng thái "{activeFilter}".
