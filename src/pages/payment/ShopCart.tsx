@@ -4,8 +4,10 @@ import CartData from "../../Types/TCart";
 import { FaTimes } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useLoading } from "../Loadings/LoadinfContext";
 const ShopCart = () => {
   const navigate = useNavigate();
+  const { startLoading, stopLoading } = useLoading();
   const [cartData, setCartData] = useState<CartData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // State lưu các item được chọn
@@ -15,12 +17,12 @@ const ShopCart = () => {
   // call data cart của user
   useEffect(() => {
     const fetchCartData = async () => {
+      startLoading();
       try {
         const token = localStorage.getItem("jwt_token");
         console.log("Token:", token);
         if (!token) {
           console.log("Token not found");
-          setLoading(false); // Set loading false khi không tìm thấy token
           return;
         }
 
@@ -34,10 +36,10 @@ const ShopCart = () => {
         console.log(response);
 
         setCartData(response.data); // Lưu dữ liệu vào state cartData
-        setLoading(false); // Dừng trạng thái loading sau khi lấy dữ liệu
       } catch (error) {
         console.error("Error fetching cart data:", error);
-        setLoading(false); // Dừng trạng thái loading khi có lỗi
+      } finally {
+        stopLoading();
       }
     };
 

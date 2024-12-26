@@ -244,17 +244,6 @@ const HeaderClientC = ({
 
   return (
     <>
-      {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-70 z-50">
-          <div className="flex flex-col items-center animate-pulse">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-black-400 mb-4"></div>
-            <p className="text-white text-lg font-semibold">
-              Đang tải kết quả...
-            </p>
-          </div>
-        </div>
-      )}
-
       <div
         className="header-desktop p-4 border-b"
         style={{
