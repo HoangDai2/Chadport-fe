@@ -13,7 +13,7 @@ import PaymentData from "../../Types/TOrder";
 import { checkoutPayment } from "./PaymentService";
 import { useNavigate } from "react-router-dom";
 import { validateForm, Errors } from "./ValidateFormCheckOut.tsx";
-
+import { useLoading } from "../Loadings/LoadinfContext.tsx";
 const Checkout = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
@@ -25,7 +25,10 @@ const Checkout = () => {
     shipping_address: "",
   });
 
+  const { startLoading, stopLoading } = useLoading();
+
   const [checked, setCheckes] = useState<CartData | null>(null);
+
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   // state này check xem khi nào người dùng thêm địa chỉ mới thì mới hiên dữ liệu
@@ -104,6 +107,7 @@ const Checkout = () => {
   // call dữ liệu được chọn từ bên giỏ hàng
   useEffect(() => {
     const fetchdataChecked = async () => {
+      startLoading();
       try {
         const token = localStorage.getItem("jwt_token");
         // console.log("Token:", token);
@@ -124,7 +128,10 @@ const Checkout = () => {
         // console.log("data checked", dataChecked.data);
 
         return dataChecked.data;
-      } catch (error) {}
+      } catch (error) {
+      } finally {
+        stopLoading();
+      }
     };
     fetchdataChecked();
   }, []);
@@ -406,14 +413,14 @@ const Checkout = () => {
                         &#8203;
                         <input
                           type="checkbox"
-                          className="size-4 rounded border-gray-300"
+                          className="size-4 rounded border-gray-300 hidden"
                           id="Option1"
                           checked={selectedAddress === "default"}
                           onChange={() => handleAddressChange("default")}
                         />
                       </div>
 
-                      <div className="w-[170px] text-lg font-bold text-left flex items-center space-x-2">
+                      <div className="w-[172px] text-lg font-bold text-left flex items-center space-x-2">
                         <MdLocationOn className="text-xl text-blue-500" />
                         <span className="text-gray-800">Địa chỉ nhận hàng</span>
                       </div>
@@ -467,14 +474,14 @@ const Checkout = () => {
                           &#8203;
                           <input
                             type="checkbox"
-                            className="size-4 rounded border-gray-300"
+                            className="size-4 rounded border-gray-300 hidden"
                             id="Option2"
                             checked={selectedAddress === "new"}
                             onChange={() => handleAddressChange("new")}
                           />
                         </div>
 
-                        <div className="w-[170px] text-lg font-bold text-left flex items-center space-x-2">
+                        <div className="w-[172px] text-lg font-bold text-left flex items-center space-x-2">
                           <MdLocationOn className="text-xl text-blue-500" />
                           <span className="text-gray-800">
                             Địa chỉ nhận hàng
@@ -588,31 +595,58 @@ const Checkout = () => {
                   <span className="font-bold text-2xl">Total Money</span>
                 </div>
                 <div className="mt-[20px] mb-6 pb-6 border-b border-gray-200 text-gray-800 text-left">
+                  {/* giá gốc */}
                   <div className="w-full flex mb-3 items-center">
                     <div className="flex-grow">
                       <span className="text-gray-600">Giá Gốc</span>
                     </div>
                     <div className="pl-3">
-                      <span className="font-semibold"></span>
+                      <span className="font-semibold text-gray-400 line-through">
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(
+                          // Kiểm tra dữ liệu trước khi truy cập thuộc tính
+                          checked?.cart_items?.[0]?.product_price
+                            ? Number(checked.cart_items[0].product_price)
+                            : 0
+                        )}
+                      </span>
                     </div>
                   </div>
+
+                  {/* giá giảm */}
                   <div className="w-full flex items-center">
                     <div className="flex-grow">
-                      <span className="text-gray-600">Taxes (GST)</span>
+                      <span className="text-gray-600">Giá Được Giảm</span>
                     </div>
                     <div className="pl-3">
-                      <span className="font-semibold">$19.09</span>
+                      <span className="font-semibold text-black">
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(
+                          // Kiểm tra dữ liệu trước khi truy cập thuộc tính
+                          checked?.cart_items?.[0]?.product_price
+                            ? Number(checked.cart_items[0].product_sale_price)
+                            : 0
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
+
                 {/* tổng tiền sản phẩm  */}
                 <div className="mb-6 pb-6 border-b border-gray-200 md:border-none text-gray-800 text-xl text-left">
                   <div className="w-full flex items-center">
                     <div className="flex-grow">
-                      <span className="text-gray-600">Total</span>
+                      <span className="text-gray-600">Tổng Tiền</span>
                     </div>
                     <div className="pl-3">
-                      <span className="font-semibold" style={{ color: "red" }}>
+                      <span
+                        className="font-semibold"
+                        style={{ color: "black" }}
+                      >
                         {new Intl.NumberFormat("vi-VN", {
                           style: "currency",
                           currency: "VND",

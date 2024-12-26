@@ -3,32 +3,45 @@ import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import TProduct from "../Types/TProduct";
 import { toast, ToastContainer } from "react-toastify";
 import apisphp from "../Service/api";
+import { useLoading } from "./Loadings/LoadinfContext";
 // import { addToCart } from "../Types/cartUtils";
 // import { useDispatch } from 'react-redux';
 // const dispatch = useDispatch();
 // const handleAddToCart = (product: TProduct) => {
 //   addToCart(product, dispatch);
 // };
+import NProgress from "nprogress"; // Import NProgress
+import "nprogress/nprogress.css"; // Import CSS NProgress
 const Home = ({
   addToWishlist,
 }: {
   addToWishlist: (product: TProduct) => void;
 }) => {
+  const { startLoading, stopLoading } = useLoading();
   const [products, setProducts] = useState<TProduct[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); // Thêm trạng thái loading
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProducts = async () => {
+      startLoading();
       try {
+        setLoading(true); // Bắt đầu loading
+        NProgress.start(); // Hiển thị thanh loading trên đầu trang
+
         const response = await apisphp.get("list/products");
         setProducts(response.data.data);
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Error fetching products");
+      } finally {
+        stopLoading();
       }
     };
 
     fetchProducts();
   }, []);
+
   const settings = {
     dots: false,
     infinite: true,
@@ -58,6 +71,7 @@ const Home = ({
       },
     ],
   };
+
   return (
     <section className="section section-padding">
       <ToastContainer

@@ -91,5 +91,194 @@
       "id": "32ae"
     }
   ],
-  "wishlist": []
+  "wishlist": [
+    {
+      "id": "53a4",
+      "product": {
+        "id": 67,
+        "category_id": 7,
+        "brand_id": null,
+        "name": "Giày Thể Thao Nam Adidas NMD R1 Cloud White GZ7925 Màu Trắng Size 43",
+        "total_quatity": 8,
+        "description": "Giày Thể Thao Nam Adidas NMD R1 Cloud White GZ7925 Màu Trắng là đôi giày thời trang đến từ thương hiệu Adidas . Giày Adidas GZ7925 với thiết kế mang nét thể thao năng động, đẹp mắt cùng chất liệu cao cấp",
+        "title": "Giày Thể Thao Nam Adidas NMD R1 Cloud White GZ7925 Màu Trắng Size 43",
+        "status": "active",
+        "price": 2190000,
+        "price_sale": 1905300,
+        "image_product": "images/60pHitIim6KP1sFLnB1VVguEc5NRziHe2aWvJrEx.webp",
+        "image_description": [
+          "images/Idy2yVRMcKqUAur990OUEQiycXKuT3j1r9Zkg3no.webp",
+          "images/jVljyctsQWCBaqpGQMPnrfvESpXrMKoEL8G8wT7q.webp",
+          "images/hQiBl4Nc0SBSYdZIo6v4Ul2ymZzgkGhyNgnohJ9V.webp",
+          "images/qRCRicfPo5nFtW5XfH7503avVWtdDWASqKKUhYVN.webp"
+        ],
+        "created_at": "2024-11-28T04:35:49.000000Z",
+        "updated_at": "2024-11-28T04:35:49.000000Z",
+        "variants": [
+          {
+            "id": 113,
+            "product_id": 67,
+            "color_id": 1,
+            "size_id": 1,
+            "description": null,
+            "quantity": 2,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-28T04:35:49.000000Z",
+            "updated_at": "2024-12-24T06:40:51.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 1,
+              "name": "35",
+              "created_at": "2024-11-23T01:35:00.000000Z",
+              "updated_at": "2024-11-23T01:35:00.000000Z"
+            },
+            "color": {
+              "id": 1,
+              "name": "đỏ",
+              "image": "",
+              "created_at": null,
+              "updated_at": null,
+              "hex": "#FF6B6B"
+            }
+          },
+          {
+            "id": 115,
+            "product_id": 67,
+            "color_id": 1,
+            "size_id": 3,
+            "description": null,
+            "quantity": 184,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-28T04:35:49.000000Z",
+            "updated_at": "2024-12-13T20:55:42.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 3,
+              "name": "37",
+              "created_at": "2024-11-23T01:34:08.000000Z",
+              "updated_at": "2024-11-23T01:34:08.000000Z"
+            },
+            "color": {
+              "id": 1,
+              "name": "đỏ",
+              "image": "",
+              "created_at": null,
+              "updated_at": null,
+              "hex": "#FF6B6B"
+            }
+          },
+          {
+            "id": 116,
+            "product_id": 67,
+            "color_id": 1,
+            "size_id": 4,
+            "description": null,
+            "quantity": 6,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-28T04:35:49.000000Z",
+            "updated_at": "2024-12-13T21:00:55.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 4,
+              "name": "38",
+              "created_at": "2024-11-23T01:34:08.000000Z",
+              "updated_at": "2024-11-23T01:34:08.000000Z"
+            },
+            "color": {
+              "id": 1,
+              "name": "đỏ",
+              "image": "",
+              "created_at": null,
+              "updated_at": null,
+              "hex": "#FF6B6B"
+            }
+          },
+          {
+            "id": 117,
+            "product_id": 67,
+            "color_id": 2,
+            "size_id": 1,
+            "description": null,
+            "quantity": 17,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-28T04:35:49.000000Z",
+            "updated_at": "2024-12-23T16:51:42.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 1,
+              "name": "35",
+              "created_at": "2024-11-23T01:35:00.000000Z",
+              "updated_at": "2024-11-23T01:35:00.000000Z"
+            },
+            "color": {
+              "id": 2,
+              "name": "xanh",
+              "image": "",
+              "created_at": null,
+              "updated_at": null,
+              "hex": "#6BCB77"
+            }
+          },
+          {
+            "id": 118,
+            "product_id": 67,
+            "color_id": 3,
+            "size_id": 1,
+            "description": null,
+            "quantity": 0,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-28T04:35:49.000000Z",
+            "updated_at": "2024-12-14T16:52:31.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 1,
+              "name": "35",
+              "created_at": "2024-11-23T01:35:00.000000Z",
+              "updated_at": "2024-11-23T01:35:00.000000Z"
+            },
+            "color": {
+              "id": 3,
+              "name": "Cam",
+              "image": "https://picsum.photos/",
+              "created_at": "2024-11-23T01:31:54.000000Z",
+              "updated_at": "2024-11-23T01:31:54.000000Z",
+              "hex": "#FFA500"
+            }
+          },
+          {
+            "id": 119,
+            "product_id": 67,
+            "color_id": 4,
+            "size_id": 1,
+            "description": null,
+            "quantity": 1,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-28T04:35:49.000000Z",
+            "updated_at": "2024-11-28T04:35:49.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 1,
+              "name": "35",
+              "created_at": "2024-11-23T01:35:00.000000Z",
+              "updated_at": "2024-11-23T01:35:00.000000Z"
+            },
+            "color": {
+              "id": 4,
+              "name": "Đen",
+              "image": "https://picsum.photos/",
+              "created_at": "2024-11-23T01:31:54.000000Z",
+              "updated_at": "2024-11-23T01:31:54.000000Z",
+              "hex": "#000000"
+            }
+          }
+        ]
+      }
+    }
+  ]
 }
