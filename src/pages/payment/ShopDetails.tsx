@@ -1,14 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import TProduct from "../Types/TProduct";
-import instance from "../Service";
 import { toast, ToastContainer } from "react-toastify";
-import apisphp from "../Service/api";
-import CommentSection from "./Comments/CommentSection";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/cartSlice";
 import "react-toastify/dist/ReactToastify.css";
-import ProductReviewForm from "./ProductReviewForm";
+import { addToCart } from "../../redux/cartSlice";
+import apisphp from "../../Service/api";
+import CommentSection from "../Comments/CommentSection";
+import TProduct from "../../Types/TProduct";
+
 
 const ShopDetails = ({
   addToWishlist,
@@ -22,25 +21,20 @@ const ShopDetails = ({
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  // State để quản lý số lượng sản phẩm
   const [quantity, setQuantity] = useState(1);
-  const [availableColors, setAvailableColors] = useState<string[]>([]); // State để quản lý màu sắc tương ứng với size đã chọn
-
+  const [availableColors, setAvailableColors] = useState<string[]>([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const token = localStorage.getItem("jwt_token");
   const navigate = useNavigate();
 
-  // Hàm xử lý khi thay đổi size
   const handleSizeChange = (sizeId: string) => {
     setSelectedSize(sizeId);
-
-    // Lọc các màu có sẵn cho size đã chọn
     const colorsForSelectedSize = product?.variants
       ?.filter((variant) => variant.size?.id === sizeId)
       .map((variant) => variant.color?.name);
-
-    setAvailableColors(colorsForSelectedSize || []); // Cập nhật danh sách màu sắc tương ứng
+    setAvailableColors(colorsForSelectedSize || []);
   };
 
-  // Hàm xử lý khi thay đổi màu
   const handleColorChange = (colorId: string) => {
     setSelectedColor(colorId);
   };
@@ -53,6 +47,11 @@ const ShopDetails = ({
   const handleAddToCart = (event: any) => {
     event.preventDefault();
 
+    if (!token) {
+      setShowAlert(true);
+      return;
+    }
+
     if (!selectedSize || !selectedColor) {
       toast.error("Bắt buộc phải chọn size và color", {
         position: "top-right",
@@ -60,41 +59,110 @@ const ShopDetails = ({
       });
       return;
     }
-
     if (!product?.id) {
       console.error("Product ID is missing");
       return;
     }
-
-    // Tìm variant phù hợp với size và color đã chọn
     const selectedVariant = product.variants.find(
       (variant) =>
         variant.size?.id === selectedSize && variant.color?.id === selectedColor
     );
-
     if (!selectedVariant) {
       console.error("Variant not found for selected size and color");
       return;
     }
-
-    console.log("Selected variant:", selectedVariant);
-
-    // Đảm bảo rằng dữ liệu gửi đi đủ thông tin mà backend yêu cầu
+    if (selectedVariant.quantity === 0) {
+      toast.warning("Sản phầm này đã hết");
+      return;
+    }
     const productDetails = {
       product_item_id: selectedVariant.id,
       quantity: quantity,
     };
-
-    console.log("Payload gửi đi:", productDetails);
-
-    // Gửi yêu cầu API với dữ liệu đã chuẩn bị
     dispatch(addToCart(productDetails));
-
-    // Hiển thị thông báo toast khi thêm thành công
     toast.success("Thêm vào giỏ hàng thành công!", {
       position: "top-right",
-      autoClose: 3000, // Thời gian tự đóng (3 giây)
+      autoClose: 3000,
     });
+  };
+
+  const handleBuyNow = async (event: any) => {
+    event.preventDefault();
+
+    if (!token) {
+      setShowAlert(true);
+      return;
+    }
+
+    if (!selectedSize || !selectedColor) {
+      toast.error("Bắt buộc phải chọn size và color", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+    if (!product?.id) {
+      console.error("Product ID is missing");
+      return;
+    }
+    const selectedVariant = product.variants.find(
+      (variant) =>
+        variant.size?.id === selectedSize && variant.color?.id === selectedColor
+    );
+    if (!selectedVariant) {
+      console.error("Variant not found for selected size and color");
+      return;
+    }
+    if (selectedVariant.quantity === 0) {
+      toast.warning("Sản phầm này đã hết");
+      return;
+    }
+    const productDetails = {
+      product_item_id: selectedVariant.id,
+      quantity: quantity,
+      checked: 1,
+    };
+
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        toast.error("Bạn chưa đăng nhập", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await apisphp.post("/user/buynows", productDetails, {
+        headers,
+      });
+
+      if (response.status === 200) {
+        toast.success(
+          "Thêm vào giỏ hàng thành công! Chuyển đến trang thanh toán",
+          {
+            position: "top-right",
+            autoClose: 3000,
+          }
+        );
+        navigate("/checkout");
+      } else {
+        toast.error("Không thể thêm vào giỏ hàng, vui lòng thử lại", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error processing Buy It Now request", error);
+      toast.error("Có lỗi xảy ra khi xử lý yêu cầu", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   useEffect(() => {
@@ -102,71 +170,86 @@ const ShopDetails = ({
       try {
         const res = await apisphp.get(`/showdetail/products/${id}`);
         const fetchedProduct = res.data;
-        // console.log(fetchedProduct, "fet");
-
         let images: string[] = [];
         if (typeof fetchedProduct.image_description === "string") {
           try {
             images = JSON.parse(fetchedProduct.image_description);
           } catch (error) {
-            console.error("Error parsing image_description:", error);
+            console.error("Error parsing image_description", error);
           }
         } else if (Array.isArray(fetchedProduct.image_description)) {
           images = fetchedProduct.image_description;
         }
-
         setProduct({ ...fetchedProduct, image_description: images });
-        setMainImage(fetchedProduct.image_product); // Đặt ảnh chính ban đầu
+        setMainImage(fetchedProduct.image_product);
       } catch (error) {
-        console.error("Error fetching product details:", error);
+        console.error("Error fetching product details", error);
       }
     };
-
     if (id) {
       fetchProductDetails();
     }
   }, [id]);
-  useEffect(() => {
-    const testDetailsFetch = async () => {
-      try {
-        // Gọi API để lấy chi tiết sản phẩm
-        const res = await apisphp.get(`/showdetail/products/${id}`);
-        const fetchedProduct = res.data;
 
-        // Kiểm tra nếu mảng `products` đã có sản phẩm với cùng `id`
-        setRelatedProducts((prevProducts) => {
-          // Kiểm tra xem sản phẩm có tồn tại trong mảng chưa
-          const existingProduct = prevProducts.find(
-            (product) => product.id === fetchedProduct.id
-          );
-
-          if (existingProduct) {
-            // Nếu sản phẩm đã có, không thêm vào mà giữ nguyên mảng cũ
-            return prevProducts;
-          } else {
-            // Nếu sản phẩm chưa có, thêm sản phẩm vào mảng
-            return [...prevProducts, fetchedProduct];
-          }
-        });
-      } catch (error) {
-        console.error("Error fetching product details:", error);
-      } finally {
-        setLoading(false); // Đảm bảo loading được tắt sau khi lấy dữ liệu xong
-      }
-    };
-
-    if (id) {
-      testDetailsFetch();
-    }
-  }, [id]);
-  // console.log("relatedProducts", relatedProducts);
+  // giao diện hiện thị thông báo check login hay chưa để cho phép bình luận
+  const renderAlert = () => {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div
+          className="bg-gradient-to-br from-white to-gray-100 p-6 rounded-2xl shadow-2xl transform transition-transform duration-500 scale-100 animate-fade-in"
+          style={{ maxWidth: "450px", width: "100%" }}
+        >
+          <div className="flex flex-col items-center justify-center">
+            <div className="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full shadow-lg mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-12 h-12 text-red-500"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM11 6h2v7h-2V6zm0 9h2v2h-2v-2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
+              Yêu cầu đăng nhập
+            </h2>
+            <p className="text-gray-600 text-center mb-6">
+              Bạn cần đăng nhập/đăng kí để thực hiện chức năng này. Vui lòng
+              thực hiện để tiếp tục.
+            </p>
+          </div>
+          <div className="flex justify-center space-x-4">
+            <button
+              className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all duration-200"
+              onClick={() => setShowAlert(false)}
+            >
+              Đóng
+            </button>
+            <button
+              className="px-6 py-2 bg-black text-white rounded-lg hover:bg-blue-600 shadow-lg transition-all duration-200"
+              onClick={() => {
+                setShowAlert(false);
+                window.location.href = "/login"; // Điều hướng đến trang login
+              }}
+            >
+              Đăng nhập
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   if (!product) {
     return <div>Loading...</div>;
   }
-
   return (
     <>
+      {showAlert && renderAlert()}
       {/* Đặt ToastContainer trong component để hiển thị các thông báo */}
       <div id="site-main" className="site-main">
         <ToastContainer
@@ -311,7 +394,6 @@ const ShopDetails = ({
                               </span>
                             </ins>
                           </span>
-
                           {/* star sản phẩm chính */}
                           <div className="rating text-left">
                             <div className="star star-5" />
@@ -319,12 +401,10 @@ const ShopDetails = ({
                               (3<span> reviews</span>)
                             </div>
                           </div>
-
                           {/* mổ tả sản phẩm chính */}
                           <div className="description text-left">
                             <p>{product.description}</p>
                           </div>
-
                           {/* Size selection */}
                           <div className="mb-3">
                             <label className="block text-sm text-left font-medium text-gray-700">
@@ -360,7 +440,6 @@ const ShopDetails = ({
                               ))}
                             </div>
                           </div>
-
                           {/* Color selection */}
                           <div className="mb-3">
                             <label className="block text-sm text-left font-medium text-gray-700">
@@ -444,22 +523,24 @@ const ShopDetails = ({
                               </div>
 
                               {/* nút add cart */}
-                              <div className="btn-add-to-cart">
-                                <a
+                              <div className="btn-add-to-carts">
+                                <button
                                   onClick={handleAddToCart}
-                                  href="#"
                                   className="button"
                                   tabIndex={0}
                                 >
                                   Add to cart
-                                </a>
+                                </button>
                               </div>
                             </div>
                             <div
                               className="btn-quick-buy"
-                              data-title="Wishlist"
+                              data-title="Buy it now"
                             >
-                              <button className="product-btn">
+                              <button
+                                className="product-btn"
+                                onClick={handleBuyNow}
+                              >
                                 Buy It Now
                               </button>
                             </div>
@@ -497,7 +578,6 @@ const ShopDetails = ({
                               </a>
                             </span>
                           </div>
-
                           <div className="social-share">
                             <a
                               href="#"
@@ -530,8 +610,6 @@ const ShopDetails = ({
                     </div>
                   </div>
                 </div>
-                {/* Product Review */}
-                <ProductReviewForm />
                 {/* Related Products */}
                 <div className="product-related">
                   <div className="section-padding">
