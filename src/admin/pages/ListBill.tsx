@@ -130,7 +130,7 @@ const Orders1: React.FC = () => {
         toast.error("Cập nhật thất bại!");
       }
     } catch (err) {
-      setError("Failed to update order status. Please try again.");
+      toast.error("Cập nhật thất bị lỗi!");
     }
   };
 
@@ -262,7 +262,7 @@ const Orders1: React.FC = () => {
                   <td className="p-2 text-gray-700 block md:table-cell">
                     {order.billing_address}
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  {/*} <td className="p-2 text-gray-700 block md:table-cell">
                     <select
                       className="border border-gray-300 rounded p-2 "
                       value={order.status || ""}
@@ -285,7 +285,46 @@ const Orders1: React.FC = () => {
                         </option>
                       ))}
                     </select>
+                  </td> */}
+                  <td className="p-2 text-gray-700 block md:table-cell">
+                    <select
+                      className="border border-gray-300 rounded p-2"
+                      value={order.status || ""}
+                      onChange={(e) =>
+                        handleStatusChangeSubmit(order.id, e.target.value)
+                      }
+                      disabled={order.status === "bị hủy"}
+                    >
+                      {statusOptions.map((status) => {
+                        const currentStatusKey = statusOptions.find(
+                          (option) => option.value === order.status
+                        )?.key;
+
+                        const isCurrentStatus = order.status === status.value;
+
+                        return (
+                          <option
+                            key={status.key}
+                            value={status.value}
+                            disabled={
+                              (currentStatusKey !== undefined &&
+                                status.key < currentStatusKey) ||
+                              (status.value === "bị hủy" &&
+                                order.status !== "bị hủy")
+                            }
+                            className={`${
+                              isCurrentStatus
+                                ? "bg-blue-100 font-bold"
+                                : "bg-white"
+                            } disabled:bg-gray-300`}
+                          >
+                            {status.label}
+                          </option>
+                        );
+                      })}
+                    </select>
                   </td>
+
                   <td className="p-2 text-gray-700 block md:table-cell">
                     {new Date(order.created_at).toLocaleString()}
                   </td>

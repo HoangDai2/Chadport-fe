@@ -6,6 +6,9 @@ import ChartTwo from "./ThongKe/ChartTwo";
 import TUser from "../../Types/TUsers";
 import apisphp from "../../Service/api";
 import axios from "axios";
+import DonHangCoLuotXemNhieuNhat from "./ThongKe/LuotXemNhieuNhat";
+import TableOne from "./ThongKe/TableOne";
+import ChatCard from "./ThongKe/ChatCard";
 const ThongKe = () => {
   const [orders, setOrders] = useState<any[]>([]); // Lưu danh sách đơn hàng
   const [revenue, setRevenue] = useState<number>(0); // Doanh thu
@@ -21,7 +24,7 @@ const ThongKe = () => {
       const response = await axios.get(
         "http://127.0.0.1:8000/api/showAllOrder"
       );
-      setOrders(response.data.data);  // Cập nhật danh sách đơn hàng
+      setOrders(response.data.data); // Cập nhật danh sách đơn hàng
       // console.log(response.data)
     } catch (error) {
       console.error("Có lỗi khi lấy dữ liệu đơn hàng:", error);
@@ -33,7 +36,7 @@ const ThongKe = () => {
     const completedOrders = orders.filter(
       (order) => order.status === "đã thanh toán"
     );
-    console.log(completedOrders)
+    console.log(completedOrders);
     const totalRevenue = completedOrders.reduce(
       (total: number, order: any) => total + order.total_money,
       0
@@ -235,6 +238,13 @@ const ThongKe = () => {
           <ChartOne />
           {/* <ChartTwo /> */}
           <ChartThree />
+          <div className="col-span-12 xl:col-span-8">
+            <TableOne />
+          </div>
+          <ChatCard />
+          <div className=" xl:col-span-12">
+            <DonHangCoLuotXemNhieuNhat />
+          </div>
         </div>
       </>
     </>
