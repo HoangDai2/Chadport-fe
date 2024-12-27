@@ -101,10 +101,9 @@ const handleLoginSubmit = async (
       localStorage.setItem("jwt_token", token);
 
       // Điều hướng dựa trên role_id
-      if ([1, 2, 3].includes(userData.role_id)) {
-        // Admin
-        navigate("/admin");
-      } else if (userData.role_id === 4) {
+      if ([1, 2].includes(userData.role_id)) {
+        navigate("/");
+      } else if (userData.role_id === 3) {
         // User
         navigate("/");
       } else {
