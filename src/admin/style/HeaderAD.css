@@ -1,4 +1,4 @@
-.header-ad {
+/* .header-ad {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -31,7 +31,6 @@
   color: #9ca3af;
 }
 
-/* Header right section */
 .header-right {
   display: flex;
   align-items: center;
@@ -40,7 +39,6 @@
   justify-content: flex-end;
 }
 
-/* Notification styles */
 .notification-container {
   display: flex;
   align-items: center;
@@ -150,12 +148,12 @@
   margin-right: 15px;
   width: 36px;
   height: 36px;
-  background-color: #e8f5e9; /* Màu nền nhạt của icon */
+  background-color: #e8f5e9;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4caf50; /* Màu icon giống theme */
+  color: #4caf50;
 }
 
 .notification-text {
@@ -167,4 +165,4 @@
   font-size: 12px;
   color: #6b7280;
   margin-top: 4px;
-}
+} */
