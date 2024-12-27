@@ -223,8 +223,8 @@ function App() {
         const newProduct = await createProduct(formData);
         setProduct((prev) => [...prev, newProduct]);
         toast.success("Thêm sản phẩm thành công!");
-        navigate("/admin/products"); // Điều hướng sau khi thêm thành công
-        window.location.reload(); // Tải lại trang nếu cần thiết
+        // navigate("/admin/products"); // Điều hướng sau khi thêm thành công
+        // window.location.reload(); // Tải lại trang nếu cần thiết
       } catch (error) {
         console.error("Error adding product:", error);
       }

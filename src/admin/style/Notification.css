@@ -1,6 +1,5 @@
 body {
   font-family: Arial, sans-serif;
-  padding-top: 20px; /* Đảm bảo rằng nội dung không bị che khuất bởi thanh thông báo */
 }
 .notification-container {
   position: absolute;

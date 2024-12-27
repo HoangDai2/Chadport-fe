@@ -204,7 +204,12 @@ function ProductAdd({ onAdd, categories }: Props) {
         {({ setFieldValue }) => (
           <Form action="" className="w-[100%]">
             {/* nút thêm sản phẩm */}
-            <div className="grid grid-cols-4 grid-rows-1 gap-4 p-4">
+            <div
+              className="grid  gap-4 p-4"
+              style={{
+                gridTemplateColumns: `repeat(var(--x-columns, 2), 1fr)`,
+              }}
+            >
               {/* Ô đầu tiên */}
               <div className=" flex items-center text-black font-bold text-[25px]">
                 <AiFillProduct className="mr-2  " />
@@ -225,7 +230,12 @@ function ProductAdd({ onAdd, categories }: Props) {
               </div>
             </div>
 
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div
+              className="w-full grid  gap-8"
+              style={{
+                gridTemplateColumns: `repeat(var(--x-columns, 2), 1fr)`,
+              }}
+            >
               {/* General Information */}
               <div className="p-6 bg-white rounded-lg  text-left">
                 <h2 className="text-lg font-semibold mb-5 text-gray-800">
@@ -319,7 +329,12 @@ function ProductAdd({ onAdd, categories }: Props) {
                   <h2 className="text-lg font-semibold mb-4 text-gray-800">
                     Giá và Số Lượng
                   </h2>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div
+                    className="grid gap-4"
+                    style={{
+                      gridTemplateColumns: `repeat(var(--x-columns, 2), 1fr)`,
+                    }}
+                  >
                     {/* giá gốc */}
                     <div>
                       <label className="block text-gray-600 text-sm font-medium mb-1">
