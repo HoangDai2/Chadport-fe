@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import CartItem from "../Types/TCart";
 import apisphp from "../Service/api";
+import { toast } from "react-toastify";
 
 export const addToCart = createAsyncThunk(
   "products/AddCart",
@@ -32,9 +33,17 @@ export const addToCart = createAsyncThunk(
       const response = await apisphp.post("user/add_to_cart", productDetails, {
         headers,
       });
+      toast.success("Thêm vào giỏ hàng thành công!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       console.log("API response:", response);
       return response.data; // Trả về dữ liệu khi thành công
     } catch (error) {
+      toast.error(`sản phẩm vượt quá số lượng trong kho`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
       console.log("Error adding to cart:", error); // Log lỗi chi tiết
       return rejectWithValue("Error adding to cart");
     }

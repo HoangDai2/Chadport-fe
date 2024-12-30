@@ -6,17 +6,19 @@ import { Outlet } from "react-router-dom";
 const Admin: React.FC = () => {
   return (
     <>
-      <main>
+      <div className="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary pl-[20%]">
         <SideBarAD />
-        <div className="headerad">
+        <div className="h-screen flex-grow-1 overflow-y-lg-auto">
           <HeaderAD />
-          <div className="conten_admin">
-            <Outlet />
-          </div>
+          <main className="py-6 bg-surface-secondary">
+            <div className="container-fluid">
+              <Outlet />
+            </div>
+          </main>
         </div>
-      </main>
+      </div>
     </>
   );
 };
- 
+
 export default Admin;

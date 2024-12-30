@@ -85,6 +85,7 @@ import VariantForm from "./admin/pages/Variants/VariantsForm";
 import ShopDetails from "./pages/payment/ShopDetails";
 import ThongKe from "./admin/pages/ThongKe";
 import { LoadingProvider } from "./pages/Loadings/LoadinfContext";
+import RefundForm from "./pages/Order/FormRefund";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -223,8 +224,8 @@ function App() {
         const newProduct = await createProduct(formData);
         setProduct((prev) => [...prev, newProduct]);
         toast.success("Thêm sản phẩm thành công!");
-        navigate("/admin/products"); // Điều hướng sau khi thêm thành công
-        window.location.reload(); // Tải lại trang nếu cần thiết
+        // navigate("/admin/products"); // Điều hướng sau khi thêm thành công
+        // window.location.reload(); // Tải lại trang nếu cần thiết
       } catch (error) {
         console.error("Error adding product:", error);
       }
@@ -513,6 +514,19 @@ function App() {
                     carCount={carCount}
                   />
                   <SearchResults />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/formrefund"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <RefundForm />
                   <FooterClient />
                 </>
               }

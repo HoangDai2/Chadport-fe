@@ -11,8 +11,12 @@ import { toast, ToastContainer } from "react-toastify";
 import { useLoading } from "../Loadings/LoadinfContext";
 import CancelOrderForm from "../Order/CancelOrder";
 import { FaAngleDown } from "react-icons/fa";
+
 import ReviewForm from "./ReviewForm";
 import TComments from "../../Types/TComments";
+
+
+import { Link } from "react-router-dom";
 
 type Props = {};
 const genderMapping = {
@@ -49,11 +53,23 @@ const Profile = (props: Props) => {
   const ordersPerPage = 4; // Số đơn hàng mỗi trang
   const [showCancelForm, setShowCancelForm] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+
   const [showReviewForm, setShowReviewForm] = useState(false); // State để điều khiển hiển thị ReviewForm
   const [reviewFormData, setReviewFormData] = useState<TComments | null>(null); // Sử dụng TComments
 
   const [productName, setProductName] = useState<string>("");
 const [productImage, setProductImage] = useState<string>("");
+
+  // xử lí nút hoàn trả tiền hiện form
+  const [isRefundFormOpen, setRefundFormOpen] = useState(false);
+
+  const handleOpenRefundForm = () => {
+    setRefundFormOpen(true);
+  };
+
+  const handleCloseRefundForm = () => {
+    setRefundFormOpen(false);
+  };
 
   // Hàm xử lý tải ảnh
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,6 +167,7 @@ const [productImage, setProductImage] = useState<string>("");
       });
     }
   }, [user]);
+
   interface Order {
     id: number;
     status: string;
@@ -195,7 +212,6 @@ const [productImage, setProductImage] = useState<string>("");
 
     fetchOrders();
   }, []);
-  console.log("oder", orders);
 
   // Lọc dữ liệu dựa trên trạng thái
   const filteredOrders =
@@ -679,6 +695,95 @@ const [productImage, setProductImage] = useState<string>("");
 
                     <div className="mt-4 flex flex-wrap justify-end gap-4">
                       {renderButtonCancelOrder(order)}
+
+                  <div
+                    onClick={() => handleViewDetails(order)}
+                    key={order.id}
+                    className="text-right bg-white rounded-lg px-4 py-2 border border-gray-300 hover:shadow-lg transition-shadow duration-200"
+                  >
+                    <p className="mt-[20px] uppercase whitespace-nowrap text-right text-black font-medium">
+                      {order.status}
+                    </p>
+
+                    <hr className="border-t border-dashed border-gray-600 my-6" />
+
+                    {/* Hiển thị danh sách sản phẩm trong đơn hàng */}
+                    {order.products.map((product, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col md:flex-row gap-6 p-4 border-b border-gray-300 last:border-b-0"
+                      >
+                        <img
+                          src={
+                            product.product_image
+                              ? `http://127.0.0.1:8000/storage/${product.product_image}`
+                              : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
+                          }
+                          className="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                          alt="Product"
+                        />
+                        <div className="flex flex-col text-left flex-1">
+                          <p className="text-base text-gray-800 font-semibold">
+                            {product.product_name}
+                          </p>
+
+                          <p className="text-sm text-gray-700 mt-1 flex items-center space-x-3">
+                            {/* Hiển thị màu sắc */}
+                            <span
+                              className="inline-block w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm"
+                              style={{
+                                backgroundColor: product.color_hex || "#E5E7EB",
+                              }}
+                            ></span>
+                            <span className="font-medium text-gray-800">
+                              Size: {product.size_name} - {product.color_name}
+                            </span>
+                          </p>
+
+                          <p className="text-sm text-gray-700 mt-1">
+                            Số lượng: {product.quantity}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end justify-center">
+                          <p className="text-sm text-gray-500 line-through">
+                            Giá:{" "}
+                            {product.price
+                              ? new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(Math.ceil(product.price))
+                              : "null"}
+                          </p>
+                          <p className="text-lg text-red-600 font-semibold">
+                            {product.price
+                              ? new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(Math.ceil(product.price))
+                              : "null"}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+
+                    <hr className="border-t border-dashed border-gray-600 my-6" />
+
+                    {/* Hiển thị tổng số tiền và trạng thái đơn hàng */}
+                    <div className="flex justify-end items-center">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-gray-500">Tổng tiền:</p>
+                        <p className="text-lg text-red-600 font-bold">
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(order.total_money)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap justify-end gap-4">
+                      {renderButtonCancelOrder()}
+
                       {showCancelForm && (
                         <CancelOrderForm
                           onClose={() => setShowCancelForm(false)}
