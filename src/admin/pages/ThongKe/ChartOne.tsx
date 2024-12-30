@@ -156,9 +156,10 @@ const ChartOne: React.FC = () => {
       .get("http://127.0.0.1:8000/api/showAllOrder")
       .then((response) => {
         const orders = response.data.data;
+
         const monthlySales = {
           "Doanh thu": Array(12).fill(0),
-          "Loi Nhuan": Array(12).fill(0),
+          // "Loi Nhuan": Array(12).fill(0),
         };
 
         if (orders && orders.length > 0) {
@@ -170,10 +171,10 @@ const ChartOne: React.FC = () => {
               const orderYear = orderDate.getFullYear();
               if (orderYear.toString() === selectedYear) {
                 const orderMonth = orderDate.getMonth();
-                if (order.status === "đã thanh toán") {
+                if (order.status === "đã hoàn thành") {
                   monthlySales["Doanh thu"][orderMonth] += order.total_money;
-                  monthlySales["Loi Nhuan"][orderMonth] +=
-                    order.total_money * 0.3;
+                  // monthlySales["Loi Nhuan"][orderMonth] +=
+                  //   order.total_money * 0.3;
                 }
               }
             }
@@ -184,10 +185,10 @@ const ChartOne: React.FC = () => {
                 name: "Doanh Thu",
                 data: filterData(monthlySales["Doanh thu"], timeRange),
               },
-              {
-                name: "Loi Nhuan",
-                data: filterData(monthlySales["Loi Nhuan"], timeRange),
-              },
+              // {
+              //   name: "Loi Nhuan",
+              //   data: filterData(monthlySales["Loi Nhuan"], timeRange),
+              // },
             ],
           });
         }

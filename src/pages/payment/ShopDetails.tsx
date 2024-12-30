@@ -54,13 +54,12 @@ const ShopDetails = ({
 
     // Lọc màu theo size đã chọn
     const colorsForSelectedSize = product?.variants
-      ?.filter((variant) => variant.size?.id === sizeId)
+      ?.filter((variant) => variant.size?.id === sizeId && variant.quantity > 0)
       .map((variant) => ({
         id: variant.color?.id,
         name: variant.color?.name,
         hex: variant.color?.hex,
       }));
-
     setAvailableColors(colorsForSelectedSize || allColors); // Nếu không có màu thì hiển thị tất cả
     setSelectedColor(null); // Reset màu khi đổi size
     setWarehouse(0); // Reset số lượng khi đổi Size
@@ -76,9 +75,70 @@ const ShopDetails = ({
         variant.size?.id === selectedSize && variant.color?.id === colorId
     );
     setWarehouse(selectedVariant ? selectedVariant.quantity : 0); // Cập nhật số lượng tồn kho
+    setQuantity(1);
+  };
+  // hưng làm phần tăng giảm sl
+  // const handleIncrement = () => {
+  //   const selectedVariant = product?.variants.find(
+  //     (variant) =>
+  //       variant.size?.id === selectedSize && variant.color?.id === selectedColor
+  //   );
+  //   console.log(selectedVariant?.quantity);
+  //   if (selectedVariant && quantity < selectedVariant.quantity) {
+  //     setQuantity((prev) => prev + 1); // Tăng số lượng
+  //   }
+  // };
+  const [cartData, setCartData] = useState([]);
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) return;
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      try {
+        const response = await apisphp.get("user/cart", { headers });
+        setCartData(response.data.cart_items || []);
+      } catch (error) {
+        console.error("Lỗi khi tải dữ liệu giỏ hàng:", error.message);
+      }
+    };
+
+    fetchCartData();
+  }, []);
+
+  const handleIncrement = () => {
+    const selectedVariant = product?.variants.find(
+      (variant) =>
+        variant.size?.id === selectedSize && variant.color?.id === selectedColor
+    );
+
+    if (!selectedVariant) {
+      console.log("Không tìm thấy biến thể sản phẩm.");
+      return;
+    }
+
+    const cartItem = cartData.find(
+      (item) =>
+        item.product_item_id === selectedVariant.id &&
+        item.size?.id === selectedSize &&
+        item.color?.id === selectedColor
+    );
+
+    const cartQuantity = cartItem ? cartItem.quantity : 0;
+    const totalCartdb = selectedVariant.quantity - cartQuantity;
+    console.log(cartQuantity);
+    console.log(totalCartdb);
+    if (quantity < totalCartdb) {
+      setQuantity((prev) => prev + 1);
+    } else {
+      toast.warn("vượt quá số lượng tồn kho.");
+    }
   };
 
-  const handleIncrement = () => setQuantity((prev) => prev + 1);
   const handleDecrement = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   const [mainImage, setMainImage] = useState<string | null>(null);
@@ -106,23 +166,26 @@ const ShopDetails = ({
       (variant) =>
         variant.size?.id === selectedSize && variant.color?.id === selectedColor
     );
+
     if (!selectedVariant) {
       console.error("Variant not found for selected size and color");
       return;
     }
+    // console.log(selectedVariant);
     if (selectedVariant.quantity === 0) {
       toast.warning("Sản phầm này đã hết");
       return;
     }
+
     const productDetails = {
       product_item_id: selectedVariant.id,
       quantity: quantity,
     };
     dispatch(addToCart(productDetails));
-    toast.success("Thêm vào giỏ hàng thành công!", {
-      position: "top-right",
-      autoClose: 3000,
-    });
+    // toast.success("Thêm vào giỏ hàng thành công!", {
+    //   position: "top-right",
+    //   autoClose: 3000,
+    // });
   };
 
   const handleBuyNow = async (event: any) => {
@@ -222,7 +285,7 @@ const ShopDetails = ({
         }
         setProduct({ ...fetchedProduct, image_description: images });
         setMainImage(fetchedProduct.image_product);
-        console.log("123", res);
+        // console.log("123", res);
       } catch (error) {
         console.error("Error fetching product details", error);
       } finally {
@@ -233,6 +296,7 @@ const ShopDetails = ({
       fetchProductDetails();
     }
   }, [id]);
+  // console.log(product);
 
   // giao diện hiện thị thông báo check login hay chưa để cho phép bình luận
   const renderAlert = () => {
@@ -290,6 +354,7 @@ const ShopDetails = ({
   if (!product) {
     return <div>Loading...</div>;
   }
+  // console.log(product);
   return (
     <>
       {showAlert && renderAlert()}
@@ -483,7 +548,7 @@ const ShopDetails = ({
                                 {/* Modal */}
                                 {isOpen && (
                                   <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                                    <div className="relative bg-white p-4 rounded-lg shadow-lg w-[45rem] w-full top-[55px]">
+                                    <div className="relative bg-white p-4 rounded-lg shadow-lg w-[50rem] w-full top-[55px]">
                                       {/* Nút đóng */}
                                       <button
                                         onClick={toggleModal}
@@ -504,7 +569,7 @@ const ShopDetails = ({
                               </div>
                             </div>
                           </div>
-                          {/* // Size selection */}
+                          {/* // cỡ selection */}
                           <div className="mb-3 ">
                             <label className="block text-sm text-left font-medium text-gray-700">
                               Size:
@@ -522,19 +587,17 @@ const ShopDetails = ({
                               ].map((variant) => (
                                 <button
                                   key={variant.size?.name}
-                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
-                                              ${
-                                                selectedSize ===
-                                                variant.size?.id
-                                                  ? "bg-black text-white"
-                                                  : "bg-white text-gray-700 border-gray-300"
-                                              }
-                                              hover:bg-primary hover:text-black`}
+                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 ${
+                                    selectedSize === variant.size?.id
+                                      ? "bg-black text-white"
+                                      : "bg-white text-gray-700 border-gray-300"
+                                  } hover:bg-primary hover:text-black`}
                                   onClick={() =>
                                     handleSizeChange(variant.size?.id || "")
                                   }
                                 >
-                                  {variant.size?.name}
+                                  {" "}
+                                  {variant.size?.name}{" "}
                                 </button>
                               ))}
                             </div>
@@ -545,28 +608,28 @@ const ShopDetails = ({
                               Color:
                             </label>
                             <div className="flex gap-2">
-                              {(selectedSize ? availableColors : allColors).map(
+                              {(selectedSize ? availableColors : []).map(
                                 (color) => (
                                   <button
                                     key={color.id}
-                                    className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 
-                                              ${
-                                                selectedColor === color.id
-                                                  ? "border-black scale-110" // Nổi bật và to hơn khi được chọn
-                                                  : "border-gray-300"
-                                              }`}
+                                    className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 ${
+                                      selectedColor === color.id
+                                        ? "border-black scale-110"
+                                        : "border-gray-300"
+                                    }`}
                                     style={{
-                                      backgroundColor: color.hex, // Màu nền từ hex
+                                      backgroundColor: color.hex,
                                       color:
                                         color.hex === "#FFFFFF"
                                           ? "black"
-                                          : "white", // Đổi chữ nổi bật nếu nền trắng
+                                          : "white",
                                     }}
                                     onClick={() =>
                                       handleColorChange(color.id || "")
                                     }
                                   >
-                                    {}
+                                    {" "}
+                                    {}{" "}
                                   </button>
                                 )
                               )}
@@ -575,12 +638,31 @@ const ShopDetails = ({
 
                           <div className="buttons ">
                             <div className="add-to-cart-wrap">
-                              {/* số lượng tăng giảm */}
+                              {/* lên */}
                               <div className="quantity">
                                 <button
                                   type="button"
                                   className="plus"
                                   onClick={handleIncrement}
+                                  disabled={
+                                    !product?.variants.find(
+                                      (variant) =>
+                                        variant.size?.id === selectedSize &&
+                                        variant.color?.id === selectedColor &&
+                                        quantity < variant.quantity
+                                    )
+                                  }
+                                  style={{
+                                    display:
+                                      quantity >=
+                                      product?.variants.find(
+                                        (variant) =>
+                                          variant.size?.id === selectedSize &&
+                                          variant.color?.id === selectedColor
+                                      )?.quantity
+                                        ? "none"
+                                        : "inline-block",
+                                  }}
                                 >
                                   +
                                 </button>
@@ -589,6 +671,7 @@ const ShopDetails = ({
                                   className="qty"
                                   step={1}
                                   min={1}
+                                  readOnly
                                   name="quantity"
                                   value={quantity}
                                   onChange={(e) => {
@@ -642,181 +725,6 @@ const ShopDetails = ({
                               >
                                 Buy It Now
                               </button>
-                            </div>
-                          </div>
-                          <div className="product-meta">
-                            <span className="sku-wrapper">
-                              SKU: <span className="sku">D2300-3-2-2</span>
-                            </span>
-                            <span className="posted-in">
-                              Category:{" "}
-                              <a href="shop-grid-left.html" rel="tag">
-                                Furniture
-                              </a>
-                            </span>
-                            <span className="tagged-as">
-                              Tags:{" "}
-                              <a href="shop-grid-left.html" rel="tag">
-                                Hot
-                              </a>
-                              ,{" "}
-                              <a href="shop-grid-left.html" rel="tag">
-                                Trend
-                              </a>
-                            </span>
-                          </div>
-                          <div className="social-share">
-                            <a
-                              href="#"
-                              title="Facebook"
-                              className="share-facebook"
-                              target="_blank"
-                            >
-                              <i className="fa fa-facebook" />
-                              Facebook
-                            </a>
-                            <a
-                              href="#"
-                              title="Twitter"
-                              className="share-twitter"
-                            >
-                              <i className="fa fa-twitter" />
-                              Twitter
-                            </a>
-                            <a
-                              href="#"
-                              title="Pinterest"
-                              className="share-pinterest"
-                            >
-                              <i className="fa fa-pinterest" />
-                              Pinterest
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Related Products */}
-                <div className="product-related">
-                  <div className="section-padding">
-                    <div className="section-container p-l-r">
-                      <div className="block block-products slider">
-                        <div className="block-title">
-                          <h2>Related Products</h2>
-                        </div>
-                        <div className="block-content">
-                          <div className="content-product-list slick-wrap">
-                            <div
-                              className="products-list grid"
-                              data-slidestoscroll="true"
-                              data-dots="false"
-                              data-nav={1}
-                              data-columns4={1}
-                              data-columns3={2}
-                              data-columns2={3}
-                              data-columns1={3}
-                              data-columns1440={4}
-                              data-columns={4}
-                            >
-                              <div className="slick-sliders">
-                                {relatedProducts.map((relatedProduct) => (
-                                  <div
-                                    className="item-product slick-slider-item"
-                                    key={relatedProduct.id}
-                                  >
-                                    <div className="items">
-                                      <div className="products-entry clearfix product-wapper">
-                                        <div className="products-thumb">
-                                          <div className="product-lable">
-                                            <div className="hot">Hot</div>
-                                          </div>
-                                          <a
-                                            href={`/shop-details/${relatedProduct.id}`}
-                                          >
-                                            <img
-                                              width={600}
-                                              height={600}
-                                              src={`http://127.0.0.1:8000/storage/${product.image_product}`}
-                                              className="post-image"
-                                              alt={relatedProduct.name}
-                                            />
-                                          </a>
-                                          <div className="product-button">
-                                            <div
-                                              className="cart_default"
-                                              data-title="Add to cart"
-                                            >
-                                              <a
-                                                rel="nofollow"
-                                                // href="#"
-                                                className="product-btn"
-                                              >
-                                                Add to cart
-                                              </a>
-                                            </div>
-                                            <div
-                                              className=""
-                                              data-title="Wishlist"
-                                            >
-                                              <button
-                                                className="product-btn"
-                                                onClick={() =>
-                                                  addToWishlist(relatedProduct)
-                                                }
-                                              >
-                                                Add to wishlist
-                                              </button>
-                                            </div>
-                                            <div
-                                              className="btn-compare"
-                                              data-title="Compare"
-                                            >
-                                              <button className="product-btn">
-                                                Compare
-                                              </button>
-                                            </div>
-                                            <span
-                                              className="product-quickview"
-                                              data-title="Quick View"
-                                            >
-                                              <a
-                                                href="#"
-                                                className="quickview quickview-button"
-                                              >
-                                                Quick View{" "}
-                                                <i className="icon-search" />
-                                              </a>
-                                            </span>
-                                          </div>
-                                        </div>
-                                        <div className="products-content">
-                                          <div className="contents text-center">
-                                            <h3 className="product-title">
-                                              <a
-                                                href={`/shop-details/${relatedProduct.id}`}
-                                              >
-                                                {relatedProduct.name}
-                                              </a>
-                                            </h3>
-                                            <div className="rating">
-                                              <div className="star star-5" />
-                                            </div>
-                                            <span className="tracking-wider text-2xl font-semibold text-gray-900">
-                                              {new Intl.NumberFormat("vi-VN", {
-                                                style: "currency",
-                                                currency: "VND",
-                                              }).format(product.price)}
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                {/* <p>{product.name}</p> */}
-                              </div>
                             </div>
                           </div>
                         </div>
