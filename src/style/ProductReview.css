@@ -1,0 +1,18 @@
+.custom-btn {
+    background-color: #ffffff; /* Nền màu trắng */
+    color: #000000; /* Chữ màu đen */
+    border: 2px solid #000000; /* Viền đen */
+    transition: all 0.3s ease-in-out; /* Hiệu ứng mượt */
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px; /* Bo tròn nút */
+    cursor: pointer;
+  }
+  
+  .custom-btn:hover {
+    background-color: #000000; /* Nền màu đen */
+    color: #ffffff; /* Chữ màu trắng */
+    border-color: #000000; /* Viền đen */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hiệu ứng bóng khi hover */
+  }
+  

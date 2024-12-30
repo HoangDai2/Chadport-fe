@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 
 const CancelOrderForm = ({ onClose }: any) => {
@@ -20,7 +21,7 @@ const CancelOrderForm = ({ onClose }: any) => {
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex justify-center items-center z-50">
-      <div className="p-6 bg-white rounded-lg  w-full max-w-md relative top-[50px]">
+      <div className="p-6 bg-white rounded-lg  w-full max-w-md relative top-[70px]">
         <button
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
           onClick={onClose}

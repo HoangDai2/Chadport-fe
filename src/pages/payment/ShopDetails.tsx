@@ -10,6 +10,7 @@ import TProduct from "../../Types/TProduct";
 import { BsBookmarkHeart } from "react-icons/bs";
 import { useLoading } from "../Loadings/LoadinfContext";
 import tablesize from "../../img/bang-size-giay-1024x571-1.jpg";
+
 const ShopDetails = ({
   addToWishlist,
 }: {
@@ -428,7 +429,7 @@ const ShopDetails = ({
                                 >
                                   <div className="product-gallery">
                                     {product.image_description &&
-                                    Array.isArray(product.image_description) ? (
+                                      Array.isArray(product.image_description) ? (
                                       product.image_description.map(
                                         (image, index) => (
                                           <div
@@ -445,9 +446,8 @@ const ShopDetails = ({
                                                 width={100}
                                                 height={100}
                                                 src={`http://127.0.0.1:8000/storage/${image}`}
-                                                alt={`Additional image ${
-                                                  index + 1
-                                                }`}
+                                                alt={`Additional image ${index + 1
+                                                  }`}
                                               />
                                             </span>
                                           </div>
@@ -520,11 +520,10 @@ const ShopDetails = ({
                                 <label className="mr-2">Kho Hàng:</label>
                                 {selectedSize && selectedColor ? (
                                   <span
-                                    className={`text-sm font-semibold ${
-                                      warehouse > 0
+                                    className={`text-sm font-semibold ${warehouse > 0
                                         ? "text-green-600"
                                         : "text-red-600"
-                                    }`}
+                                      }`}
                                   >
                                     {warehouse > 0 ? "Còn hàng" : "Hết hàng"}
                                   </span>
@@ -587,6 +586,7 @@ const ShopDetails = ({
                               ].map((variant) => (
                                 <button
                                   key={variant.size?.name}
+
                                   className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 ${
                                     selectedSize === variant.size?.id
                                       ? "bg-black text-white"
@@ -612,11 +612,13 @@ const ShopDetails = ({
                                 (color) => (
                                   <button
                                     key={color.id}
+
                                     className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 ${
                                       selectedColor === color.id
                                         ? "border-black scale-110"
                                         : "border-gray-300"
                                     }`}
+
                                     style={{
                                       backgroundColor: color.hex,
                                       color:
@@ -628,6 +630,7 @@ const ShopDetails = ({
                                       handleColorChange(color.id || "")
                                     }
                                   >
+
                                     {" "}
                                     {}{" "}
                                   </button>
@@ -725,6 +728,181 @@ const ShopDetails = ({
                               >
                                 Buy It Now
                               </button>
+                            </div>
+                          </div>
+
+                          <div className="product-meta">
+                            <span className="sku-wrapper">
+                              SKU: <span className="sku">D2300-3-2-2</span>
+                            </span>
+                            <span className="posted-in">
+                              Category:{" "}
+                              <a href="shop-grid-left.html" rel="tag">
+                                Furniture
+                              </a>
+                            </span>
+                            <span className="tagged-as">
+                              Tags:{" "}
+                              <a href="shop-grid-left.html" rel="tag">
+                                Hot
+                              </a>
+                              ,{" "}
+                              <a href="shop-grid-left.html" rel="tag">
+                                Trend
+                              </a>
+                            </span>
+                          </div>
+                          <div className="social-share">
+                            <a
+                              href="#"
+                              title="Facebook"
+                              className="share-facebook"
+                              target="_blank"
+                            >
+                              <i className="fa fa-facebook" />
+                              Facebook
+                            </a>
+                            <a
+                              href="#"
+                              title="Twitter"
+                              className="share-twitter"
+                            >
+                              <i className="fa fa-twitter" />
+                              Twitter
+                            </a>
+                            <a
+                              href="#"
+                              title="Pinterest"
+                              className="share-pinterest"
+                            >
+                              <i className="fa fa-pinterest" />
+                              Pinterest
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Related Products */}
+                <div className="product-related">
+                  <div className="section-padding">
+                    <div className="section-container p-l-r">
+                      <div className="block block-products slider">
+                        <div className="block-title">
+                          <h2>Related Products</h2>
+                        </div>
+                        <div className="block-content">
+                          <div className="content-product-list slick-wrap">
+                            <div
+                              className="products-list grid"
+                              data-slidestoscroll="true"
+                              data-dots="false"
+                              data-nav={1}
+                              data-columns4={1}
+                              data-columns3={2}
+                              data-columns2={3}
+                              data-columns1={3}
+                              data-columns1440={4}
+                              data-columns={4}
+                            >
+                              <div className="slick-sliders">
+                                {relatedProducts.map((relatedProduct) => (
+                                  <div
+                                    className="item-product slick-slider-item"
+                                    key={relatedProduct.id}
+                                  >
+                                    <div className="items">
+                                      <div className="products-entry clearfix product-wapper">
+                                        <div className="products-thumb">
+                                          <div className="product-lable">
+                                            <div className="hot">Hot</div>
+                                          </div>
+                                          <a
+                                            href={`/shop-details/${relatedProduct.id}`}
+                                          >
+                                            <img
+                                              width={600}
+                                              height={600}
+                                              src={`http://127.0.0.1:8000/storage/${product.image_product}`}
+                                              className="post-image"
+                                              alt={relatedProduct.name}
+                                            />
+                                          </a>
+                                          <div className="product-button">
+                                            <div
+                                              className="cart_default"
+                                              data-title="Add to cart"
+                                            >
+                                              <a
+                                                rel="nofollow"
+                                                // href="#"
+                                                className="product-btn"
+                                              >
+                                                Add to cart
+                                              </a>
+                                            </div>
+                                            <div
+                                              className=""
+                                              data-title="Wishlist"
+                                            >
+                                              <button
+                                                className="product-btn"
+                                                onClick={() =>
+                                                  addToWishlist(relatedProduct)
+                                                }
+                                              >
+                                                Add to wishlist
+                                              </button>
+                                            </div>
+                                            <div
+                                              className="btn-compare"
+                                              data-title="Compare"
+                                            >
+                                              <button className="product-btn">
+                                                Compare
+                                              </button>
+                                            </div>
+                                            <span
+                                              className="product-quickview"
+                                              data-title="Quick View"
+                                            >
+                                              <a
+                                                href="#"
+                                                className="quickview quickview-button"
+                                              >
+                                                Quick View{" "}
+                                                <i className="icon-search" />
+                                              </a>
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <div className="products-content">
+                                          <div className="contents text-center">
+                                            <h3 className="product-title">
+                                              <a
+                                                href={`/shop-details/${relatedProduct.id}`}
+                                              >
+                                                {relatedProduct.name}
+                                              </a>
+                                            </h3>
+                                            <div className="rating">
+                                              <div className="star star-5" />
+                                            </div>
+                                            <span className="tracking-wider text-2xl font-semibold text-gray-900">
+                                              {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                              }).format(product.price)}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                                {/* <p>{product.name}</p> */}
+                              </div>
                             </div>
                           </div>
                         </div>
