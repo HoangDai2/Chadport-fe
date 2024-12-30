@@ -364,7 +364,7 @@ const ShopDetails = ({
                                 >
                                   <div className="product-gallery">
                                     {product.image_description &&
-                                    Array.isArray(product.image_description) ? (
+                                      Array.isArray(product.image_description) ? (
                                       product.image_description.map(
                                         (image, index) => (
                                           <div
@@ -381,9 +381,8 @@ const ShopDetails = ({
                                                 width={100}
                                                 height={100}
                                                 src={`http://127.0.0.1:8000/storage/${image}`}
-                                                alt={`Additional image ${
-                                                  index + 1
-                                                }`}
+                                                alt={`Additional image ${index + 1
+                                                  }`}
                                               />
                                             </span>
                                           </div>
@@ -456,11 +455,10 @@ const ShopDetails = ({
                                 <label className="mr-2">Kho Hàng:</label>
                                 {selectedSize && selectedColor ? (
                                   <span
-                                    className={`text-sm font-semibold ${
-                                      warehouse > 0
+                                    className={`text-sm font-semibold ${warehouse > 0
                                         ? "text-green-600"
                                         : "text-red-600"
-                                    }`}
+                                      }`}
                                   >
                                     {warehouse > 0 ? "Còn hàng" : "Hết hàng"}
                                   </span>
@@ -524,12 +522,11 @@ const ShopDetails = ({
                                 <button
                                   key={variant.size?.name}
                                   className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
-                                              ${
-                                                selectedSize ===
-                                                variant.size?.id
-                                                  ? "bg-black text-white"
-                                                  : "bg-white text-gray-700 border-gray-300"
-                                              }
+                                              ${selectedSize ===
+                                      variant.size?.id
+                                      ? "bg-black text-white"
+                                      : "bg-white text-gray-700 border-gray-300"
+                                    }
                                               hover:bg-primary hover:text-black`}
                                   onClick={() =>
                                     handleSizeChange(variant.size?.id || "")
@@ -551,11 +548,10 @@ const ShopDetails = ({
                                   <button
                                     key={color.id}
                                     className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 
-                                              ${
-                                                selectedColor === color.id
-                                                  ? "border-black scale-110" // Nổi bật và to hơn khi được chọn
-                                                  : "border-gray-300"
-                                              }`}
+                                              ${selectedColor === color.id
+                                        ? "border-black scale-110" // Nổi bật và to hơn khi được chọn
+                                        : "border-gray-300"
+                                      }`}
                                     style={{
                                       backgroundColor: color.hex, // Màu nền từ hex
                                       color:
@@ -567,7 +563,7 @@ const ShopDetails = ({
                                       handleColorChange(color.id || "")
                                     }
                                   >
-                                    {}
+                                    { }
                                   </button>
                                 )
                               )}
