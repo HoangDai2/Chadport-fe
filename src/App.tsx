@@ -85,6 +85,7 @@ import VariantForm from "./admin/pages/Variants/VariantsForm";
 import ShopDetails from "./pages/payment/ShopDetails";
 import ThongKe from "./admin/pages/ThongKe";
 import { LoadingProvider } from "./pages/Loadings/LoadinfContext";
+import RefundForm from "./pages/Order/FormRefund";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -513,6 +514,19 @@ function App() {
                     carCount={carCount}
                   />
                   <SearchResults />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/formrefund"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <RefundForm />
                   <FooterClient />
                 </>
               }
