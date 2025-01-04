@@ -9,7 +9,9 @@ import TUser from "../../Types/TUsers";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginValidationSchema, registerValidationSchema } from "./Validation";
 import { useUserContext } from "./UserContext";
-
+import { GoogleLogin } from "@react-oauth/google";
+import { toast } from "react-toastify";
+import { FacebookProvider, LoginButton } from "react-facebook";
 // Biểu tượng spinner loading
 const LoadingSpinner = () => (
   <svg
@@ -76,51 +78,50 @@ const LoginRegister: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
- // Xử lý đăng nhập
-const handleLoginSubmit = async (
-  values: Partial<TUser>,
-  { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
-) => {
-  setLoading(true);
-  setFormError("");
+  // Xử lý đăng nhập
+  const handleLoginSubmit = async (
+    values: Partial<TUser>,
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
+  ) => {
+    setLoading(true);
+    setFormError("");
 
-  try {
-    const response = await apisphp.post("/user/login", {
-      email: values.email,
-      password: values.password,
-    });
+    try {
+      const response = await apisphp.post("/user/login", {
+        email: values.email,
+        password: values.password,
+      });
 
-    if (response.data.message === "Successfully logged in") {
-      const userData = response.data.data; // API trả về dữ liệu người dùng
-      const token = response.data.token;
+      if (response.data.message === "Successfully logged in") {
+        const userData = response.data.data; // API trả về dữ liệu người dùng
+        const token = response.data.token;
 
-      // Lưu thông tin người dùng vào context
-      setUser(userData);
+        // Lưu thông tin người dùng vào context
+        setUser(userData);
 
-      // Lưu token vào localStorage
-      localStorage.setItem("jwt_token", token);
+        // Lưu token vào localStorage
+        localStorage.setItem("jwt_token", token);
 
-      // Điều hướng dựa trên role_id
-      if ([1, 2].includes(userData.role_id)) {
-        navigate("/");
-      } else if (userData.role_id === 3) {
-        // User
-        navigate("/");
-      } else {
-        // Role không xác định
-        setFormError("Tài khoản không có quyền truy cập.");
+        // Điều hướng dựa trên role_id
+        if ([1, 2].includes(userData.role_id)) {
+          navigate("/");
+        } else if (userData.role_id === 3) {
+          // User
+          navigate("/");
+        } else {
+          // Role không xác định
+          setFormError("Tài khoản không có quyền truy cập.");
+        }
+      } else if (response.data.error) {
+        setFormError(response.data.error);
       }
-    } else if (response.data.error) {
-      setFormError(response.data.error);
+    } catch (error: any) {
+      setFormError("Thông tin tài khoản không chính xác.");
     }
-  } catch (error: any) {
-    setFormError("Thông tin tài khoản không chính xác.");
-  }
 
-  setLoading(false);
-  setSubmitting(false);
-};
-
+    setLoading(false);
+    setSubmitting(false);
+  };
 
   // Xử lý đăng ký
   const handleRegisterSubmit = async (
@@ -153,6 +154,55 @@ const handleLoginSubmit = async (
     setLoading(false);
     setSubmitting(false);
   };
+  // // Handle Facebook login success
+  // async function handleSuccess(response: any) {
+  //   try {
+  //     setLoading(true);
+  //     // console.log(response.authResponse);
+  //     const { authResponse } = response;
+
+  //     // Gửi token đến backend
+  //     const backendResponse = await apisphp.get("/login/facebook/callback", {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${authResponse.accessToken}`,
+  //       },
+  //     });
+  //     console.log(backendResponse, "1");
+  //     if (backendResponse.status === "connected") {
+  //       const userData = backendResponse.data.data;
+  //       const token = backendResponse.data.token;
+
+  //       // Lưu thông tin người dùng và token vào localStorage
+  //       localStorage.setItem("jwt_token", token);
+  //       setUser(userData);
+
+  //       if ([1, 2].includes(userData.role_id)) {
+  //         navigate("/");
+  //       } else if (userData.role_id === 4) {
+  //         // User role 4
+  //         navigate("/");
+  //       } else {
+  //         setFormError("Tài khoản không có quyền truy cập.");
+  //       }
+  //       toast.success("Đăng nhập thành công");
+
+  //       navigate("/"); // Điều hướng tới trang chủ
+  //     } else {
+  //       setFormError("Đăng nhập Facebook không thành công.");
+  //     }
+  //   } catch (error) {
+  //     setFormError("Đã xảy ra lỗi trong quá trình đăng nhập Facebook.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
+
+  // // Handle Facebook login error
+  // function handleError(error: any) {
+  //   console.error(error); // Log the error to the console
+  //   setFormError("Đăng nhập Facebook không thành công.");
+  // }
 
   return (
     <div id="site-main" className="site-main">
@@ -371,22 +421,84 @@ const handleLoginSubmit = async (
                               <div className="absolute w-full h-px bg-gray-300"></div>
                             </div>
                             <div className="flex items-center justify-center mt-4 space-x-4">
-                              <button className="flex items-center bg-gray-100 px-4 py-2 rounded-lg border text-sm w-48 justify-center">
-                                <img
-                                  src={gg}
-                                  alt="Google Icon"
-                                  className="w-5 h-5 mr-2"
-                                />
-                                Sign in with Google
-                              </button>
-                              <button className="flex items-center bg-gray-100 px-4 py-2 rounded-lg border text-sm w-48 justify-center">
+                              <GoogleLogin
+                                onSuccess={async (credentialResponse) => {
+                                  // credentialResponse.stopPropagation()
+                                  try {
+                                    setLoading(true);
+                                    const { credential } = credentialResponse;
+
+                                    // Gửi token đến backend
+                                    const response = await apisphp.post(
+                                      "/login/googlejwt",
+                                      {
+                                        token: credential,
+                                      }
+                                    );
+                                    // console.log(response);
+
+                                    if (
+                                      response.data.message ===
+                                      "Successfully logged in"
+                                    ) {
+                                      const userData = response.data.data;
+                                      const token = response.data.token;
+                                      // console.log(response);
+
+                                      // Lưu thông tin người dùng và token
+                                      // console.log(userData);
+                                      localStorage.setItem("jwt_token", token);
+                                      setUser(userData);
+                                      if ([1, 2].includes(userData.role_id)) {
+                                        navigate("/");
+                                      } else if (userData.role_id === 4) {
+                                        // User
+                                        navigate("/");
+                                      } else {
+                                        // Role không xác định
+                                        setFormError(
+                                          "Tài khoản không có quyền truy cập."
+                                        );
+                                      }
+                                      toast.success("Đăng nhập thành công");
+                                      // Điều hướng
+                                      navigate("/");
+                                    } else {
+                                      setFormError(
+                                        "Đăng nhập Google không thành công."
+                                      );
+                                    }
+                                  } catch (error) {
+                                    setFormError(
+                                      "Đã xảy ra lỗi trong quá trình đăng nhập Google."
+                                    );
+                                  } finally {
+                                    setLoading(false);
+                                  }
+                                }}
+                                onError={() => {
+                                  setFormError(
+                                    "Đăng nhập Google không thành công."
+                                  );
+                                }}
+                              />
+                              {/* <button className="flex items-center bg-gray-100 px-4 py-2 rounded-lg border text-sm w-48 justify-center">
                                 <img
                                   src={fb}
                                   alt="Facebook Icon"
                                   className="w-5 h-5 mr-2"
                                 />
                                 Sign in with Facebook
-                              </button>
+                              </button> */}
+                              {/* <FacebookProvider appId="1673259480213187">
+                                <LoginButton
+                                  scope="email"
+                                  onError={handleError}
+                                  onSuccess={handleSuccess}
+                                >
+                                  Login via Facebook
+                                </LoginButton>
+                              </FacebookProvider> */}
                             </div>
                           </div>
                         </div>

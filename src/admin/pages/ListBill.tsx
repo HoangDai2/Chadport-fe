@@ -130,7 +130,7 @@ const Orders1: React.FC = () => {
         toast.error("Cập nhật thất bại!");
       }
     } catch (err) {
-      setError("Failed to update order status. Please try again.");
+      toast.error("Failed to update order status. Please try again.");
     }
   };
 
@@ -198,17 +198,39 @@ const Orders1: React.FC = () => {
           <table className="min-w-full border-collapse table-auto">
             <thead className="bg-gray-100 border-b">
               <tr>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Order Number</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Payment Method</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider w-24">Total Money</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Shipping Address</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Billing Address</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Updated At</th>
-                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Order ID
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Order Number
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  User ID
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Payment Method
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider w-24">
+                  Total Money
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Shipping Address
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Billing Address
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Created At
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Updated At
+                </th>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -217,9 +239,15 @@ const Orders1: React.FC = () => {
                   key={order.id}
                   className="hover:bg-gray-50 transition duration-200"
                 >
-                  <td className="px-2 py-3 text-sm text-gray-800">{order.id}</td>
-                  <td className="text-sm font-medium text-gray-600 whitespace-nowrap max-w-48 truncate">{order.oder_number}</td>
-                  <td className="px-2 py-3 text-sm text-gray-800">{order.user_id}</td>
+                  <td className="px-2 py-3 text-sm text-gray-800">
+                    {order.id}
+                  </td>
+                  <td className="text-sm font-medium text-gray-600 whitespace-nowrap max-w-48 truncate">
+                    {order.oder_number}
+                  </td>
+                  <td className="px-2 py-3 text-sm text-gray-800">
+                    {order.user_id}
+                  </td>
                   <td className="px-2 py-3 text-sm font-medium text-gray-600">
                     {order.payment_method === "1"
                       ? "Thanh toán trực tiếp"
@@ -230,22 +258,49 @@ const Orders1: React.FC = () => {
                   <td className="text-sm font-medium text-gray-600 w-24">
                     {order.total_money} VND
                   </td>
-                  <td className="px-2 py-3 text-sm font-medium text-gray-600">{order.shipping_address}</td>
-                  <td className="px-2 py-3 text-sm font-medium text-gray-600">{order.billing_address}</td>
                   <td className="px-2 py-3 text-sm font-medium text-gray-600">
+                    {order.shipping_address}
+                  </td>
+                  <td className="px-2 py-3 text-sm font-medium text-gray-600">
+                    {order.billing_address}
+                  </td>
+                  <td className="p-2 text-gray-700 block md:table-cell">
                     <select
-                      className="p-2 border rounded-md bg-white text-sm"
-                      value={order.status}
-                      onChange={(e) => handleStatusChangeSubmit(order.id, e.target.value)}
+                      className="border border-gray-300 rounded p-2"
+                      value={order.status || ""}
+                      onChange={(e) =>
+                        handleStatusChangeSubmit(order.id, e.target.value)
+                      }
                       disabled={order.status === "bị hủy"}
                     >
-                      {statusOptions.map((status) => (
-                        <option key={status.key} value={status.value}>
-                          {status.label}
-                        </option>
-                      ))}
+                      {statusOptions.map((status) => {
+                        const currentStatusKey = statusOptions.find(
+                          (option) => option.value === order.status
+                        )?.key;
+
+                        const isCurrentStatus = order.status === status.value;
+
+                        return (
+                          <option
+                            key={status.key}
+                            value={status.value}
+                            disabled={
+                              (currentStatusKey !== undefined &&
+                                status.key < currentStatusKey) ||
+                              (status.value === "bị hủy" &&
+                                order.status !== "bị hủy")
+                            }
+                            className={`${
+                              isCurrentStatus ? "bg-blue-500 font-bold" : ""
+                            } disabled:bg-gray-300`}
+                          >
+                            {status.label}
+                          </option>
+                        );
+                      })}
                     </select>
                   </td>
+
                   <td className="px-4 py-3 text-sm font-medium text-gray-600">
                     {new Date(order.created_at).toLocaleString()}
                   </td>
@@ -287,9 +342,9 @@ const Orders1: React.FC = () => {
         </div>
       )}
 
-{isModalOpen && selectedOrder && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center mt-20 z-50">
-          <div className="bg-white rounded-lg w-3/4 lg:w-1/2 p-6 overflow-y-auto max-h-[80vh] shadow-lg">
+      {isModalOpen && selectedOrder && (
+        <div className="fixed inset-0  flex justify-center items-center  z-50">
+          <div className="bg-white rounded-lg w-2/4 lg:w-1/2  overflow-y-auto max-h-[80vh] shadow-lg">
             <h3 className="text-2xl font-semibold mb-6 text-gray-800 mt-10">
               Chi tiết đơn hàng
             </h3>

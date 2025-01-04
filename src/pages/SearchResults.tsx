@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import apisphp from "../Service/api";
+// import axios from "axios";
 type Props = {};
 
 const SearchResults = (props: Props) => {
@@ -17,7 +18,7 @@ const SearchResults = (props: Props) => {
       try {
         const response = await apisphp.get("/list/products");
         setProducts(response.data.data);
-        console.log(response);
+        // console.log(response);
       } catch (error) {
         console.error("lỗi get products:", error);
       }
@@ -35,6 +36,11 @@ const SearchResults = (props: Props) => {
       setFilteredProducts(filtered);
     }
   }, [query, products]);
+  // useEffect(() => {
+  //   axios.post(`http://127.0.0.1:8000/api/log-search`, {
+  //     id: products.map((item) => item.id),
+  //   });
+  // }, []);
 
   return (
     <>
