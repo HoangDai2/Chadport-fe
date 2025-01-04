@@ -12,6 +12,9 @@ import { useLoading } from "../Loadings/LoadinfContext";
 import CancelOrderForm from "../Order/CancelOrder";
 import { FaAngleDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import ReviewForm from "./ReviewForm";
+import TComments from "../../Types/TComments";
 type Props = {};
 const genderMapping = {
   male: 1,
@@ -28,6 +31,7 @@ const Profile = (props: Props) => {
   const { startLoading, stopLoading } = useLoading();
   const { user, setUser, token } = useUserContext();
   const [loading, setLoading] = useState(false);
+
   const [success, setSuccess] = useState(false);
   const [profileData, setProfileData] = useState<Partial<TUser>>({
     email: user?.email || "",
@@ -36,6 +40,8 @@ const Profile = (props: Props) => {
     birthday: user?.birthday || "",
     address: user?.address || "",
   });
+
+  const navigate = useNavigate(); // Hook để chuyển trang\
 
   // trạng thái đơn hàng trong profile
   const [orders, setOrders] = useState<Order[]>([]); // Danh sách đơn hàng
@@ -47,6 +53,9 @@ const Profile = (props: Props) => {
   const ordersPerPage = 4; // Số đơn hàng mỗi trang
   const [showCancelForm, setShowCancelForm] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const [showReviewForm, setShowReviewForm] = useState(false); // State để điều khiển hiển thị ReviewForm
+  const [reviewFormData, setReviewFormData] = useState<TComments | null>(null); // Sử dụng TComments
 
   // xử lí nút hoàn trả tiền hiện form
   const [isRefundFormOpen, setRefundFormOpen] = useState(false);
@@ -119,7 +128,7 @@ const Profile = (props: Props) => {
       try {
         const transformedGender =
           reverseGenderMapping[
-            values.gender as keyof typeof reverseGenderMapping
+          values.gender as keyof typeof reverseGenderMapping
           ] || values.gender;
         const response = await apisphp.post("/user/update", values, {
           headers: { Authorization: `Bearer ${token}` },
@@ -158,6 +167,7 @@ const Profile = (props: Props) => {
 
   interface Order {
     id: number;
+    order_id: number;
     status: string;
     [key: string]: any; // Nếu đơn hàng có nhiều trường khác, bạn có thể thay thế bằng kiểu cụ thể
   }
@@ -178,18 +188,23 @@ const Profile = (props: Props) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            params: {
-              status: activeFilter === "Tất cả" ? "" : activeFilter,
-            },
           }
         );
-        console.log("1234", response);
+        console.log("999", response);
 
-        setOrders(response.data.data); // Gán dữ liệu đơn hàng từ API
+        // Xử lý dữ liệu để đưa `order_id` vào `Order`
+        const formattedOrders = response.data.data.map((order: any) => ({
+          ...order,
+          order_id: order.products?.[0]?.order_id || null, // Lấy `order_id` từ `products`
+        }));
+
+        console.log("Formatted Orders:", formattedOrders);
+
+        setOrders(formattedOrders); // Gán dữ liệu đã xử lý vào state
       } catch (err: any) {
         setError(
           err.response?.data?.message ||
-            "Bạn cần đăng nhập để xem chi tiết đơn hàng!"
+          "Bạn cần đăng nhập để xem chi tiết đơn hàng!"
         );
       } finally {
         stopLoading();
@@ -205,14 +220,12 @@ const Profile = (props: Props) => {
     activeFilter === "Tất cả"
       ? orders
       : orders.filter((order) => order.status === activeFilter);
-  // console.log("123", filteredOrders);
 
-  // phân trang
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
   const startIndex = (currentPage - 1) * ordersPerPage;
   const endIndex = startIndex + ordersPerPage;
-  const currentOrders = filteredOrders.slice(startIndex, endIndex);
 
+  const currentOrders = filteredOrders.slice(startIndex, endIndex);
   // Hàm mở modal và chọn đơn hàng
   const handleViewDetails = (order: any) => {
     setSelectedOrder(order);
@@ -235,9 +248,9 @@ const Profile = (props: Props) => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  // case nút bấm theo trạng thái đơn hàng
-  const renderButtonCancelOrder = () => {
-    switch (activeFilter) {
+  // hiện các nút và xử lí theo trạng thái đơn hàng
+  const renderButtonCancelOrder = (order: any) => {
+    switch (order.status) {
       case "chờ xử lí":
         return (
           <div className="flex space-x-4">
@@ -271,20 +284,69 @@ const Profile = (props: Props) => {
           </div>
         );
       case "đã hoàn thành":
+        // Chuẩn bị dữ liệu của tất cả sản phẩm để truyền qua query string
+        // const productsQuery = order.products.map((product) => ({
+        //   order_id: product.order_id,
+        //   product_item_id: product.product_item_id,
+        //   product_image: product.product_image,
+        //   product_name: product.product_name,
+        //   price: product.price,
+        //   color_name: product.color_name,
+        //   size_name: product.size_name,
+        //   color_hex: product.color_hex,
+        //   quantity: product.quantity,
+        // }));
+        // console.log("ggg", productsQuery);
+
+        // Mã hóa dữ liệu thành JSON để truyền qua query string
+        // const queryString = encodeURIComponent(JSON.stringify(productsQuery));
         return (
           <div className="flex space-x-4">
             {/* Nút Đánh Giá */}
-            <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+            <button
+              className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              onClick={() => {
+                if (order.products && order.products.length > 0 && user?.id) {
+
+                  const reviewFormsData = order.products.map((product) => ({
+                    comment_id: 0,
+                    product_item_id: product.product_item_id, // Lấy product_item_id từ sản phẩm
+                    user_id: user.id, // Lấy user_id từ user
+                    user: user as TUser,
+                    content: "",
+                    rating: 0,
+                    reported: false,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    product_name: product.product_name, // Tên sản phẩm
+                    product_image: product.product_image, // Ảnh sản phẩm
+                    color_name: product.color_name, // Ảnh sản phẩm
+                    size_name: product.size_name,
+                    quantity: product.quantity,
+                    color_hex: product.color_hex,
+                  }));
+
+                  setReviewFormData(reviewFormsData); // Lưu dữ liệu của tất cả sản phẩm
+                  setShowReviewForm(true); // Hiển thị modal đánh giá
+                  console.log("qqq", reviewFormData);
+
+                } else {
+                  toast.error(
+                    "Không thể lấy thông tin sản phẩm hoặc người dùng. Vui lòng thử lại."
+                  );
+                }
+              }}
+            >
               Đánh Giá
             </button>
 
+
             {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
 
-            <Link to={`/formrefund?order_id=${orders}`}>
-              <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
-                Yêu Cầu Trả Hàng/Hoàn Tiền
-              </button>
-            </Link>
+            {/* Nút Hoàn Tiền - Chuyển sang trang hoàn trả với danh sách sản phẩm */}
+            <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
+              Yêu Cầu Trả Hàng/Hoàn Tiền
+            </button>
 
             {/* Dropdown Menu */}
             <div className="relative">
@@ -294,9 +356,8 @@ const Profile = (props: Props) => {
               >
                 Thêm
                 <span
-                  className={`ml-2 transform transition-transform ${
-                    showDropdown ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`ml-2 transform transition-transform ${showDropdown ? "rotate-180" : "rotate-0"
+                    }`}
                 >
                   <FaAngleDown />
                 </span>
@@ -316,12 +377,35 @@ const Profile = (props: Props) => {
           </div>
         );
       case "đã thanh toán":
+        // Chuẩn bị dữ liệu của tất cả sản phẩm để truyền qua query string
+        const productsQuery = order.products.map((product: any) => ({
+          order_id: product.order_id,
+          product_item_id: product.product_item_id,
+          product_image: product.product_image,
+          product_name: product.product_name,
+          price: product.price,
+          color_name: product.color_name,
+          size_name: product.size_name,
+          color_hex: product.color_hex,
+          quantity: product.quantity,
+        }));
+
+        // Thêm total_money vào dữ liệu gửi đi
+        const payload = {
+          total_money: order.total_money, // Trường total_money
+          products: productsQuery, // Danh sách sản phẩm
+        };
+
+        console.log("ggg", productsQuery);
+        const queryString = encodeURIComponent(JSON.stringify(payload));
         return (
           <div className="flex space-x-4">
-            {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
-            <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
-              Yêu Cầu Trả Hàng/Hoàn Tiền
-            </button>
+            {/* Nút Hoàn Tiền - Chuyển sang trang hoàn trả với danh sách sản phẩm */}
+            <Link to={`/formrefund/${order.order_id}?products=${queryString}`}>
+              <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
+                Yêu Cầu Trả Hàng/Hoàn Tiền
+              </button>
+            </Link>
 
             {/* nút hủy đơn hàng */}
             <button
@@ -554,11 +638,10 @@ const Profile = (props: Props) => {
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`relative pb-1 ${
-                  activeFilter === status
-                    ? "text-gray-900 after:content-[''] after:block after:w-full after:h-[2px] after:bg-gray-800 after:absolute after:bottom-0 after:left-0 after:transition-all after:duration-300"
-                    : "text-gray-600 hover:text-gray-900 after:content-[''] after:block after:w-0 after:h-[2px] after:bg-gray-400 after:absolute after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
-                }`}
+                className={`relative pb-1 ${activeFilter === status
+                  ? "text-gray-900 after:content-[''] after:block after:w-full after:h-[2px] after:bg-gray-800 after:absolute after:bottom-0 after:left-0 after:transition-all after:duration-300"
+                  : "text-gray-600 hover:text-gray-900 after:content-[''] after:block after:w-0 after:h-[2px] after:bg-gray-400 after:absolute after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
+                  }`}
               >
                 {status}
               </button>
@@ -580,7 +663,6 @@ const Profile = (props: Props) => {
                     </p>
 
                     <hr className="border-t border-dashed border-gray-600 my-6" />
-
                     {/* Hiển thị danh sách sản phẩm trong đơn hàng */}
                     {order.products.map((product, index) => (
                       <div
@@ -623,17 +705,17 @@ const Profile = (props: Props) => {
                             Giá:{" "}
                             {product.price
                               ? new Intl.NumberFormat("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                }).format(Math.ceil(product.price))
+                                style: "currency",
+                                currency: "VND",
+                              }).format(Math.ceil(product.price))
                               : "null"}
                           </p>
                           <p className="text-lg text-red-600 font-semibold">
                             {product.price
                               ? new Intl.NumberFormat("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                }).format(Math.ceil(product.price))
+                                style: "currency",
+                                currency: "VND",
+                              }).format(Math.ceil(product.price))
                               : "null"}
                           </p>
                         </div>
@@ -656,7 +738,7 @@ const Profile = (props: Props) => {
                     </div>
 
                     <div className="mt-4 flex flex-wrap justify-end gap-4">
-                      {renderButtonCancelOrder()}
+                      {renderButtonCancelOrder(order)}
                       {showCancelForm && (
                         <CancelOrderForm
                           onClose={() => setShowCancelForm(false)}
@@ -713,12 +795,11 @@ const Profile = (props: Props) => {
                           value={formik.values.phone_number}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          className={`bg-gray-100 border ${
-                            formik.touched.phone_number &&
+                          className={`bg-gray-100 border ${formik.touched.phone_number &&
                             formik.errors.phone_number
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
+                            ? "border-red-500"
+                            : "border-gray-300"
+                            } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
                         />
                         {formik.touched.phone_number &&
                           formik.errors.phone_number && (
@@ -739,11 +820,10 @@ const Profile = (props: Props) => {
                           value={formik.values.gender}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          className={`bg-gray-100 border ${
-                            formik.touched.gender && formik.errors.gender
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
+                          className={`bg-gray-100 border ${formik.touched.gender && formik.errors.gender
+                            ? "border-red-500"
+                            : "border-gray-300"
+                            } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
                         >
                           <option value={0}>Chọn</option>
                           <option value={1}>Male</option>
@@ -769,11 +849,10 @@ const Profile = (props: Props) => {
                           value={formik.values.birthday}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          className={`bg-gray-100 border ${
-                            formik.touched.birthday && formik.errors.birthday
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
+                          className={`bg-gray-100 border ${formik.touched.birthday && formik.errors.birthday
+                            ? "border-red-500"
+                            : "border-gray-300"
+                            } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
                         />
                         {formik.touched.birthday && formik.errors.birthday && (
                           <div className="text-red-500 text-sm mt-1">
@@ -829,6 +908,37 @@ const Profile = (props: Props) => {
           </div>
         </div>
       </div>
+      {showReviewForm && reviewFormData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
+          <div className="mt-[115px] bg-white rounded-lg w-full lg:w-1/2 p-6"> {/* Đảm bảo modal chiếm 100% chiều rộng màn hình */}
+            <div className="overflow-y-auto max-h-[70vh]"> {/* Đảm bảo nội dung có thể cuộn */}
+              {reviewFormData.map((data, index) => (
+                <div key={data.product_item_id} className="mb-8 w-full"> {/* Đảm bảo form chiếm 100% chiều rộng */}
+                  <ReviewForm
+                    commentData={data}
+                    onClose={() => setShowReviewForm(false)}
+                    productName={data.product_name}
+                    productImage={data.product_image}
+                    color_name={data.color_name}
+                    size_name={data.size_name}
+                    quantity={data.quantity}
+                    color_hex={data.color_hex}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowReviewForm(false)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

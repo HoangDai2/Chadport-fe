@@ -183,14 +183,12 @@ function ProductUpdate({ onEdit, categories }: Props) {
   // fake;
   const [activeSize, setActiveSize] = useState(null);
 
-
   const handleSizeClick = (size: any) => {
     setActiveSize(size);
   };
 
   return (
-    (
-       <div className="p-8 bg-gray-50 min-h-screen flex justify-center">
+    <div className="p-8 bg-gray-50 min-h-screen flex justify-center">
       <form action="" className="w-[100%]" onSubmit={handleSubmit(onSubmit)}>
         {/* nút thêm sản phẩm */}
         <div className="grid grid-cols-4 grid-rows-1 gap-4 p-4">
@@ -210,7 +208,12 @@ function ProductUpdate({ onEdit, categories }: Props) {
           </div>
         </div>
 
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div
+          className="w-full grid  gap-8"
+          style={{
+            gridTemplateColumns: `repeat(var(--x-columns, 2), 1fr)`,
+          }}
+        >
           {/* General Information */}
           <div className="p-6 bg-white rounded-lg text-left">
             <h2 className="text-lg font-semibold mb-5 text-gray-800">
@@ -393,7 +396,7 @@ function ProductUpdate({ onEdit, categories }: Props) {
         </div>
       </form>
     </div>
-  ))
+  );
 }
 
 export default ProductUpdate;

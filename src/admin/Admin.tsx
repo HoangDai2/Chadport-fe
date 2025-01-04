@@ -2,6 +2,7 @@ import React from "react";
 import SideBarAD from "./components/SideBarAD";
 import HeaderAD from "./components/HeaderAD";
 import { Outlet } from "react-router-dom";
+import { LoadingProvider } from "../pages/Loadings/LoadinfContext";
 
 const Admin: React.FC = () => {
   return (
@@ -12,7 +13,9 @@ const Admin: React.FC = () => {
           <HeaderAD />
           <main className="py-6 bg-surface-secondary">
             <div className="container-fluid">
-              <Outlet />
+              <LoadingProvider>
+                <Outlet />
+              </LoadingProvider>
             </div>
           </main>
         </div>
