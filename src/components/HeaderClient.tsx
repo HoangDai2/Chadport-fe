@@ -6,6 +6,7 @@ import Tcategory from "../Types/TCategories";
 import apisphp from "../Service/api";
 import { useUserContext } from "../pages/AuthClient/UserContext";
 import CartData from "../Types/TCart";
+import axios from "axios";
 const HeaderClientC = ({
   carCount,
   wishlisCount,
@@ -134,7 +135,12 @@ const HeaderClientC = ({
   };
 
   // hàm này xử lý chuyển hướng đến sản phẩm chi tiết
-  const goToProductDetail = (id: number) => {
+  const goToProductDetail = async (id: number) => {
+    await axios.post(`http://127.0.0.1:8000/api/log-search`, {
+      id: id,
+    });
+    setIsSearchOpen(false);
+
     navigate(`/shop-details/${id}`);
   };
 
@@ -229,7 +235,7 @@ const HeaderClientC = ({
 
         // Lấy dữ liệu giỏ hàng với header token
         const response = await apisphp.get("user/cart", { headers });
-        console.log(response);
+        // console.log(response);
 
         setCart(response.data); // Lưu dữ liệu vào state cartData
         setLoading(false); // Dừng trạng thái loading sau khi lấy dữ liệu
@@ -244,6 +250,17 @@ const HeaderClientC = ({
 
   return (
     <>
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-70 z-50">
+          <div className="flex flex-col items-center animate-pulse">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-black-400 mb-4"></div>
+            <p className="text-white text-lg font-semibold">
+              Đang tải kết quả...
+            </p>
+          </div>
+        </div>
+      )}
+
       <div
         className="header-desktop p-4 border-b"
         style={{
