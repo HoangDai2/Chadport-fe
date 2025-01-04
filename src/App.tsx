@@ -69,7 +69,7 @@ import createCategory from "./Service/categories";
 import createProduct from "./Service/Product";
 import { useNavigate } from "react-router-dom";
 import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
-import Orders from "./admin/pages/ListBill";
+import Orders from "./admin/pages/OrderAdmin/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
 import LoginAdmin from "./admin/pages/LoginAdmin";
@@ -86,6 +86,8 @@ import ShopDetails from "./pages/payment/ShopDetails";
 import ThongKe from "./admin/pages/ThongKe";
 import { LoadingProvider } from "./pages/Loadings/LoadinfContext";
 import RefundForm from "./pages/Order/FormRefund";
+import RefundNotification from "./pages/Order/RefundNotification";
+import CancelOrder from "./admin/pages/OrderAdmin/CancelOrder";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -519,7 +521,7 @@ function App() {
               }
             />
             <Route
-              path="/formrefund"
+              path="/formrefund/:order_id"
               element={
                 <>
                   <HeaderClient
@@ -530,6 +532,10 @@ function App() {
                   <FooterClient />
                 </>
               }
+            />
+            <Route
+              path="/refund-notification"
+              element={<RefundNotification />}
             />
           </Routes>
         </LoadingProvider>
@@ -576,6 +582,7 @@ function App() {
               />
               <Route path="size" element={<SizeForm />} />
               <Route path="color" element={<ColorForm />} />
+              <Route path="cancel_order" element={<CancelOrder />} />
             </Route>
           </Route>
         </Routes>

@@ -1,3 +1,4 @@
+
 // src/pages/AuthClient/ReviewForm.tsx
 import React, { useState } from "react";
 import { FaStar } from "react-icons/fa"; // Import icon thư viện
@@ -10,9 +11,22 @@ interface ReviewFormProps {
   onClose: () => void; // Hàm để đóng modal
   productName: string; // Tên sản phẩm
   productImage: string; // URL hình ảnh sản phẩm
+  color_name: string, // Ảnh sản phẩm
+  size_name: string,
+  quantity: number,
+  color_hex: string,
 }
 
-const ReviewForm: React.FC<ReviewFormProps> = ({ commentData, onClose, productName, productImage }) => {
+const ReviewForm: React.FC<ReviewFormProps> = ({
+  commentData,
+  onClose,
+  productName,
+  productImage,
+  color_name, // Ảnh sản phẩm
+  size_name,
+  quantity,
+  color_hex,
+}) => {
   const { token } = useUserContext(); // Lấy token từ UserContext
 
   // Kiểm tra dữ liệu đầu vào
@@ -31,7 +45,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ commentData, onClose, productNa
   };
 
   // Hàm thay đổi nội dung bình luận
-  const handleReviewContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleReviewContentChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const { value } = e.target;
     setReviewData((prev) => ({ ...prev, content: value }));
   };
@@ -71,12 +87,16 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ commentData, onClose, productNa
         rating: reviewData.rating,
         image: reviewData.image,
       });
-      const response = await axios.post("http://127.0.0.1:8000/api/user/add/comments", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/user/add/comments",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.status === 200) {
         alert("Đánh giá thành công!");
@@ -85,19 +105,46 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ commentData, onClose, productNa
       }
     } catch (error: any) {
       console.error("Error adding comment:", error);
-      alert("Đã có lỗi xảy ra khi gửi đánh giá: " + (error.response?.data?.error || error.message));
+      alert(
+        "Đã có lỗi xảy ra khi gửi đánh giá: " +
+        (error.response?.data?.error || error.message)
+      );
     }
   };
 
   return (
-    <div className="bg-white rounded-lg w-3/4 lg:w-1/2 p-6">
-      {/* Display Product Name and Image */}
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold">{productName}</h3>
-        {productImage && (
-          <img src={productImage} alt={productName} className="w-full h-auto rounded-md mb-2" />
-        )}
+    <div className="text-left bg-white rounded-lg w-4/4 lg:w-2/2 p-6">
+      {/*Product Name and Image */}
+      <div className="flex items-center justify-between  bg-white rounded-md mb-4">
+        {/* Hình ảnh sản phẩm */}
+        <div className="flex items-center space-x-4">
+          <img
+            src={`http://127.0.0.1:8000/storage/${productImage}`} // Thay đường dẫn bằng URL ảnh thực tế
+            alt="Product Image"
+            className="w-20 h-20 object-cover rounded-md border border-gray-200"
+          />
+          {/* Thông tin sản phẩm */}
+          <div>
+            <p className="text-base font-semibold text-gray-800">
+              {productName}
+            </p>
+            <p className="text-sm text-gray-700 mt-1 flex items-center space-x-3">
+              {/* Hiển thị màu sắc */}
+              <span
+                className="inline-block w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm"
+                style={{
+                  backgroundColor: color_hex || "#E5E7EB",
+                }}
+              ></span>
+              <span className="font-medium text-gray-800">
+                Size: {size_name} - {color_name}
+              </span>
+            </p>
+            <p className="text-sm text-gray-600">Số lượng: {quantity}</p>
+          </div>
+        </div>
       </div>
+
       <h3 className="text-2xl font-semibold mb-4">Đánh Giá Sản Phẩm</h3>
       <div className="mb-4">
         <label className="block text-gray-700">Chất lượng sản phẩm:</label>
@@ -105,7 +152,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ commentData, onClose, productNa
           {[1, 2, 3, 4, 5].map((star) => (
             <FaStar
               key={star}
-              className={`cursor-pointer ${star <= reviewData.rating ? "text-yellow-500" : "text-gray-300"}`}
+              className={`cursor-pointer ${star <= reviewData.rating ? "text-yellow-500" : "text-gray-300"
+                }`}
               onClick={() => handleReviewChange(star)}
               size={30}
             />
