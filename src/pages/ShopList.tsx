@@ -134,6 +134,7 @@ const ShopList = () => {
               </div>
             </div>
           </div>
+
           <div id="content" className="site-content" role="main">
             <div className="section-padding">
               <div className="section-container p-l-r">

@@ -1,42 +1,35 @@
 import React, { useState } from "react";
 import imm1 from "../../img/WMNS+AIR+JORDAN+1.jpg";
-import TComments from "../../Types/TComments";
+
 import { useEffect } from "react";
 import apisphp from "../../Service/api";
 import { useParams, useNavigate } from "react-router-dom";
-import { postComment } from "./CommentsAdd";
 import TUser from "../../Types/TUsers";
-import { handleDislike, handleLike } from "./LikeAndDislike";
-import { useUserContext } from "../AuthClient/UserContext";
-type Props = {};
 
-const CommentSection = ({ commentId }: any) => {
+import { useUserContext } from "../AuthClient/UserContext";
+type TComments = {
+  comment_id: number;
+  user_id: number;
+  content: string;
+  rating: number;
+  created_at: string;
+  user: {
+    first_name: string;
+    image_user: string;
+  };
+};
+
+const CommentSection = () => {
   const { user } = useUserContext();
 
   const token = localStorage.getItem("jwt_token");
   const [showAlert, setShowAlert] = useState(false);
   const { id } = useParams();
-  const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
-  const [dislikeCounts, setDislikeCounts] = useState<Record<number, number>>(
-    {}
-  );
 
   const [openSection, setOpenSection] = useState(null);
   const [visibleCommentsCount, setVisibleCommentsCount] = useState(3);
   const [comment, setComments] = useState<TComments[]>([]);
-  const [newComment, setNewComment] = useState<TComments>({
-    comment_id: 0,
-    product_id: Number(id),
-    user_id: 1,
-    user: {} as TUser,
-    content: "",
-    rating: 0,
-    like_count: 0,
-    dislike_count: 0,
-    reported: false,
-    created_at: "",
-    updated_at: "",
-  });
+  
   const [menuVisibleCommentId, setMenuVisibleCommentId] = useState<
     number | null
   >(null);
@@ -49,66 +42,27 @@ const CommentSection = ({ commentId }: any) => {
   };
 
   // lấy data từ bên server show ra người dung
+  // Lấy bình luận từ API
   useEffect(() => {
-    const fetchDataComments = async () => {
+    const fetchComments = async () => {
       try {
-        // đoạn này sẽ lấy data comments
-        const commetsResponse = await apisphp.get(`/getall/comments/${id}`);
-        setComments(commetsResponse.data.data);
+        const response = await apisphp.get(`user/getall/comments/${id}`);
+        setComments(response.data.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching comments:", error);
       }
     };
+    fetchComments();
+    console.log(fetchComments)
+  }, [id]);
 
-    fetchDataComments();
-  }, []);
 
-  // Hàm xử lý khi nhấn nút Post Comment
-  const handlePostComment = async () => {
-    if (!token) {
-      setShowAlert(true);
-      return;
-    }
-    const commentData = { ...newComment };
-
-    if (commentData.content.trim()) {
-      try {
-        console.log("Posting Comment:", commentData);
-        const createdComment = await postComment(commentData);
-        setComments([createdComment, ...comment]); // Thêm bình luận mới vào đầu danh sách
-        setNewComment({ ...newComment, content: "", rating: 0 }); // Reset nội dung và đánh giá
-      } catch (error) {
-        console.error("Error posting comment:", error);
-      }
-    } else {
-      alert("Vui lòng nhập nội dung trước khi đăng!");
-    }
+  // Hiển thị sao
+  const renderStars = (rating: number) => {
+    return "★".repeat(rating) + "☆".repeat(5 - rating);
   };
 
-  const handleEditComment = (commentId: number) => {
-    alert(`Edit comment ID: ${commentId}`);
-  };
-
-  const handleDeleteComment = (commentId: number) => {
-    alert(`Delete comment ID: ${commentId}`);
-  };
-
-  // hàm này để lưu rating
-  const handleRatingSelect = (star: number) => {
-    setNewComment({ ...newComment, rating: star });
-  };
-
-  // hàm này để chuyển đổi giá trị number ở db sang biếu tưởng hình sao
-  const renderStars = (rating: any) => {
-    return "★".repeat(rating);
-  };
-
-  const handleEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Ngăn xuống dòng
-      handlePostComment(); // Gọi hàm đăng bình luận
-    }
-  };
+ 
 
   // xổ menu
   const handleMenuToggle = (commentId: number) => {
@@ -116,267 +70,53 @@ const CommentSection = ({ commentId }: any) => {
       menuVisibleCommentId === commentId ? null : commentId
     );
   };
-
-  // Tải số lượng like/dislike từ localStorage khi component mount
-  useEffect(() => {
-    comment.forEach((com) => {
-      const storedLikes = localStorage.getItem(`likes_${com.comment_id}`);
-      const storedDislikes = localStorage.getItem(`dislikes_${com.comment_id}`);
-      setLikeCounts((prev) => ({
-        ...prev,
-        [com.comment_id]: storedLikes ? parseInt(storedLikes) : 0,
-      }));
-      setDislikeCounts((prev) => ({
-        ...prev,
-        [com.comment_id]: storedDislikes ? parseInt(storedDislikes) : 0,
-      }));
-    });
-  }, [comment]);
-
-  // giao diện hiện thị thông báo check login hay chưa để cho phép bình luận
-  const renderAlert = () => {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-        <div
-          className="bg-gradient-to-br from-white to-gray-100 p-6 rounded-2xl shadow-2xl transform transition-transform duration-500 scale-100 animate-fade-in"
-          style={{ maxWidth: "450px", width: "100%" }}
-        >
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full shadow-lg mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-12 h-12 text-red-500"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM11 6h2v7h-2V6zm0 9h2v2h-2v-2z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
-              Yêu cầu đăng nhập
-            </h2>
-            <p className="text-gray-600 text-center mb-6">
-              Bạn cần đăng nhập/đăng kí để thực hiện chức năng này. Vui lòng
-              thực hiện để tiếp tục.
-            </p>
-          </div>
-          <div className="flex justify-center space-x-4">
-            <button
-              className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all duration-200"
-              onClick={() => setShowAlert(false)}
-            >
-              Đóng
-            </button>
-            <button
-              className="px-6 py-2 bg-black text-white rounded-lg hover:bg-blue-600 shadow-lg transition-all duration-200"
-              onClick={() => {
-                setShowAlert(false);
-                window.location.href = "/login"; // Điều hướng đến trang login
-              }}
-            >
-              Đăng nhập
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
+ 
 
   return (
     <>
-      {showAlert && renderAlert()}
+      {showAlert}
       {/* Description Additional information Reviews */}
       <div className="w-full border-t border-gray-300 mt-[50px]">
         {/* Đánh giá */}
         <div className="border-b border-gray-300">
-          <div
-            className="flex justify-between items-center px-4 py-3 font-semibold cursor-pointer"
-            onClick={() => toggleSection("reviews")}
-          >
-            <span className="text-lg">Đánh giá ({comment.length})</span>
-            <span className="text-xl">
-              {openSection === "reviews" ? "▲" : "▼"}
-            </span>
-          </div>
-          {openSection === "reviews" && (
-            <div className="w-full border-t border-gray-300 p-4 md:p-8">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
-                <h2 className="text-4xl font-bold">
-                  4.9 <span className="text-green-500">★★★★★</span>
-                </h2>
-              </div>
-
-              {/* Lọc và sắp xếp */}
-              <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-                <div className="flex space-x-2 mb-4 md:mb-0">
-                  {[5, 4, 3, 2, 1].map((star) => (
-                    <button
-                      key={star}
-                      className={`px-3 py-1 border rounded ${
-                        newComment.rating === star
-                          ? "bg-yellow-400 text-white"
-                          : "hover:bg-gray-200"
-                      }`}
-                      onClick={() => handleRatingSelect(star)}
-                    >
-                      ★ {star}
-                    </button>
-                  ))}
-                </div>
-                <div className="w-full md:w-auto">
-                  <select className="w-full md:w-auto border border-gray-300 px-3 py-1 rounded">
-                    <option value="newest">Tất Cả</option>
-                    <option value="newest">Hình Ảnh</option>
-                    <option value="oldest">Video</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Danh sách bình luận */}
-              <div className="space-y-4">
-                {visibleComments.map((com: TComments) => (
-                  <div key={com.comment_id} className="border-b pb-4 mb-4">
-                    <div className="grid grid-cols-5 gap-4">
-                      <div className="col-span-1 row-span-2 flex flex-col items-center justify-center text-green-500 space-y-2">
-                        <div>{renderStars(com.rating)}</div>
-                        <img
-                          src={
-                            user && user.image_user
-                              ? `http://127.0.0.1:8000${user.image_user}`
-                              : "/default-avatar.png" // Đường dẫn đến ảnh mặc định
-                          }
-                          alt="User Avatar"
-                          className="w-[5rem] h-[5rem] rounded-full object-cover"
-                        />
-                      </div>
-
-                      <div className="col-span-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-3">
-                        <span className="font-semibold">
-                          {com.user ? com.user.firt_name : "Unknown User"}
-                        </span>
-
-                        <span className="text-gray-500 text-sm">
-                          {com.created_at}
-                        </span>
-                      </div>
-
-                      <div className="col-span-4 row-span-1">
-                        <p className="text-gray-700 text-left">{com.content}</p>
-                        <div className="col-span-4 flex items-center mt-2 space-x-4 text-sm text-gray-500">
-                          <button className="hover:text-black">Đọc thêm</button>
-                          <button className="hover:text-black">
-                            Báo cáo đánh giá
-                          </button>
-
-                          {/* phần này xử lí nút like và dislike fake */}
-                          <div className="flex items-center space-x-1">
-                            <button
-                              onClick={() =>
-                                handleLike(
-                                  com.comment_id,
-                                  likeCounts,
-                                  setLikeCounts
-                                )
-                              }
-                              className="hover:text-black"
-                            >
-                              👍
-                            </button>
-                            <span>{likeCounts[com.comment_id] || 0}</span>
-                            <button
-                              onClick={() =>
-                                handleDislike(
-                                  com.comment_id,
-                                  dislikeCounts,
-                                  setDislikeCounts
-                                )
-                              }
-                              className="hover:text-black"
-                            >
-                              👎
-                            </button>
-                            <span>{dislikeCounts[com.comment_id] || 0}</span>
-                          </div>
-
-                          <div className="relative">
-                            <button
-                              style={{ fontSize: "15px" }}
-                              onClick={() => handleMenuToggle(com.comment_id)}
-                            >
-                              ...
-                            </button>
-                            {menuVisibleCommentId === com.comment_id && (
-                              <div className="absolute right-[-60px] bg-white border p-2 shadow-lg rounded-md">
-                                <button
-                                  key={com.comment_id}
-                                  onClick={() =>
-                                    handleEditComment(com.comment_id)
-                                  }
-                                  className="block px-2 py-1 hover:bg-gray-100"
-                                >
-                                  Sửa
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleDeleteComment(com.comment_id)
-                                  }
-                                  className="block px-2 py-1 hover:bg-gray-100"
-                                >
-                                  Xóa
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+        <div
+          className="flex justify-between items-center px-4 py-3 font-semibold cursor-pointer"
+          onClick={() => toggleSection("reviews")}
+        >
+          <span className="text-lg">Đánh giá ({comment.length})</span>
+          <span className="text-xl">{openSection === "reviews" ? "▲" : "▼"}</span>
+        </div>
+        {openSection === "reviews" && (
+          <div className="w-full border-t border-gray-300 p-4">
+            {/* Danh sách bình luận */}
+            <div className="space-y-4">
+              {comment.map((comment) => (
+                <div key={comment.comment_id} className="border-b pb-4">
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={
+                        comment.user?.image_user
+                          ? `http://127.0.0.1:8000${comment.user.image_user}`
+                          : "/default-avatar.png"
+                      }
+                      alt="User Avatar"
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="font-semibold">{comment.user?.first_name || "Unknown User"}</p>
+                      <p className="text-gray-500 text-sm">{comment.created_at}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              {/* Post Comment */}
-              <textarea
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                placeholder="Viết bình luận của bạn..."
-                rows={4}
-                value={newComment.content}
-                onChange={(e) =>
-                  setNewComment({ ...newComment, content: e.target.value })
-                }
-                onKeyDown={handleEnterPress}
-                style={{
-                  resize: "none", // Ngăn người dùng thay đổi kích thước
-                  overflowWrap: "break-word", // Ngắt từ dài khi đạt chiều rộng tối đa
-                  whiteSpace: "pre-wrap", // Giữ nguyên khoảng trắng và ngắt dòng tự động
-                }}
-              />
-
-              {/* Link đến Xem thêm bình luận / Ẩn bình luận */}
-              <div className="flex justify-center mt-4">
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setVisibleCommentsCount(
-                      visibleCommentsCount < comment.length
-                        ? visibleCommentsCount + 3
-                        : 3
-                    );
-                  }}
-                  className="text-sm text-gray-500 hover:underline"
-                >
-                  {visibleCommentsCount < comment.length
-                    ? "Xem thêm bình luận"
-                    : "Ẩn bình luận"}
-                </a>
-              </div>
+                  <div className="mt-2">
+                    <p className="text-gray-700">{comment.content}</p>
+                    <p className="text-yellow-500">{renderStars(comment.rating)}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
         {/* Mô tả */}
         <div className="border-b border-gray-300">
