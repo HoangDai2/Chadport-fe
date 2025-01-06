@@ -11,14 +11,10 @@ import { toast, ToastContainer } from "react-toastify";
 import { useLoading } from "../Loadings/LoadinfContext";
 import CancelOrderForm from "../Order/CancelOrder";
 import { FaAngleDown } from "react-icons/fa";
-
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReviewForm from "./ReviewForm";
 import TComments from "../../Types/TComments";
-
-
-import { Link } from "react-router-dom";
-
-import { useNavigate } from "react-router-dom";
 type Props = {};
 const genderMapping = {
   male: 1,
@@ -60,7 +56,6 @@ const Profile = (props: Props) => {
 
   const [showReviewForm, setShowReviewForm] = useState(false); // State để điều khiển hiển thị ReviewForm
   const [reviewFormData, setReviewFormData] = useState<TComments | null>(null); // Sử dụng TComments
-
 
   // xử lí nút hoàn trả tiền hiện form
   const [isRefundFormOpen, setRefundFormOpen] = useState(false);
@@ -174,7 +169,6 @@ const Profile = (props: Props) => {
     id: number;
     order_id: number;
     status: string;
-    product_item_id: number;
     [key: string]: any; // Nếu đơn hàng có nhiều trường khác, bạn có thể thay thế bằng kiểu cụ thể
   }
 
@@ -267,22 +261,21 @@ const Profile = (props: Props) => {
               Chờ
             </button>
 
-              <button
-                className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                onClick={() => setShowCancelForm(true)}
-              >
-                Hủy Đơn Hàng
-              </button>
-            </div>
-          );
-        case "đang giao":
-          return (
-            <div className="flex space-x-4">
-              {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
-              <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
-                Theo dõi đơn hàng
-              </button>
-
+            <button
+              className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              onClick={() => setShowCancelForm(true)}
+            >
+              Hủy Đơn Hàng
+            </button>
+          </div>
+        );
+      case "đang giao":
+        return (
+          <div className="flex space-x-4">
+            {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
+            <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
+              Theo dõi đơn hàng
+            </button>
 
             {/* nút hủy đơn hàng */}
             <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
@@ -355,13 +348,12 @@ const Profile = (props: Props) => {
               Yêu Cầu Trả Hàng/Hoàn Tiền
             </button>
 
-
-              {/* nút hủy đơn hàng */}
+            {/* Dropdown Menu */}
+            <div className="relative">
               <button
-                className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                onClick={() => setShowCancelForm(true)}
+                className="bg-white border px-4 py-2 rounded-lg hover:bg-gray-100 flex items-center"
+                onClick={() => setShowDropdown(!showDropdown)}
               >
-
                 Thêm
                 <span
                   className={`ml-2 transform transition-transform ${showDropdown ? "rotate-180" : "rotate-0"
@@ -369,8 +361,18 @@ const Profile = (props: Props) => {
                 >
                   <FaAngleDown />
                 </span>
-
               </button>
+
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                  <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    Liên Hệ Người Bán
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                    Mua Lại
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -422,23 +424,19 @@ const Profile = (props: Props) => {
               Mua lại
             </button>
 
+            {/* Nút Xem chi tiết đơn hàng */}
+            <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
+              Xem chi tiết đơn hàng
+            </button>
 
-              {/* Nút Xem chi tiết đơn hàng */}
-              <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
-                Xem chi tiết đơn hàng
-              </button>
-
-              {/* nút  Liên hệ người bán */}
-              <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
-                Liên hệ người bán
-              </button>
-            </div>
-          );
-        default:
-          break;
-      }
-    } else {
-      return <p className="text-gray-500 text-center mt-6">Không có sản phẩm nào trong đơn hàng.</p>;
+            {/* nút  Liên hệ người bán */}
+            <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+              Liên hệ người bán
+            </button>
+          </div>
+        );
+      default:
+        break;
     }
   };
 
@@ -633,8 +631,8 @@ const Profile = (props: Props) => {
               "Tất cả",
               "chờ xử lí",
               "đang giao",
-              "đã hoàn thành",
               "đã thanh toán",
+              "đã hoàn thành",
               "bị hủy",
             ].map((status) => (
               <button
@@ -655,90 +653,6 @@ const Profile = (props: Props) => {
             <div className="col-span-3 row-span-3 space-y-4">
               {filteredOrders && filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
-                  // console.log(order),
-                  <div
-                    onClick={() => handleViewDetails(order)}
-                    key={order.id}
-                    className="bg-white rounded-lg px-4 py-2 border border-gray-300 hover:shadow-lg transition-shadow duration-200"
-                  >
-                    <hr className="border-t border-dashed border-gray-600 my-6" />
-
-                    <div className="flex flex-col md:flex-row gap-6">
-                      <img
-                        src={
-                          order.products[0]?.product_image
-                            ? `http://127.0.0.1:8000/storage/${order.products[0]?.product_image}`
-                            : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
-                        }
-                        className="w-24 h-24 object-cover rounded-lg  border-gray-200"
-                        alt="Product"
-                      />
-                      <div className="flex flex-col text-left flex-1">
-                        <p className="text-base  text-gray-800 font-semibold">
-                          {order.products[0]?.product_name}
-                        </p>
-
-                        <p className="text-sm text-gray-700 mt-1 flex items-center space-x-3">
-                          {/* Hiển thị màu sắc */}
-                          <span
-                            className="inline-block w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm"
-                            style={{
-                              backgroundColor:
-                                order.products[0]?.color_hex || "#E5E7EB", // Mặc định màu xám nhạt nếu không có dữ liệu
-                            }}
-                          ></span>
-                          {/* Hiển thị size và màu */}
-                          <span className="font-medium text-gray-800">
-                            Size: {order.products[0]?.size_name} -{" "}
-                            {order.products[0]?.color_name}
-                          </span>
-                        </p>
-
-                        <p className="text-sm text-gray-700 mt-1 flex items-center space-x-3">
-                          Số lượng: {order.products[0]?.quantity}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end justify-center">
-                        <p className="uppercase whitespace-nowrap mb-5  text-end text-black font-medium">
-                          {order.status}
-                        </p>
-                        <p className="text-sm text-gray-500 line-through">
-                          Giá:{" "}
-                          {order.products && order.products[0]?.price
-                            ? new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(Math.ceil(order.products[0].price))
-                            : "null"}
-                        </p>
-                        <p className="text-lg text-red-600 font-semibold">
-                          {order.products && order.products[0]?.price
-                            ? new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(Math.ceil(order.products[0].price))
-                            : "null"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <hr className="border-t border-dashed border-gray-600 my-6" />
-
-                    <div className="flex justify-end">
-                      <p className="text-sm text-gray-500 mt-1">
-                        Số tiền phải trả:{" "}
-                      </p>
-                      <p className="text-lg text-red-600 font-bold">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(order.total_money)}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap justify-end gap-4">
-                      {renderButtonCancelOrder(order)}
-
                   <div
                     onClick={() => handleViewDetails(order)}
                     key={order.id}
@@ -824,9 +738,7 @@ const Profile = (props: Props) => {
                     </div>
 
                     <div className="mt-4 flex flex-wrap justify-end gap-4">
-
                       {renderButtonCancelOrder(order)}
-
                       {showCancelForm && (
                         <CancelOrderForm
                           onClose={() => setShowCancelForm(false)}
@@ -997,7 +909,6 @@ const Profile = (props: Props) => {
         </div>
       </div>
       {showReviewForm && reviewFormData && (
-
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
           <div className="mt-[115px] bg-white rounded-lg w-full lg:w-1/2 p-6"> {/* Đảm bảo modal chiếm 100% chiều rộng màn hình */}
             <div className="overflow-y-auto max-h-[70vh]"> {/* Đảm bảo nội dung có thể cuộn */}
@@ -1026,7 +937,6 @@ const Profile = (props: Props) => {
               </button>
             </div>
           </div>
-
         </div>
       )}
     </>
