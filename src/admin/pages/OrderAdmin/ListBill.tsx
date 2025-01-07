@@ -46,6 +46,7 @@ const Orders1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -252,8 +253,8 @@ const Orders1: React.FC = () => {
                     {order.payment_method === "1"
                       ? "Thanh toán trực tiếp"
                       : order.payment_method === "2"
-                      ? "Thanh toán online"
-                      : "Credit Card"}
+                        ? "Thanh toán online"
+                        : "Credit Card"}
                   </td>
                   <td className="text-sm font-medium text-gray-600 w-24">
                     {order.total_money} VND
@@ -290,9 +291,8 @@ const Orders1: React.FC = () => {
                               (status.value === "bị hủy" &&
                                 order.status !== "bị hủy")
                             }
-                            className={`${
-                              isCurrentStatus ? "bg-blue-500 font-bold" : ""
-                            } disabled:bg-gray-300`}
+                            className={`${isCurrentStatus ? "bg-blue-500 font-bold" : ""
+                              } disabled:bg-gray-300`}
                           >
                             {status.label}
                           </option>
@@ -327,11 +327,10 @@ const Orders1: React.FC = () => {
               (_, index) => (
                 <button
                   key={index}
-                  className={`py-2 px-4 mx-1 rounded-md ${
-                    index + 1 === currentPage
+                  className={`py-2 px-4 mx-1 rounded-md ${index + 1 === currentPage
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-700"
-                  }`}
+                    }`}
                   onClick={() => handlePageChange(index + 1)}
                 >
                   {index + 1}
@@ -357,7 +356,7 @@ const Orders1: React.FC = () => {
                     </p>
                     <div className="space-y-4 mt-4">
                       {selectedOrder.data.products &&
-                      selectedOrder.data.products.length > 0 ? (
+                        selectedOrder.data.products.length > 0 ? (
                         selectedOrder.data.products.map((item) => (
                           <div
                             key={item.product_id}

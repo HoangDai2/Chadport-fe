@@ -21,7 +21,7 @@ function ProductList() {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchProducts = async (page: number) => {
       try {
@@ -29,9 +29,12 @@ function ProductList() {
         setProducts(response.data.data);
         setCurrentPage(response.data.current_page);
         setLastPage(response.data.last_page);
+        setLoading(true)
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Error fetching products");
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -80,6 +83,20 @@ function ProductList() {
     }
   };
 
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex flex-col items-center">
+        {/* Vòng tròn quay */}
+        <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin"></div>
+
+        {/* Dòng thông báo */}
+        <p className="mt-4 text-gray-600 text-lg font-medium">
+          Đang tải dữ liệu
+          <span className="animate-pulse">...</span>
+        </p>
+      </div>
+    </div>; // Hiển thị trạng thái loading
+  }
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,9 +107,8 @@ function ProductList() {
 
           {message && (
             <div
-              className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${
-                currentAction === "Delete" ? "bg-green-500" : "bg-red-500"
-              } text-white`}
+              className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${currentAction === "Delete" ? "bg-green-500" : "bg-red-500"
+                } text-white`}
             >
               {message}
             </div>
@@ -149,11 +165,10 @@ function ProductList() {
                       <td className="px-2 py-2 whitespace-nowrap">{product.price}</td>
                       <td className="px-2 py-2 whitespace-nowrap">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            product.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${product.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                            }`}
                         >
                           {product.status}
                         </span>

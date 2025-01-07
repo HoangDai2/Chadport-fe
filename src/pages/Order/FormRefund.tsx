@@ -7,6 +7,8 @@ import apisphp from "../../Service/api";
 import RefundRequest, { AccountInfo, Note } from "../../Types/TCancelOrder";
 import { useNavigate } from "react-router-dom";
 import { useLoading } from "../Loadings/LoadinfContext";
+import { MdOutlineCameraAlt } from "react-icons/md";
+import { CiVideoOn } from "react-icons/ci";
 interface Product {
   product_item_id: number;
   product_name: string;
@@ -219,17 +221,17 @@ const RefundForm = () => {
                   Giá:{" "}
                   {product.price
                     ? new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(Math.ceil(product.price))
+                      style: "currency",
+                      currency: "VND",
+                    }).format(Math.ceil(product.price))
                     : "null"}
                 </p>
                 <p className="text-lg text-red-600 font-semibold">
                   {product.price
                     ? new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(Math.ceil(product.price))
+                      style: "currency",
+                      currency: "VND",
+                    }).format(Math.ceil(product.price))
                     : "null"}
                 </p>
               </div>
@@ -304,6 +306,55 @@ const RefundForm = () => {
 
           {/* Thông tin hoàn tiền */}
           <div className="col-span-1 p-6 border rounded-lg bg-white ">
+
+            {/* tải ảnh và video sản phẩm muốn hoàn của khách hàng lên  */}
+            <div className="p-4 border rounded-lg">
+              <p className="text-black text-sm mb-4">
+                *Đăng tải hình ảnh hoặc video thấy rõ số lượng và tất cả sản phẩm nhận được.
+              </p>
+              <div className="flex gap-4">
+                {/* Upload Image */}
+                <label
+                  htmlFor="upload-image"
+                  className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-black"
+                >
+                  <MdOutlineCameraAlt className="text-2xl text-gray-600" />
+                  <p className="text-xs text-gray-600">Thêm Hình ảnh</p>
+                </label>
+                <input
+                  id="upload-image"
+                  type="file"
+                  className="hidden"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    console.log("Hình ảnh đã chọn:", files);
+                  }}
+                />
+
+                {/* Upload Video */}
+                <label
+                  htmlFor="upload-video"
+                  className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-black"
+                >
+                  <CiVideoOn className="text-2xl text-gray-600" />
+                  <p className="text-xs text-gray-600">Thêm Video</p>
+                </label>
+                <input
+                  id="upload-video"
+                  type="file"
+                  className="hidden"
+                  accept="video/*"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    console.log("Video đã chọn:", files);
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* thông tin số tiền muốn hoàn trả */}
             <h2 className="text-lg font-semibold mb-6 text-gray-800">
               Thông tin hoàn tiền
             </h2>
@@ -321,11 +372,14 @@ const RefundForm = () => {
               <p className="text-base mb-6 text-gray-700">
                 Hoàn tiền vào:{" "}
                 <span className="font-semibold text-gray-800">
-                  Số dư TK VNPAY
+                  SỐ DƯ TÀI KHOẢN CỦA KHÁCH HÀNG
                 </span>
               </p>
             </div>
           </div>
+
+
+
 
           {/* Nút Hoàn thành */}
           <div className="col-span-2 flex justify-end mt-6">
