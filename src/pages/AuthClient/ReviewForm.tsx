@@ -10,9 +10,10 @@ interface ReviewFormProps {
   onClose: () => void; // Hàm để đóng modal
   productName: string; // Tên sản phẩm
   productImage: string; // URL hình ảnh sản phẩm
+  productItem: number;
 }
 
-const ReviewForm: React.FC<ReviewFormProps> = ({ commentData, onClose, productName, productImage }) => {
+const ReviewForm: React.FC<ReviewFormProps> = ({ commentData, onClose, productName, productImage, productItem }) => {
   const { token } = useUserContext(); // Lấy token từ UserContext
 
   // Kiểm tra dữ liệu đầu vào
@@ -94,6 +95,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ commentData, onClose, productNa
       {/* Display Product Name and Image */}
       <div className="mb-4">
         <h3 className="text-xl font-semibold">{productName}</h3>
+        <h3 className="text-xl font-semibold">{productItem}</h3>
         {productImage && (
           <img src={productImage} alt={productName} className="w-full h-auto rounded-md mb-2" />
         )}
