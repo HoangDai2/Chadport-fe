@@ -9,14 +9,14 @@ import TUser from "../../Types/TUsers";
 import { useUserContext } from "../AuthClient/UserContext";
 type TComments = {
   comment_id: number;
+  product_item_id: number;
   user_id: number;
+  user: TUser;
   content: string;
   rating: number;
+  reported: boolean;
   created_at: string;
-  user: {
-    first_name: string;
-    image_user: string;
-  };
+  updated_at: string;
 };
 
 const CommentSection = () => {
@@ -24,45 +24,55 @@ const CommentSection = () => {
 
   const token = localStorage.getItem("jwt_token");
   const [showAlert, setShowAlert] = useState(false);
-  const { id } = useParams();
-
-  const [openSection, setOpenSection] = useState(null);
+  const { id: productId } = useParams();
+  const [comments, setComments] = useState<TComments[]>([]);
+  const [openSection, setOpenSection] = useState<string | null>(null);
   const [visibleCommentsCount, setVisibleCommentsCount] = useState(3);
-  const [comment, setComments] = useState<TComments[]>([]);
-  
+
   const [menuVisibleCommentId, setMenuVisibleCommentId] = useState<
     number | null
   >(null);
 
   // Xác định số lượng bình luận hiển thị
-  const visibleComments = comment.slice(0, visibleCommentsCount);
+  const visibleComments = comments.slice(0, visibleCommentsCount);
 
   const toggleSection = (section: any) => {
     setOpenSection(openSection === section ? null : section);
   };
 
-  // lấy data từ bên server show ra người dung
   // Lấy bình luận từ API
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await apisphp.get(`user/getall/comments/${id}`);
-        setComments(response.data.data);
+        const response = await apisphp.get(`/commentsByProductId/${productId}`);
+        setComments(response.data.comments || []);
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
     };
     fetchComments();
-    console.log(fetchComments)
-  }, [id]);
+  }, [productId]);
 
-
-  // Hiển thị sao
-  const renderStars = (rating: number) => {
-    return "★".repeat(rating) + "☆".repeat(5 - rating);
+  // Tính tổng và trung bình số sao
+  const calculateAverageRating = () => {
+    if (comments.length === 0) return 0;
+    const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0);
+    return (totalRating / comments.length).toFixed(1); // Tính trung bình và làm tròn 1 chữ số thập phân
   };
 
- 
+  const averageRating = calculateAverageRating(); // Tính toán trung bình số sao
+
+  // Render stars
+  const renderStars = (rating: number) => {
+    const filledStars = "★".repeat(rating);
+    const emptyStars = "☆".repeat(5 - rating);
+    return (
+      <span className="text-yellow-500">
+        {filledStars}
+        <span className="text-gray-300">{emptyStars}</span>
+      </span>
+    );
+  };
 
   // xổ menu
   const handleMenuToggle = (commentId: number) => {
@@ -70,53 +80,57 @@ const CommentSection = () => {
       menuVisibleCommentId === commentId ? null : commentId
     );
   };
- 
 
   return (
     <>
       {showAlert}
       {/* Description Additional information Reviews */}
       <div className="w-full border-t border-gray-300 mt-[50px]">
-        {/* Đánh giá */}
+        {/* Review Section */}
         <div className="border-b border-gray-300">
-        <div
-          className="flex justify-between items-center px-4 py-3 font-semibold cursor-pointer"
-          onClick={() => toggleSection("reviews")}
-        >
-          <span className="text-lg">Đánh giá ({comment.length})</span>
-          <span className="text-xl">{openSection === "reviews" ? "▲" : "▼"}</span>
-        </div>
-        {openSection === "reviews" && (
-          <div className="w-full border-t border-gray-300 p-4">
-            {/* Danh sách bình luận */}
-            <div className="space-y-4">
-              {comment.map((comment) => (
-                <div key={comment.comment_id} className="border-b pb-4">
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={
-                        comment.user?.image_user
-                          ? `http://127.0.0.1:8000${comment.user.image_user}`
-                          : "/default-avatar.png"
-                      }
-                      alt="User Avatar"
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
+          <div
+            className="flex justify-between items-center px-4 py-3 font-semibold cursor-pointer"
+            onClick={() => setOpenSection(openSection === "reviews" ? null : "reviews")}
+          >
+            <span className="text-lg">Đánh giá ({comments.length})</span>
+            <span className="text-xl">{openSection === "reviews" ? "▲" : "▼"}</span>
+          </div>
+          {openSection === "reviews" && (
+            <div className="w-full border-t border-gray-300 p-4">
+              {/* Tổng số sao */}
+              <div className="flex items-center mb-4">
+                <span className="text-xl font-bold text-yellow-500">
+                  ★ {averageRating} / 5
+                </span>
+                <span className="ml-2 text-gray-600">
+                  ({comments.length} đánh giá)
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                {comments.map((comment, index) => (
+                  <div key={index} className="border-b pb-4">
                     <div>
-                      <p className="font-semibold">{comment.user?.first_name || "Unknown User"}</p>
-                      <p className="text-gray-500 text-sm">{comment.created_at}</p>
+                      <p className="font-semibold">{comment.name}</p>
+                      {/* Nếu có ảnh, hiển thị ảnh */}
+                      {comment.image && (
+                        <img
+                          src={comment.image}
+                          alt={`Comment image by ${comment.name}`}
+                          className="w-16 h-16 mt-2 rounded"
+                        />
+                      )}
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-gray-700">{comment.content}</p>
+                      {renderStars(comment.rating)}
                     </div>
                   </div>
-                  <div className="mt-2">
-                    <p className="text-gray-700">{comment.content}</p>
-                    <p className="text-yellow-500">{renderStars(comment.rating)}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
         {/* Mô tả */}
         <div className="border-b border-gray-300">
@@ -223,5 +237,8 @@ const CommentSection = () => {
     </>
   );
 };
+
+
+
 
 export default CommentSection;
