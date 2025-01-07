@@ -125,7 +125,7 @@ const Checkout = () => {
           headers,
         });
         setCheckes(dataChecked.data);
-        // console.log("data checked", dataChecked.data);
+        console.log("data checked", dataChecked.data);
 
         return dataChecked.data;
       } catch (error) {
@@ -233,6 +233,7 @@ const Checkout = () => {
       const token = localStorage.getItem("jwt_token");
       if (!token) return toast.error("Vui lòng đăng nhập");
 
+      // Kiểm tra token hợp lệ
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
         const isExpired = payload.exp * 1000 < Date.now();
@@ -242,6 +243,7 @@ const Checkout = () => {
         return toast.error("Token không hợp lệ, vui lòng đăng nhập lại.");
       }
 
+      // Kiểm tra tổng tiền
       const totalAmount = Number(checked?.total_amount ?? 0);
       if (isNaN(totalAmount) || totalAmount <= 0) {
         return toast.error(
@@ -249,47 +251,55 @@ const Checkout = () => {
         );
       }
 
+      // Gọi API để tạo đơn hàng
       const orderResponse = await apisphp.post(
         "/user/payment",
         {
           shipping_address: user?.address || "",
           billing_address: user?.address || "",
-          payment_method: "2",
+          payment_method: "2", // Thanh toán VNPay
           phone: user?.phone_number || "",
           email: user?.email || "",
-          total_money: totalAmount, // Đảm bảo giá trị không null
-          ...formData,
+          total_money: totalAmount, // Tổng tiền
+          ...formData, // Dữ liệu form
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      const orderData = orderResponse.data;
-      setOrderDetails({
-        order_number: orderData.order_number,
-        order_id: orderData.id,
-      });
+      const { order_id, order_number } = orderResponse.data;
 
+      // Kiểm tra dữ liệu trả về
+      if (!order_id || !order_number) {
+        return toast.error("Không thể tạo đơn hàng. Vui lòng thử lại.");
+      }
+
+      console.log("Order ID:", order_id);
+      console.log("Order Number:", order_number);
+
+      // Gọi API để tạo URL thanh toán VNPay
       const vnpayResponse = await apisphp.post(
         "/user/create_paymentVnPay",
         {
           amount: totalAmount,
-          order_number: orderData.order_number,
-          order_id: orderData.id,
+          order_number,
+          order_id,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
+      // Kiểm tra URL thanh toán từ VNPay
       if (vnpayResponse.data.url_payment) {
-        window.location.href = vnpayResponse.data.url_payment;
+        console.log("URL Payment:", vnpayResponse.data.url_payment);
+        window.location.href = vnpayResponse.data.url_payment; // Chuyển hướng đến VNPay
       } else {
         toast.error("Không thể tìm thấy URL thanh toán. Vui lòng thử lại.");
       }
     } catch (error) {
-      console.error("Lỗi trong quá trình thanh toán VNPay", error);
+      console.error("Lỗi trong quá trình thanh toán VNPay:", error);
       toast.error("Không thể thực hiện thanh toán. Vui lòng thử lại.");
     }
   };
