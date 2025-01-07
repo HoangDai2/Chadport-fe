@@ -1,7 +1,8 @@
-
+import axios from "axios";
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
-const CancelOrderForm = ({ onClose }: any) => {
+const CancelOrderForm = ({ onClose, orderId, onCancelOrder }: any) => {
   const [selectedReason, setSelectedReason] = useState("");
 
   const reasons = [
@@ -15,12 +16,43 @@ const CancelOrderForm = ({ onClose }: any) => {
   ];
 
   const handleSubmit = () => {
-    alert(`Lý do hủy đơn: ${selectedReason}`);
-    onClose();
+    const payload = {
+      order_id: orderId, // ID của đơn hàng
+      cancel_note: selectedReason, // Lý do hủy đơn hàng
+    };
+    const token = localStorage.getItem("jwt_token");
+    axios
+      .post("http://127.0.0.1:8000/api/user/cancelOrder", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (onCancelOrder) {
+          onCancelOrder(response.data.data); // Đảm bảo response có giá trị `data`
+        }
+        toast.success("Hủy đơn hàng thành công!");
+        console.log("Kết quả:", response.data.data);
+        onClose();
+      })
+      .catch((error) => {
+        console.error("Lỗi:", error.response || error.message);
+        alert("Đã xảy ra lỗi khi hủy đơn hàng. Vui lòng thử lại.");
+      });
   };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-10 flex justify-center items-center z-50">
+      <ToastContainer
+        theme="light"
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+        draggable={true}
+      />
       <div className="p-6 bg-white rounded-lg  w-full max-w-md relative top-[70px]">
         <button
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"

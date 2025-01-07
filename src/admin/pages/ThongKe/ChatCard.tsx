@@ -62,7 +62,7 @@ const ChatCard = () => {
 
       setOrderStats(sortedStats);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      // console.error("Error fetching orders:", error);
     }
   };
 

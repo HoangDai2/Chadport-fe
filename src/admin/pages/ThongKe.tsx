@@ -32,7 +32,7 @@ const ThongKe = () => {
   // Hàm tính doanh thu khi trạng thái đơn hàng là "đã hoàn thành"
   const calculateRevenue = () => {
     const completedOrders = orders.filter(
-      (order) => order.status === "đã thanh toán"
+      (order) => order.status === "đã hoàn thành"
     );
     // console.log(completedOrders);
     const totalRevenue = completedOrders.reduce(
@@ -234,7 +234,7 @@ const ThongKe = () => {
         </div>
         <ChatCard />
         <div className=" xl:col-span-12">
-          <DonHangCoLuotXemNhieuNhat />
+          {/* <DonHangCoLuotXemNhieuNhat /> */}
         </div>
       </div>
     </>

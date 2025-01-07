@@ -136,9 +136,10 @@ const HeaderClientC = ({
 
   // hàm này xử lý chuyển hướng đến sản phẩm chi tiết
   const goToProductDetail = async (id: number) => {
-    await axios.post(`http://127.0.0.1:8000/api/log-search`, {
+    const res = await axios.post(`http://127.0.0.1:8000/api/log-search`, {
       id: id,
     });
+    console.log(res);
     setIsSearchOpen(false);
 
     navigate(`/shop-details/${id}`);
