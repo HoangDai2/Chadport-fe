@@ -184,9 +184,8 @@ const ListUser = ({ listuser }: Props) => {
           </div>
 
           {message && (
-            <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${
-              messageType === 'error' ? "bg-red-500" : "bg-green-500"
-            } text-white`}>
+            <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${message.includes("khóa") ? "bg-red-500" : "bg-green-500"
+              } text-white`}>
               {message}
             </div>
           )}
@@ -225,11 +224,10 @@ const ListUser = ({ listuser }: Props) => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        userData.status === "active" 
-                          ? "bg-green-100 text-green-800" 
-                          : "bg-red-100 text-red-800"
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${userData.status === "active"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                        }`}>
                         {userData.status}
                       </span>
                     </td>
@@ -295,11 +293,11 @@ const ListUser = ({ listuser }: Props) => {
                             after:content-[''] after:absolute after:top-0.5 after:left-[2px] 
                             after:bg-white after:border-gray-300 after:border after:rounded-full 
                             after:h-5 after:w-5 after:transition-all
-                            ${userData.status === "active" 
-                              ? 'bg-green-500 after:translate-x-full' 
+                            ${userData.status === "active"
+                              ? 'bg-green-500 after:translate-x-full'
                               : 'bg-gray-400'} 
-                            ${loadingUserId !== null || userData.id === user?.id 
-                              ? 'opacity-50 cursor-not-allowed' 
+                            ${loadingUserId !== null || userData.id === user?.id
+                              ? 'opacity-50 cursor-not-allowed'
                               : 'cursor-pointer'}`}>
                           </div>
                         </label>

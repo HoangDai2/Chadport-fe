@@ -25,8 +25,7 @@ const ShopList = () => {
       startLoading();
       try {
         const response = await apisphp.get(
-          `shop/products?page=${currentPage}${
-            priceRange ? `&price_range=${priceRange}` : ""
+          `shop/products?page=${currentPage}${priceRange ? `&price_range=${priceRange}` : ""
           }${selectedCategory ? `&category_id=${selectedCategory}` : ""}`
         );
 
@@ -289,9 +288,8 @@ const ShopList = () => {
                               : sortOption}
                           </span>
                           <ul
-                            className={`sort-list dropdown-menu ${
-                              isDropdownOpen ? "show" : "hide"
-                            }`}
+                            className={`sort-list dropdown-menu ${isDropdownOpen ? "show" : "hide"
+                              }`}
                           >
                             <li
                               className={
@@ -408,7 +406,7 @@ const ShopList = () => {
                                     {Math.round(
                                       ((product.price - product.price_sale) /
                                         product.price) *
-                                        100
+                                      100
                                     )}
                                     %
                                   </span>
@@ -425,9 +423,8 @@ const ShopList = () => {
                       <nav aria-label="Page navigation example">
                         <ul className="pagination justify-content-center">
                           <li
-                            className={`page-item ${
-                              currentPage === 1 ? "disabled" : ""
-                            }`}
+                            className={`page-item ${currentPage === 1 ? "disabled" : ""
+                              }`}
                           >
                             <button
                               className="page-link rounded-pill shadow-sm"
@@ -440,9 +437,8 @@ const ShopList = () => {
                           {Array.from({ length: totalPages }, (_, index) => (
                             <li
                               key={index}
-                              className={`page-item ${
-                                currentPage === index + 1 ? "active" : ""
-                              }`}
+                              className={`page-item ${currentPage === index + 1 ? "active" : ""
+                                }`}
                             >
                               <button
                                 className="page-link rounded-pill shadow-sm"
@@ -453,9 +449,8 @@ const ShopList = () => {
                             </li>
                           ))}
                           <li
-                            className={`page-item ${
-                              currentPage === totalPages ? "disabled" : ""
-                            }`}
+                            className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                              }`}
                           >
                             <button
                               className="page-link rounded-pill shadow-sm"

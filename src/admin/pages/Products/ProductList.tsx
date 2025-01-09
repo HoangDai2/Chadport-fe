@@ -22,6 +22,7 @@ function ProductList() {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+
   const [variants, setVariants] = useState<any[]>([]); // Dùng kiểu dữ liệu phù hợp với response từ API
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [sizes, setSizes] = useState<Size[]>([]); // Thêm state để lưu sizes
@@ -37,9 +38,12 @@ function ProductList() {
         setProducts(response.data.data);
         setCurrentPage(response.data.current_page);
         setLastPage(response.data.last_page);
+        setLoading(true)
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Error fetching products");
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -162,6 +166,7 @@ function ProductList() {
       toast.error("Lỗi khi khôi phục sản phẩm!");
     }
   };
+
   // hưng chỉnh sửa
   const fetchVariants = async (productId: number) => {
     try {
@@ -238,6 +243,7 @@ function ProductList() {
     setSelectedVariant(null);
   };
   // end hưng chỉnh sửa
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <ToastContainer />
@@ -251,9 +257,8 @@ function ProductList() {
 
           {message && (
             <div
-              className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${
-                currentAction === "Delete" ? "bg-green-500" : "bg-red-500"
-              } text-white`}
+              className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${currentAction === "Delete" ? "bg-green-500" : "bg-red-500"
+                } text-white`}
             >
               {message}
             </div>
@@ -308,6 +313,7 @@ function ProductList() {
                   const isDeleted = product.deleted_at !== null;
 
                   return (
+
                     <React.Fragment key={product.id}>
                       <tr
                         key={product.id}
@@ -442,6 +448,7 @@ function ProductList() {
                       )}
                     </React.Fragment>
                     // end table variant
+
                   );
                 })}
               </tbody>

@@ -450,7 +450,8 @@ const Profile = (props: Props) => {
   };
   return (
     <>
-      <div id="title" className="page-title py-6 mt-[120px]">
+      <div id="title" className="page-title py-6 mt-[120
+      x]">
         <ToastContainer
           theme="light"
           position="top-right"

@@ -279,6 +279,113 @@
           }
         ]
       }
+    },
+    {
+      "id": "d4b8",
+      "product": {
+        "id": 43,
+        "category_id": 6,
+        "brand_id": null,
+        "name": "Giày Thể Thao Nam Nike Journey Run ‘White Fire Red’ FN0228-103 Màu Trắng Đỏ Size 42",
+        "total_quatity": null,
+        "description": "Giày Thể Thao Nam Nike Journey Run ‘White Fire Red’ FN0228-103 Màu Trắng Đỏ đến từ thương hiệu Nike nổi tiếng. Đôi giày Nike FN0228-103 sở hữu thiết kế hiện đại, tinh tế và nổi bật với cách phối màu trẻ trung nên được nhiều tín đồ hàng hiệu yêu thích.",
+        "title": "Nike",
+        "status": "active",
+        "price": 3000,
+        "price_sale": 29990000,
+        "image_product": "images/3nYCvbG2T1ol1IjLssmNnCNjNXUbBbB3wfFcXM9O.webp",
+        "image_description": [
+          "images/QFfXccMas7G1481hdwtSWzdHvgKdUtgiVBkA54UO.webp",
+          "images/1ATNNmM6gQyrweM0T62Y5nLioidI3zpBNBYNIQb5.webp",
+          "images/gN9QZpqXsf6kNqTstebITtLmbuZPnO8wHLrtnZ60.webp",
+          "images/w0BNMlx079yxTp8IPY4TTewyZlFozMUa2HrIrFpF.webp"
+        ],
+        "created_at": "2024-11-24T21:55:18.000000Z",
+        "updated_at": "2024-11-24T21:55:18.000000Z",
+        "variants": [
+          {
+            "id": 69,
+            "product_id": 43,
+            "color_id": 1,
+            "size_id": 1,
+            "description": null,
+            "quantity": 0,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-24T21:55:18.000000Z",
+            "updated_at": "2025-01-04T07:50:57.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 1,
+              "name": "35",
+              "created_at": "2024-11-23T01:35:00.000000Z",
+              "updated_at": "2024-11-23T01:35:00.000000Z"
+            },
+            "color": {
+              "id": 1,
+              "name": "đỏ",
+              "image": "",
+              "created_at": null,
+              "updated_at": null,
+              "hex": "#FF6B6B"
+            }
+          },
+          {
+            "id": 70,
+            "product_id": 43,
+            "color_id": 1,
+            "size_id": 2,
+            "description": null,
+            "quantity": 8,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-24T21:55:18.000000Z",
+            "updated_at": "2025-01-02T08:56:37.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 2,
+              "name": "36",
+              "created_at": "2024-11-23T01:35:00.000000Z",
+              "updated_at": "2024-11-23T01:35:00.000000Z"
+            },
+            "color": {
+              "id": 1,
+              "name": "đỏ",
+              "image": "",
+              "created_at": null,
+              "updated_at": null,
+              "hex": "#FF6B6B"
+            }
+          },
+          {
+            "id": 71,
+            "product_id": 43,
+            "color_id": 1,
+            "size_id": 3,
+            "description": null,
+            "quantity": 9,
+            "status": "active",
+            "type": null,
+            "created_at": "2024-11-24T21:55:18.000000Z",
+            "updated_at": "2024-12-06T20:20:09.000000Z",
+            "checkeds": null,
+            "size": {
+              "id": 3,
+              "name": "37",
+              "created_at": "2024-11-23T01:34:08.000000Z",
+              "updated_at": "2024-11-23T01:34:08.000000Z"
+            },
+            "color": {
+              "id": 1,
+              "name": "đỏ",
+              "image": "",
+              "created_at": null,
+              "updated_at": null,
+              "hex": "#FF6B6B"
+            }
+          }
+        ]
+      }
     }
   ]
 }
