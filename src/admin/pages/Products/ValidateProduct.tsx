@@ -16,15 +16,14 @@ export const productValidationSchema = Yup.object({
   price: Yup.number()
     .required("Giá là bắt buộc")
     .min(0, "Giá không thể nhỏ hơn 0"),
-  price_sale: Yup.number()
-    .min(0, "Giảm giá không thể nhỏ hơn 0")
-    .max(100, "Giảm giá không thể vượt quá 100%"),
+  price_sale: Yup.number(),
   total_quatity: Yup.number()
     .required("Số lượng là bắt buộc")
     .min(1, "Số lượng không thể nhỏ hơn 1"),
   category_id: Yup.string().required("Danh mục là bắt buộc"),
   image_product: Yup.mixed().nullable().required("Ảnh chính là bắt buộc"),
-  image_description: Yup.mixed().nullable().required("Ảnh mô tả là bắt buộc"),
+  // image_description: Yup.mixed().nullable().required("Ảnh mô tả là bắt buộc"),
+  image_description: Yup.mixed().nullable(),
 });
 export const variantValidationSchema = Yup.array().of(
   Yup.object().shape({
