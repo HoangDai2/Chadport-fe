@@ -13,12 +13,13 @@ import VariantForm from "../Variants/VariantsForm";
 import VariantsForm from "../Variants/VariantsForm";
 import { productValidationSchema } from "./ValidateProduct";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import VariantsProCreat from "../Variants/VariantsProCreat";
 type Props = {
   onAdd: (
     newShoe: TProduct,
     images: File[],
     imageProduct: File,
-    variant: Array<{ quantity: number; color: string; size: string }>,
+    variant: Array<{ quantity: number; color_id: ""; size_id: "" }>,
     sizes: Size[],
     colors: Color[]
   ) => void;
@@ -34,15 +35,15 @@ function ProductAdd({ onAdd, categories }: Props) {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [variant, setVariant] = useState<
-    Array<{ quantity: number; color: string; size: string }>
+    Array<{ quantity: number; color_id: ""; size_id: "" }>
   >([
     {
-      size: "",
-      color: "",
+      size_id: "",
+      color_id: "",
       quantity: 0,
     },
   ]);
-
+  // console.log(variant);
   const [sizes, setSizes] = useState<Size[]>([]); // Thêm state để lưu sizes
   const [colors, setColors] = useState<Color[]>([]); // Thêm state để lưu colors
 
@@ -185,17 +186,26 @@ function ProductAdd({ onAdd, categories }: Props) {
       };
 
       await onAdd(productData, images, imageProduct!, variant, sizes, colors); // Truyền cả sản phẩm và biến thể
+      // console.log(variant);
       navigate("/admin/products");
       window.location.reload();
-      toast.success("Thêm sản phẩm thành công!");
     } catch (error) {
       console.error("Error adding product:", error);
-      toast.error("Thêm sản phẩm thất bại!");
+      toast.error("Error adding product!");
     }
   };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex justify-center">
+      <ToastContainer
+        theme="light"
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+        draggable={true}
+      />
       <Formik
         initialValues={{ ...initialValues, category_id: categoryId ?? 0 }}
         validationSchema={productValidationSchema}
@@ -330,10 +340,10 @@ function ProductAdd({ onAdd, categories }: Props) {
                     Giá và Số Lượng
                   </h2>
                   <div
-                    className="grid gap-4"
-                    style={{
-                      gridTemplateColumns: `repeat(var(--x-columns, 2), 1fr)`,
-                    }}
+                    className=" gap-4"
+                    // style={{
+                    //   gridTemplateColumns: `repeat(var(--x-columns, 2), 1fr)`,
+                    // }}
                   >
                     {/* giá gốc */}
                     <div>
@@ -356,19 +366,19 @@ function ProductAdd({ onAdd, categories }: Props) {
                       />
                     </div>
 
-                    {/* hàng tồn kho */}
                     <div>
                       <label className="block text-gray-600 text-sm font-medium mb-1">
-                        Hàng tồn kho
+                        Số Lượng
                       </label>
                       <Field
-                        type="text"
+                        type="number"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                        placeholder="$47.55"
-                        // name="price"
+                        placeholder="Chinese New Year Discount"
+                        id="total_quatity"
+                        name="total_quatity"
                       />
                       <ErrorMessage
-                        name="price"
+                        name="total_quatity"
                         component="div"
                         className="text-red-500 text-sm mt-1"
                       />
@@ -411,23 +421,6 @@ function ProductAdd({ onAdd, categories }: Props) {
                     </div>
 
                     {/* sô lương */}
-                    <div>
-                      <label className="block text-gray-600 text-sm font-medium mb-1">
-                        Số Lượng
-                      </label>
-                      <Field
-                        type="number"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
-                        placeholder="Chinese New Year Discount"
-                        id="total_quatity"
-                        name="total_quatity"
-                      />
-                      <ErrorMessage
-                        name="total_quatity"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -500,7 +493,6 @@ function ProductAdd({ onAdd, categories }: Props) {
                   ))}
                 </div>
               </div>
-
               <div>
                 <VariantsForm
                   variant={variant}

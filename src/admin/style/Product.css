@@ -30,3 +30,7 @@
   color: white;
   border-color: #0056b3;
 }
+
+.grid-cutoms {
+  grid-template-columns: none !important;
+}

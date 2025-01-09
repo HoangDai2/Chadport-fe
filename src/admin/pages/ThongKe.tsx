@@ -32,7 +32,7 @@ const ThongKe = () => {
   // Hàm tính doanh thu khi trạng thái đơn hàng là "đã hoàn thành"
   const calculateRevenue = () => {
     const completedOrders = orders.filter(
-      (order) => order.status === "đã thanh toán"
+      (order) => order.status === "đã hoàn thành"
     );
     // console.log(completedOrders);
     const totalRevenue = completedOrders.reduce(
@@ -73,7 +73,7 @@ const ThongKe = () => {
     }
   };
   const countRole4 = () => {
-    const count = users.filter((user) => user.role_id === 4).length; // Lọc và đếm người có role_id = 4
+    const count = users.filter((user) => user.role_id === 3).length; // Lọc và đếm người có role_id = 4
     setroleCount(count); // Cập nhật số lượng vào state
   };
   useEffect(() => {
@@ -86,9 +86,9 @@ const ThongKe = () => {
 
   const listProducts = async () => {
     try {
-      const res = await apisphp.get("/shop/products");
-      setProducts(res.data.data); // Cập nhật danh sách sản phẩm
-      //   console.log(res.data);
+      const res = await apisphp.get("/listall/products");
+      setProducts(res.data); // Cập nhật danh sách sản phẩm
+      // console.log(res.data);
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm:", error);
     }
@@ -97,6 +97,7 @@ const ThongKe = () => {
   // Tính toán số lượng sản phẩm
   const countProducts = () => {
     const count = products.length; // Đếm số lượng sản phẩm trong mảng
+    // console.log(products);
     setProductCount(count); // Cập nhật số lượng vào state
   };
 

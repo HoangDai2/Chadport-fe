@@ -2,238 +2,267 @@ import { ApexOptions } from "apexcharts";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReactApexChart from "react-apexcharts";
+import DatePicker from "react-datepicker"; // Import thư viện DatePicker
+import "react-datepicker/dist/react-datepicker.css"; // Import CSS cho DatePicker
+import { vi } from "date-fns/locale"; // Import ngôn ngữ tiếng Việt từ date-fns
 
-const options: ApexOptions = {
-  legend: {
-    show: false,
-    position: "top",
-    horizontalAlign: "left",
-  },
-  colors: ["#3C50E0", "#80CAEE"],
+// Cấu hình biểu đồ ApexCharts
+const defaultOptions: ApexOptions = {
   chart: {
-    fontFamily: "Satoshi, sans-serif",
-    height: 335,
-    type: "area",
-    dropShadow: {
-      enabled: true,
-      color: "#623CEA14",
-      top: 10,
-      blur: 4,
-      left: 0,
-      opacity: 0.1,
-    },
+    type: "bar",
+    height: 350,
     toolbar: {
       show: false,
     },
   },
-  responsive: [
-    {
-      breakpoint: 1024,
-      options: {
-        chart: {
-          height: 300,
-        },
-      },
-    },
-    {
-      breakpoint: 1366,
-      options: {
-        chart: {
-          height: 350,
-        },
-      },
-    },
-  ],
-  stroke: {
-    width: [2, 2],
-    curve: "smooth",
-  },
-  grid: {
-    xaxis: {
-      lines: {
-        show: true,
-      },
-    },
-    yaxis: {
-      lines: {
-        show: true,
-      },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: "55%",
+      borderRadius: 10, // Sử dụng borderRadius thay vì endingShape
     },
   },
   dataLabels: {
     enabled: false,
   },
-  markers: {
-    size: 4,
-    colors: "#fff",
-    strokeColors: ["#3056D3", "#80CAEE"],
-    strokeWidth: 3,
-    strokeOpacity: 0.9,
-    strokeDashArray: 0,
-    fillOpacity: 1,
-    discrete: [],
-    hover: {
-      size: undefined,
-      sizeOffset: 5,
-    },
+  legend: {
+    show: false,
   },
+  colors: ["#28A745"], // Màu xanh cho biểu đồ
   xaxis: {
-    type: "category",
-    categories: [
-      "Tháng 1",
-      "Tháng 2",
-      "Tháng 3",
-      "Tháng 4",
-      "Tháng 5",
-      "Tháng 6",
-      "Tháng 7",
-      "Tháng 8",
-      "Tháng 9",
-      "Tháng 10",
-      "Tháng 11",
-      "Tháng 12",
-    ],
-    axisBorder: {
-      show: false,
-    },
-    axisTicks: {
-      show: false,
-    },
+    categories: [], // Được cập nhật động sau khi chọn tháng hoặc năm
   },
   yaxis: {
     title: {
-      style: {
-        fontSize: "0px",
-      },
-    },
-    min: 0,
-    labels: {
-      formatter: (value) => {
-        // Format numbers with commas
-        return value.toLocaleString("vi-VN"); // Adjust currency or format as needed
-      },
+      text: "Doanh Thu (VND)",
     },
   },
   tooltip: {
+    shared: true,
+    intersect: false,
     y: {
-      formatter: (value) => {
-        return value.toLocaleString("vi-VN"); // Format tooltip values with commas
-      },
+      formatter: (value) =>
+        value.toLocaleString("vi-VN", { style: "currency", currency: "VND" }),
     },
   },
 };
 
-interface ChartOneState {
+interface ChartState {
   series: {
     name: string;
-    data: number[]; // Store raw numbers here for the chart
+    data: number[];
   }[];
 }
 
 const ChartOne: React.FC = () => {
-  const [state, setState] = useState<ChartOneState>({
-    series: [],
-  });
-
+  const [state, setState] = useState<ChartState>({ series: [] });
+  const [options, setOptions] = useState<ApexOptions>(defaultOptions); // State cho options
   const [selectedYear, setSelectedYear] = useState<string>(
     new Date().getFullYear().toString()
-  );
-  const years = Array.from({ length: 5 }, (_, i) =>
+  ); // Lọc theo năm, mặc định năm hiện tại
+  const [selectedMonth, setSelectedMonth] = useState<string>(""); // Lọc theo tháng, mặc định không chọn tháng nào
+  const [startDate, setStartDate] = useState<Date | null>(null); // Lọc theo ngày bắt đầu
+  const [endDate, setEndDate] = useState<Date | null>(null); // Lọc theo ngày kết thúc
+  const [startMonth, setStartMonth] = useState<string>(""); // Lọc theo tháng bắt đầu
+  const [endMonth, setEndMonth] = useState<string>(""); // Lọc theo tháng kết thúc
+  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString()); // Tháng từ 1 đến 12
+  const years = Array.from({ length: 10 }, (_, i) =>
     (new Date().getFullYear() - i).toString()
-  ); // List of years for selection
+  ); // 10 năm gần nhất
 
-  const [timeRange, setTimeRange] = useState<string>("All");
-
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    });
-  };
-
+  // Lấy dữ liệu và lọc theo năm/tháng/ngày
   useEffect(() => {
     axios
       .get("http://127.0.0.1:8000/api/showAllOrder")
       .then((response) => {
         const orders = response.data.data;
-
-        const monthlySales = {
-          "Doanh thu": Array(12).fill(0),
-          // "Loi Nhuan": Array(12).fill(0),
-        };
+        const dailySales = Array(30).fill(0); // Mảng 30 ngày, mỗi ngày có doanh thu
+        const monthlySales = Array(12).fill(0); // Mảng 12 tháng, mỗi tháng có doanh thu
 
         if (orders && orders.length > 0) {
           orders.forEach((order: any) => {
             const orderDate = new Date(order.created_at);
-            if (isNaN(orderDate.getTime())) {
-              console.error("Invalid Date:", order.created_at);
-            } else {
-              const orderYear = orderDate.getFullYear();
+            const orderYear = orderDate.getFullYear(); // Lấy năm
+            const orderMonth = orderDate.getMonth(); // Lấy tháng (0-11)
+            const orderDay = orderDate.getDate(); // Lấy ngày trong tháng
+            const orderDateStr = orderDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+            // Lọc theo năm
+            if (selectedYear) {
               if (orderYear.toString() === selectedYear) {
-                const orderMonth = orderDate.getMonth();
+                if (
+                  (!startDate || orderDate >= startDate) &&
+                  (!endDate || orderDate <= endDate) &&
+                  (!startMonth || orderMonth + 1 >= parseInt(startMonth)) &&
+                  (!endMonth || orderMonth + 1 <= parseInt(endMonth))
+                ) {
+                  if (order.status === "đã hoàn thành") {
+                    if (selectedMonth) {
+                      dailySales[orderDay - 1] += order.total_money;
+                    } else {
+                      monthlySales[orderMonth] += order.total_money;
+                    }
+                  }
+                }
+              }
+            }
+            // Lọc theo tháng
+            else if (selectedMonth) {
+              if (
+                orderMonth + 1 === parseInt(selectedMonth) &&
+                (!startDate || orderDate >= startDate) &&
+                (!endDate || orderDate <= endDate)
+              ) {
                 if (order.status === "đã hoàn thành") {
-                  monthlySales["Doanh thu"][orderMonth] += order.total_money;
-                  // monthlySales["Loi Nhuan"][orderMonth] +=
-                  //   order.total_money * 0.3;
+                  dailySales[orderDay - 1] += order.total_money;
+                }
+              }
+            }
+            // Lọc theo tháng bắt đầu và tháng kết thúc
+            else if (startMonth && endMonth) {
+              const startMonthNum = parseInt(startMonth);
+              const endMonthNum = parseInt(endMonth);
+
+              if (
+                orderMonth + 1 >= startMonthNum &&
+                orderMonth + 1 <= endMonthNum &&
+                (!startDate || orderDate >= startDate) &&
+                (!endDate || orderDate <= endDate)
+              ) {
+                if (order.status === "đã hoàn thành") {
+                  monthlySales[orderMonth] += order.total_money;
                 }
               }
             }
           });
+
+          // Cập nhật series cho biểu đồ
           setState({
             series: [
               {
                 name: "Doanh Thu",
-                data: filterData(monthlySales["Doanh thu"], timeRange),
+                data:
+                  selectedMonth || startMonth || endMonth
+                    ? dailySales
+                    : monthlySales,
               },
-              // {
-              //   name: "Loi Nhuan",
-              //   data: filterData(monthlySales["Loi Nhuan"], timeRange),
-              // },
             ],
           });
+
+          // Cập nhật các giá trị cho trục X
+          setOptions((prevOptions) => ({
+            ...prevOptions,
+            xaxis: {
+              ...prevOptions.xaxis,
+              categories:
+                selectedMonth || startMonth || endMonth
+                  ? Array.from({ length: 30 }, (_, i) => `Ngày ${i + 1}`)
+                  : Array.from({ length: 12 }, (_, i) => `Tháng ${i + 1}`),
+            },
+          }));
         }
       })
       .catch((error) => {
         console.error("Error fetching orders data:", error);
       });
-  }, [timeRange, selectedYear]);
+  }, [startDate, endDate, selectedMonth, selectedYear, startMonth, endMonth]);
 
-  const filterData = (data: number[], timeRange: string) => {
-    if (timeRange === "Year") {
-      return data;
-    }
-    return data;
+  // Xử lý thay đổi năm
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year); // Cập nhật năm khi chọn
+    setStartDate(null); // Xóa ngày bắt đầu khi chọn năm
+    setEndDate(null); // Xóa ngày kết thúc khi chọn năm
+    setStartMonth(""); // Xóa tháng bắt đầu khi chọn năm
+    setEndMonth(""); // Xóa tháng kết thúc khi chọn năm
   };
 
-  const handleYearChange = (year: string) => {
-    setSelectedYear(year); // Update the selected year
+  // Xử lý thay đổi tháng
+  const handleMonthChange = (month: string) => {
+    setSelectedMonth(month); // Cập nhật tháng khi chọn
+    setStartDate(null); // Xóa ngày bắt đầu khi chọn tháng
+    setEndDate(null); // Xóa ngày kết thúc khi chọn tháng
+    setStartMonth(""); // Xóa tháng bắt đầu khi chọn tháng
+    setEndMonth(""); // Xóa tháng kết thúc khi chọn tháng
   };
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7 pb-5 drop-shadow-xl dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
-      <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-        <div className="flex w-full max-w-45 justify-end">
-          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
-            <select
-              onChange={(e) => handleYearChange(e.target.value)}
-              className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark"
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <select
+            onChange={(e) => handleYearChange(e.target.value)}
+            value={selectedYear}
+            className="border border-gray-300 rounded p-2"
+          >
+            <option value="">Chọn năm</option>
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <select
+            onChange={(e) => handleMonthChange(e.target.value)}
+            value={selectedMonth}
+            className="border border-gray-300 rounded p-2"
+          >
+            <option value="">Tổng quan</option>
+            {months.map((month) => (
+              <option key={month} value={month}>
+                Tháng {month}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex gap-2">
+          <DatePicker
+            selected={startDate}
+            onChange={(date: Date) => {
+              if (date) {
+                // Lấy năm từ lựa chọn trước đó và gắn vào ngày tháng
+                const fullDate = new Date(
+                  date.setFullYear(parseInt(selectedYear))
+                );
+                setStartDate(fullDate);
+              }
+            }}
+            placeholderText="Ngày bắt đầu"
+            dateFormat="MM-dd" // Chỉ chọn tháng và ngày
+            showMonthDropdown
+            showYearDropdown={false} // Ẩn dropdown chọn năm
+            locale={vi} // Đặt ngôn ngữ là tiếng Việt
+            className="border border-gray-300 rounded p-2"
+            isClearable
+          />
+          <DatePicker
+            selected={endDate}
+            onChange={(date: Date) => {
+              if (date) {
+                // Lấy năm từ lựa chọn trước đó và gắn vào ngày tháng
+                const fullDate = new Date(
+                  date.setFullYear(parseInt(selectedYear))
+                );
+                setEndDate(fullDate);
+              }
+            }}
+            placeholderText="Ngày kết thúc"
+            dateFormat="MM-dd" // Chỉ chọn tháng và ngày
+            showMonthDropdown
+            showYearDropdown={false} // Ẩn dropdown chọn năm
+            locale={vi} // Đặt ngôn ngữ là tiếng Việt
+            className="border border-gray-300 rounded p-2"
+            isClearable
+          />
         </div>
       </div>
-
-      <div>
-        <div id="chartOne" className="-ml-5">
+      <div className="flex flex-wrap gap-5">
+        <div className="w-full md:w-2/3">
           <ReactApexChart
             options={options}
             series={state.series}
-            type="area"
+            type="bar"
             height={350}
           />
         </div>

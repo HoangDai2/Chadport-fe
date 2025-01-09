@@ -127,7 +127,7 @@ const Profile = (props: Props) => {
       try {
         const transformedGender =
           reverseGenderMapping[
-          values.gender as keyof typeof reverseGenderMapping
+            values.gender as keyof typeof reverseGenderMapping
           ] || values.gender;
         const response = await apisphp.post("/user/update", values, {
           headers: { Authorization: `Bearer ${token}` },
@@ -203,7 +203,7 @@ const Profile = (props: Props) => {
       } catch (err: any) {
         setError(
           err.response?.data?.message ||
-          "Bạn cần đăng nhập để xem chi tiết đơn hàng!"
+            "Bạn cần đăng nhập để xem chi tiết đơn hàng!"
         );
       } finally {
         stopLoading();
@@ -246,7 +246,6 @@ const Profile = (props: Props) => {
   const handlePreviousPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
-
 
   // hiện các nút và xử lí theo trạng thái đơn hàng
 
@@ -308,7 +307,6 @@ const Profile = (props: Props) => {
               className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
               onClick={() => {
                 if (order.products && order.products.length > 0 && user?.id) {
-
                   const reviewFormsData = order.products.map((product) => ({
                     comment_id: 0,
                     product_item_id: product.product_item_id, // Lấy product_item_id từ sản phẩm
@@ -331,7 +329,6 @@ const Profile = (props: Props) => {
                   setReviewFormData(reviewFormsData); // Lưu dữ liệu của tất cả sản phẩm
                   setShowReviewForm(true); // Hiển thị modal đánh giá
                   console.log("qqq", reviewFormData);
-
                 } else {
                   toast.error(
                     "Không thể lấy thông tin sản phẩm hoặc người dùng. Vui lòng thử lại."
@@ -341,9 +338,6 @@ const Profile = (props: Props) => {
             >
               Đánh Giá
             </button>
-
-
-
 
             {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
 
@@ -360,8 +354,9 @@ const Profile = (props: Props) => {
               >
                 Thêm
                 <span
-                  className={`ml-2 transform transition-transform ${showDropdown ? "rotate-180" : "rotate-0"
-                    }`}
+                  className={`ml-2 transform transition-transform ${
+                    showDropdown ? "rotate-180" : "rotate-0"
+                  }`}
                 >
                   <FaAngleDown />
                 </span>
@@ -443,7 +438,16 @@ const Profile = (props: Props) => {
         break;
     }
   };
-
+  const handleCancelOrder = (updatedOrder: any) => {
+    if (updatedOrder) {
+      // Cập nhật trạng thái của đơn hàng bị hủy
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === updatedOrder.id ? { ...order, ...updatedOrder } : order
+        )
+      );
+    }
+  };
   return (
     <>
       <div id="title" className="page-title py-6 mt-[120px]">
@@ -642,10 +646,11 @@ const Profile = (props: Props) => {
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`relative pb-1 ${activeFilter === status
-                  ? "text-gray-900 after:content-[''] after:block after:w-full after:h-[2px] after:bg-gray-800 after:absolute after:bottom-0 after:left-0 after:transition-all after:duration-300"
-                  : "text-gray-600 hover:text-gray-900 after:content-[''] after:block after:w-0 after:h-[2px] after:bg-gray-400 after:absolute after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
-                  }`}
+                className={`relative pb-1 ${
+                  activeFilter === status
+                    ? "text-gray-900 after:content-[''] after:block after:w-full after:h-[2px] after:bg-gray-800 after:absolute after:bottom-0 after:left-0 after:transition-all after:duration-300"
+                    : "text-gray-600 hover:text-gray-900 after:content-[''] after:block after:w-0 after:h-[2px] after:bg-gray-400 after:absolute after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
+                }`}
               >
                 {status}
               </button>
@@ -665,7 +670,6 @@ const Profile = (props: Props) => {
                     <p className="mt-[20px] uppercase whitespace-nowrap text-right text-black font-medium">
                       {order.status}
                     </p>
-
 
                     <hr className="border-t border-dashed border-gray-600 my-6" />
 
@@ -711,17 +715,17 @@ const Profile = (props: Props) => {
                             Giá:{" "}
                             {product.price
                               ? new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(Math.ceil(product.price))
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(Math.ceil(product.price))
                               : "null"}
                           </p>
                           <p className="text-lg text-red-600 font-semibold">
                             {product.price
                               ? new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(Math.ceil(product.price))
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(Math.ceil(product.price))
                               : "null"}
                           </p>
                         </div>
@@ -747,6 +751,8 @@ const Profile = (props: Props) => {
                       {renderButtonCancelOrder(order)}
                       {showCancelForm && (
                         <CancelOrderForm
+                          orderId={order.id}
+                          onCancelOrder={handleCancelOrder}
                           onClose={() => setShowCancelForm(false)}
                         />
                       )}
@@ -801,11 +807,12 @@ const Profile = (props: Props) => {
                           value={formik.values.phone_number}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          className={`bg-gray-100 border ${formik.touched.phone_number &&
+                          className={`bg-gray-100 border ${
+                            formik.touched.phone_number &&
                             formik.errors.phone_number
-                            ? "border-red-500"
-                            : "border-gray-300"
-                            } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
                         />
                         {formik.touched.phone_number &&
                           formik.errors.phone_number && (
@@ -826,10 +833,11 @@ const Profile = (props: Props) => {
                           value={formik.values.gender}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          className={`bg-gray-100 border ${formik.touched.gender && formik.errors.gender
-                            ? "border-red-500"
-                            : "border-gray-300"
-                            } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
+                          className={`bg-gray-100 border ${
+                            formik.touched.gender && formik.errors.gender
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
                         >
                           <option value={0}>Chọn</option>
                           <option value={1}>Male</option>
@@ -855,10 +863,11 @@ const Profile = (props: Props) => {
                           value={formik.values.birthday}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          className={`bg-gray-100 border ${formik.touched.birthday && formik.errors.birthday
-                            ? "border-red-500"
-                            : "border-gray-300"
-                            } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
+                          className={`bg-gray-100 border ${
+                            formik.touched.birthday && formik.errors.birthday
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black w-full`}
                         />
                         {formik.touched.birthday && formik.errors.birthday && (
                           <div className="text-red-500 text-sm mt-1">
@@ -916,18 +925,21 @@ const Profile = (props: Props) => {
       </div>
       {showReviewForm && reviewFormData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
-
-          <div className="mt-[115px] bg-white rounded-lg w-full lg:w-1/2 p-6"> {/* Đảm bảo modal chiếm 100% chiều rộng màn hình */}
-            <div className="overflow-y-auto max-h-[70vh]"> {/* Đảm bảo nội dung có thể cuộn */}
-
+          <div className="mt-[115px] bg-white rounded-lg w-full lg:w-1/2 p-6">
+            {" "}
+            {/* Đảm bảo modal chiếm 100% chiều rộng màn hình */}
+            <div className="overflow-y-auto max-h-[70vh]">
+              {" "}
+              {/* Đảm bảo nội dung có thể cuộn */}
               {reviewFormData.map((data, index) => (
-                <div key={data.product_item_id} className="mb-8 w-full"> {/* Đảm bảo form chiếm 100% chiều rộng */}
+                <div key={data.product_item_id} className="mb-8 w-full">
+                  {" "}
+                  {/* Đảm bảo form chiếm 100% chiều rộng */}
                   <ReviewForm
                     commentData={data}
                     onClose={() => setShowReviewForm(false)}
                     productName={data.product_name}
                     productImage={data.product_image}
-
                     color_name={data.color_name}
                     size_name={data.size_name}
                     quantity={data.quantity}
