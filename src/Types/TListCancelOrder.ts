@@ -35,6 +35,8 @@ export interface CancelOrders {
       account_number: string;
       bank_name: string;
       account_holder: string;
+      file_note: string;
+      extra_file: string;
     };
   };
 }

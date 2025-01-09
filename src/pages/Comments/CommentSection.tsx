@@ -9,14 +9,19 @@ import TUser from "../../Types/TUsers";
 import { useUserContext } from "../AuthClient/UserContext";
 type TComments = {
   comment_id: number;
+  product_item_id: number;
   user_id: number;
+  user: TUser;
+  name: string;
+  color_name: string;
+  size_name: string;
+  image: string;
+  image_user: string;
   content: string;
   rating: number;
+  reported: boolean;
   created_at: string;
-  user: {
-    first_name: string;
-    image_user: string;
-  };
+  updated_at: string;
 };
 
 const CommentSection = () => {
@@ -24,99 +29,182 @@ const CommentSection = () => {
 
   const token = localStorage.getItem("jwt_token");
   const [showAlert, setShowAlert] = useState(false);
-  const { id } = useParams();
-
-  const [openSection, setOpenSection] = useState(null);
+  const { id: productId } = useParams();
+  const [comments, setComments] = useState<TComments[]>([]);
+  const [openSection, setOpenSection] = useState<string | null>(null);
   const [visibleCommentsCount, setVisibleCommentsCount] = useState(3);
-  const [comment, setComments] = useState<TComments[]>([]);
-  
+
   const [menuVisibleCommentId, setMenuVisibleCommentId] = useState<
     number | null
   >(null);
 
   // Xác định số lượng bình luận hiển thị
-  const visibleComments = comment.slice(0, visibleCommentsCount);
+  const visibleComments = comments.slice(0, visibleCommentsCount);
 
   const toggleSection = (section: any) => {
     setOpenSection(openSection === section ? null : section);
   };
 
-  // lấy data từ bên server show ra người dung
   // Lấy bình luận từ API
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await apisphp.get(`user/getall/comments/${id}`);
-        setComments(response.data.data);
+        const response = await apisphp.get(`/commentsByProductId/${productId}`);
+        setComments(response.data.comments || []);
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
     };
     fetchComments();
-    console.log(fetchComments)
-  }, [id]);
+  }, [productId]);
 
-
-  // Hiển thị sao
-  const renderStars = (rating: number) => {
-    return "★".repeat(rating) + "☆".repeat(5 - rating);
+  // Tính tổng và trung bình số sao
+  const calculateAverageRating = () => {
+    if (comments.length === 0) return 0;
+    const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0);
+    return (totalRating / comments.length).toFixed(1); // Tính trung bình và làm tròn 1 chữ số thập phân
   };
 
- 
+  const averageRating = calculateAverageRating(); // Tính toán trung bình số sao
 
-  // xổ menu
-  const handleMenuToggle = (commentId: number) => {
-    setMenuVisibleCommentId(
-      menuVisibleCommentId === commentId ? null : commentId
+  // Render stars
+  const renderStars = (rating: number) => {
+    const filledStars = "★".repeat(rating);
+    const emptyStars = "☆".repeat(5 - rating);
+    return (
+      <span className="text-yellow-500">
+        {filledStars}
+        <span className="text-gray-300">{emptyStars}</span>
+      </span>
     );
   };
- 
+
+  // định dạng lại ngày giờ theo việt nam
+  const formatDateToVietnamese = (dateString: any) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("vi-VN", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(date);
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<React.ReactNode>(null);
+
+  const openModal = (content: React.ReactNode) => {
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalContent(null);
+    setIsModalOpen(false);
+  };
 
   return (
     <>
+      {/* Modal phóng to ảnh bình luận của user  */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+          onClick={closeModal} // Đóng modal khi click bên ngoài
+        >
+          <div
+            className="relative bg-white p-4 rounded-lg"
+            onClick={(e) => e.stopPropagation()} // Ngăn đóng modal khi click vào nội dung
+          >
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+              onClick={closeModal}
+            >
+              ✕
+            </button>
+            {modalContent}
+          </div>
+        </div>
+      )}
+
       {showAlert}
       {/* Description Additional information Reviews */}
       <div className="w-full border-t border-gray-300 mt-[50px]">
-        {/* Đánh giá */}
+        {/* Review Section */}
         <div className="border-b border-gray-300">
-        <div
-          className="flex justify-between items-center px-4 py-3 font-semibold cursor-pointer"
-          onClick={() => toggleSection("reviews")}
-        >
-          <span className="text-lg">Đánh giá ({comment.length})</span>
-          <span className="text-xl">{openSection === "reviews" ? "▲" : "▼"}</span>
-        </div>
-        {openSection === "reviews" && (
-          <div className="w-full border-t border-gray-300 p-4">
-            {/* Danh sách bình luận */}
-            <div className="space-y-4">
-              {comment.map((comment) => (
-                <div key={comment.comment_id} className="border-b pb-4">
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={
-                        comment.user?.image_user
-                          ? `http://127.0.0.1:8000${comment.user.image_user}`
-                          : "/default-avatar.png"
-                      }
-                      alt="User Avatar"
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="font-semibold">{comment.user?.first_name || "Unknown User"}</p>
-                      <p className="text-gray-500 text-sm">{comment.created_at}</p>
+          <div
+            className="flex justify-between items-center px-4 py-3 font-semibold cursor-pointer"
+            onClick={() => setOpenSection(openSection === "reviews" ? null : "reviews")}
+          >
+            <span className="text-lg">Đánh giá ({comments.length})</span>
+            <span className="text-xl">{openSection === "reviews" ? "▲" : "▼"}</span>
+          </div>
+          {openSection === "reviews" && (
+            <div className="w-full border-t border-gray-300 p-4">
+              {/* Tổng số sao */}
+              <div className="flex items-center mb-4">
+                <span className="text-xl font-bold text-yellow-500">
+                  ★ {averageRating} / 5
+                </span>
+                <span className="ml-2 text-gray-600">
+                  ({comments.length} đánh giá)
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                {/* map data */}
+                {comments.map((cmt) => (
+                  <div className="p-4 border-b">
+                    {/* img và biến thể */}
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <img
+                          className="object-cover  w-10 h-10 rounded-full bg-gray-200"
+                          src={`http://127.0.0.1:8000${cmt.image_user}`}
+                          alt=""
+                        />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-semibold text-gray-700">{cmt.name}</div>
+                        <div className="text-sm text-gray-500">
+                          {formatDateToVietnamese(cmt.created_at)}  | Phân loại hàng : {cmt.color_name} - {cmt.size_name}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* content */}
+                    <div className="pl-12">
+                      <div className="text-left mt-2 text-yellow-500"> {renderStars(cmt.rating)}</div>
+
+                      <div className="text-left mt-2 text-gray-700">
+                        {cmt.content}
+                      </div>
+
+                      <div className="mt-4 flex gap-2">
+                        <div className="relative group w-24 h-24">
+                          <img
+                            src={`http://127.0.0.1:8000/storage/${cmt.image}`}
+                            alt="Ảnh"
+                            className="w-full h-full object-cover rounded-lg"
+                            onClick={() =>
+                              openModal(
+                                <img
+                                  src={`http://127.0.0.1:8000/storage/${cmt.image}`}
+                                  alt="QR"
+                                  className=" w-[400px] max-h-screen"
+                                />
+                              )
+                            }
+                          />
+
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="mt-2">
-                    <p className="text-gray-700">{comment.content}</p>
-                    <p className="text-yellow-500">{renderStars(comment.rating)}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+
 
         {/* Mô tả */}
         <div className="border-b border-gray-300">
@@ -223,5 +311,8 @@ const CommentSection = () => {
     </>
   );
 };
+
+
+
 
 export default CommentSection;

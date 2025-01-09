@@ -42,7 +42,6 @@ const Profile = (props: Props) => {
   });
 
   const navigate = useNavigate(); // Hook để chuyển trang\
-
   // trạng thái đơn hàng trong profile
   const [orders, setOrders] = useState<Order[]>([]); // Danh sách đơn hàng
   const [error, setError] = useState(null); // Trạng thái lỗi
@@ -248,7 +247,9 @@ const Profile = (props: Props) => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
+
   // hiện các nút và xử lí theo trạng thái đơn hàng
+
   const renderButtonCancelOrder = (order: any) => {
     switch (order.status) {
       case "chờ xử lí":
@@ -320,6 +321,7 @@ const Profile = (props: Props) => {
                     updated_at: new Date().toISOString(),
                     product_name: product.product_name, // Tên sản phẩm
                     product_image: product.product_image, // Ảnh sản phẩm
+
                     color_name: product.color_name, // Ảnh sản phẩm
                     size_name: product.size_name,
                     quantity: product.quantity,
@@ -339,6 +341,8 @@ const Profile = (props: Props) => {
             >
               Đánh Giá
             </button>
+
+
 
 
             {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
@@ -663,7 +667,9 @@ const Profile = (props: Props) => {
                       {order.status}
                     </p>
 
+
                     <hr className="border-t border-dashed border-gray-600 my-6" />
+
                     {/* Hiển thị danh sách sản phẩm trong đơn hàng */}
                     {order.products.map((product, index) => (
                       <div
@@ -911,8 +917,10 @@ const Profile = (props: Props) => {
       </div>
       {showReviewForm && reviewFormData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
+
           <div className="mt-[115px] bg-white rounded-lg w-full lg:w-1/2 p-6"> {/* Đảm bảo modal chiếm 100% chiều rộng màn hình */}
             <div className="overflow-y-auto max-h-[70vh]"> {/* Đảm bảo nội dung có thể cuộn */}
+
               {reviewFormData.map((data, index) => (
                 <div key={data.product_item_id} className="mb-8 w-full"> {/* Đảm bảo form chiếm 100% chiều rộng */}
                   <ReviewForm
@@ -920,6 +928,7 @@ const Profile = (props: Props) => {
                     onClose={() => setShowReviewForm(false)}
                     productName={data.product_name}
                     productImage={data.product_image}
+
                     color_name={data.color_name}
                     size_name={data.size_name}
                     quantity={data.quantity}
