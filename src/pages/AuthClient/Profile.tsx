@@ -31,6 +31,7 @@ const Profile = (props: Props) => {
   const { startLoading, stopLoading } = useLoading();
   const { user, setUser, token } = useUserContext();
   const [loading, setLoading] = useState(false);
+
   const [success, setSuccess] = useState(false);
   const [profileData, setProfileData] = useState<Partial<TUser>>({
     email: user?.email || "",
@@ -39,7 +40,8 @@ const Profile = (props: Props) => {
     birthday: user?.birthday || "",
     address: user?.address || "",
   });
-  const navigate = useNavigate(); // Hook để chuyển trang
+
+  const navigate = useNavigate(); // Hook để chuyển trang\
   // trạng thái đơn hàng trong profile
   const [orders, setOrders] = useState<Order[]>([]); // Danh sách đơn hàng
   const [error, setError] = useState(null); // Trạng thái lỗi
@@ -53,9 +55,6 @@ const Profile = (props: Props) => {
 
   const [showReviewForm, setShowReviewForm] = useState(false); // State để điều khiển hiển thị ReviewForm
   const [reviewFormData, setReviewFormData] = useState<TComments | null>(null); // Sử dụng TComments
-
-  const [productName, setProductName] = useState<string>("");
-  const [productImage, setProductImage] = useState<string>("");
 
   // xử lí nút hoàn trả tiền hiện form
   const [isRefundFormOpen, setRefundFormOpen] = useState(false);
@@ -220,14 +219,12 @@ const Profile = (props: Props) => {
     activeFilter === "Tất cả"
       ? orders
       : orders.filter((order) => order.status === activeFilter);
-  // console.log("123", filteredOrders);
 
-  // phân trang
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
   const startIndex = (currentPage - 1) * ordersPerPage;
   const endIndex = startIndex + ordersPerPage;
-  const currentOrders = filteredOrders.slice(startIndex, endIndex);
 
+  const currentOrders = filteredOrders.slice(startIndex, endIndex);
   // Hàm mở modal và chọn đơn hàng
   const handleViewDetails = (order: any) => {
     setSelectedOrder(order);
@@ -250,7 +247,9 @@ const Profile = (props: Props) => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  // case nút bấm theo trạng thái đơn hàng
+
+  // hiện các nút và xử lí theo trạng thái đơn hàng
+
   const renderButtonCancelOrder = (order: any) => {
     switch (order.status) {
       case "chờ xử lí":
@@ -309,6 +308,7 @@ const Profile = (props: Props) => {
               className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
               onClick={() => {
                 if (order.products && order.products.length > 0 && user?.id) {
+
                   const reviewFormsData = order.products.map((product) => ({
                     comment_id: 0,
                     product_item_id: product.product_item_id, // Lấy product_item_id từ sản phẩm
@@ -321,12 +321,17 @@ const Profile = (props: Props) => {
                     updated_at: new Date().toISOString(),
                     product_name: product.product_name, // Tên sản phẩm
                     product_image: product.product_image, // Ảnh sản phẩm
+
+                    color_name: product.color_name, // Ảnh sản phẩm
                     size_name: product.size_name,
-                    
+                    quantity: product.quantity,
+                    color_hex: product.color_hex,
                   }));
-                 
+
                   setReviewFormData(reviewFormsData); // Lưu dữ liệu của tất cả sản phẩm
                   setShowReviewForm(true); // Hiển thị modal đánh giá
+                  console.log("qqq", reviewFormData);
+
                 } else {
                   toast.error(
                     "Không thể lấy thông tin sản phẩm hoặc người dùng. Vui lòng thử lại."
@@ -336,7 +341,9 @@ const Profile = (props: Props) => {
             >
               Đánh Giá
             </button>
-            console.log("Form" ,reviewFormsData)
+
+
+
 
             {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
 
@@ -659,6 +666,7 @@ const Profile = (props: Props) => {
                       {order.status}
                     </p>
 
+
                     <hr className="border-t border-dashed border-gray-600 my-6" />
 
                     {/* Hiển thị danh sách sản phẩm trong đơn hàng */}
@@ -908,8 +916,10 @@ const Profile = (props: Props) => {
       </div>
       {showReviewForm && reviewFormData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
-          <div className="bg-white rounded-lg w-full lg:w-1/2 p-6"> {/* Đảm bảo modal chiếm 100% chiều rộng màn hình */}
-            <div className="overflow-y-auto max-h-[80vh]"> {/* Đảm bảo nội dung có thể cuộn */}
+
+          <div className="mt-[115px] bg-white rounded-lg w-full lg:w-1/2 p-6"> {/* Đảm bảo modal chiếm 100% chiều rộng màn hình */}
+            <div className="overflow-y-auto max-h-[70vh]"> {/* Đảm bảo nội dung có thể cuộn */}
+
               {reviewFormData.map((data, index) => (
                 <div key={data.product_item_id} className="mb-8 w-full"> {/* Đảm bảo form chiếm 100% chiều rộng */}
                   <ReviewForm
@@ -917,7 +927,11 @@ const Profile = (props: Props) => {
                     onClose={() => setShowReviewForm(false)}
                     productName={data.product_name}
                     productImage={data.product_image}
-                    productItem={data.size_name}
+
+                    color_name={data.color_name}
+                    size_name={data.size_name}
+                    quantity={data.quantity}
+                    color_hex={data.color_hex}
                   />
                 </div>
               ))}

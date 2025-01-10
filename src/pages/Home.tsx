@@ -85,7 +85,7 @@ const Home = ({
         pauseOnHover={true}
         draggable={true}
       />
-      <div className="section-container">
+      <div className="section-container  mx-auto">
         <div className="block-title">
           <h2>PRODUCTS</h2>
         </div>

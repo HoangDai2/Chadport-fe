@@ -55,13 +55,12 @@ const ShopDetails = ({
 
     // Lọc màu theo size đã chọn
     const colorsForSelectedSize = product?.variants
-      ?.filter((variant) => variant.size?.id === sizeId)
+      ?.filter((variant) => variant.size?.id === sizeId && variant.quantity > 0)
       .map((variant) => ({
         id: variant.color?.id,
         name: variant.color?.name,
         hex: variant.color?.hex,
       }));
-
     setAvailableColors(colorsForSelectedSize || allColors); // Nếu không có màu thì hiển thị tất cả
     setSelectedColor(null); // Reset màu khi đổi size
     setWarehouse(0); // Reset số lượng khi đổi Size
@@ -77,9 +76,70 @@ const ShopDetails = ({
         variant.size?.id === selectedSize && variant.color?.id === colorId
     );
     setWarehouse(selectedVariant ? selectedVariant.quantity : 0); // Cập nhật số lượng tồn kho
+    setQuantity(1);
+  };
+  // hưng làm phần tăng giảm sl
+  // const handleIncrement = () => {
+  //   const selectedVariant = product?.variants.find(
+  //     (variant) =>
+  //       variant.size?.id === selectedSize && variant.color?.id === selectedColor
+  //   );
+  //   console.log(selectedVariant?.quantity);
+  //   if (selectedVariant && quantity < selectedVariant.quantity) {
+  //     setQuantity((prev) => prev + 1); // Tăng số lượng
+  //   }
+  // };
+  const [cartData, setCartData] = useState([]);
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) return;
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      try {
+        const response = await apisphp.get("user/cart", { headers });
+        setCartData(response.data.cart_items || []);
+      } catch (error) {
+        console.error("Lỗi khi tải dữ liệu giỏ hàng:", error.message);
+      }
+    };
+
+    fetchCartData();
+  }, []);
+
+  const handleIncrement = () => {
+    const selectedVariant = product?.variants.find(
+      (variant) =>
+        variant.size?.id === selectedSize && variant.color?.id === selectedColor
+    );
+
+    if (!selectedVariant) {
+      console.log("Không tìm thấy biến thể sản phẩm.");
+      return;
+    }
+
+    const cartItem = cartData.find(
+      (item) =>
+        item.product_item_id === selectedVariant.id &&
+        item.size?.id === selectedSize &&
+        item.color?.id === selectedColor
+    );
+
+    const cartQuantity = cartItem ? cartItem.quantity : 0;
+    const totalCartdb = selectedVariant.quantity - cartQuantity;
+    console.log(cartQuantity);
+    console.log(totalCartdb);
+    if (quantity < totalCartdb) {
+      setQuantity((prev) => prev + 1);
+    } else {
+      toast.warn("vượt quá số lượng tồn kho.");
+    }
   };
 
-  const handleIncrement = () => setQuantity((prev) => prev + 1);
   const handleDecrement = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   const [mainImage, setMainImage] = useState<string | null>(null);
@@ -107,23 +167,26 @@ const ShopDetails = ({
       (variant) =>
         variant.size?.id === selectedSize && variant.color?.id === selectedColor
     );
+
     if (!selectedVariant) {
       console.error("Variant not found for selected size and color");
       return;
     }
+    // console.log(selectedVariant);
     if (selectedVariant.quantity === 0) {
       toast.warning("Sản phầm này đã hết");
       return;
     }
+
     const productDetails = {
       product_item_id: selectedVariant.id,
       quantity: quantity,
     };
     dispatch(addToCart(productDetails));
-    toast.success("Thêm vào giỏ hàng thành công!", {
-      position: "top-right",
-      autoClose: 3000,
-    });
+    // toast.success("Thêm vào giỏ hàng thành công!", {
+    //   position: "top-right",
+    //   autoClose: 3000,
+    // });
   };
 
   const handleBuyNow = async (event: any) => {
@@ -223,7 +286,7 @@ const ShopDetails = ({
         }
         setProduct({ ...fetchedProduct, image_description: images });
         setMainImage(fetchedProduct.image_product);
-        console.log("123", res);
+        // console.log("123", res);
       } catch (error) {
         console.error("Error fetching product details", error);
       } finally {
@@ -234,6 +297,7 @@ const ShopDetails = ({
       fetchProductDetails();
     }
   }, [id]);
+  // console.log(product);
 
   // giao diện hiện thị thông báo check login hay chưa để cho phép bình luận
   const renderAlert = () => {
@@ -291,6 +355,7 @@ const ShopDetails = ({
   if (!product) {
     return <div>Loading...</div>;
   }
+  // console.log(product);
   return (
     <>
       {showAlert && renderAlert()}
@@ -503,7 +568,7 @@ const ShopDetails = ({
                               </div>
                             </div>
                           </div>
-                          {/* // Size selection */}
+                          {/* // cỡ selection */}
                           <div className="mb-3 ">
                             <label className="block text-sm text-left font-medium text-gray-700">
                               Size:
@@ -521,18 +586,18 @@ const ShopDetails = ({
                               ].map((variant) => (
                                 <button
                                   key={variant.size?.name}
-                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 
-                                              ${selectedSize ===
-                                      variant.size?.id
+
+                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 ${
+                                    selectedSize === variant.size?.id
                                       ? "bg-black text-white"
                                       : "bg-white text-gray-700 border-gray-300"
-                                    }
-                                              hover:bg-primary hover:text-black`}
+                                  } hover:bg-primary hover:text-black`}
                                   onClick={() =>
                                     handleSizeChange(variant.size?.id || "")
                                   }
                                 >
-                                  {variant.size?.name}
+                                  {" "}
+                                  {variant.size?.name}{" "}
                                 </button>
                               ))}
                             </div>
@@ -543,27 +608,31 @@ const ShopDetails = ({
                               Color:
                             </label>
                             <div className="flex gap-2">
-                              {(selectedSize ? availableColors : allColors).map(
+                              {(selectedSize ? availableColors : []).map(
                                 (color) => (
                                   <button
                                     key={color.id}
-                                    className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 
-                                              ${selectedColor === color.id
-                                        ? "border-black scale-110" // Nổi bật và to hơn khi được chọn
+
+                                    className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 ${
+                                      selectedColor === color.id
+                                        ? "border-black scale-110"
                                         : "border-gray-300"
-                                      }`}
+                                    }`}
+
                                     style={{
-                                      backgroundColor: color.hex, // Màu nền từ hex
+                                      backgroundColor: color.hex,
                                       color:
                                         color.hex === "#FFFFFF"
                                           ? "black"
-                                          : "white", // Đổi chữ nổi bật nếu nền trắng
+                                          : "white",
                                     }}
                                     onClick={() =>
                                       handleColorChange(color.id || "")
                                     }
                                   >
-                                    { }
+
+                                    {" "}
+                                    {}{" "}
                                   </button>
                                 )
                               )}
@@ -572,12 +641,31 @@ const ShopDetails = ({
 
                           <div className="buttons ">
                             <div className="add-to-cart-wrap">
-                              {/* số lượng tăng giảm */}
+                              {/* lên */}
                               <div className="quantity">
                                 <button
                                   type="button"
                                   className="plus"
                                   onClick={handleIncrement}
+                                  disabled={
+                                    !product?.variants.find(
+                                      (variant) =>
+                                        variant.size?.id === selectedSize &&
+                                        variant.color?.id === selectedColor &&
+                                        quantity < variant.quantity
+                                    )
+                                  }
+                                  style={{
+                                    display:
+                                      quantity >=
+                                      product?.variants.find(
+                                        (variant) =>
+                                          variant.size?.id === selectedSize &&
+                                          variant.color?.id === selectedColor
+                                      )?.quantity
+                                        ? "none"
+                                        : "inline-block",
+                                  }}
                                 >
                                   +
                                 </button>
@@ -586,6 +674,7 @@ const ShopDetails = ({
                                   className="qty"
                                   step={1}
                                   min={1}
+                                  readOnly
                                   name="quantity"
                                   value={quantity}
                                   onChange={(e) => {
@@ -641,6 +730,7 @@ const ShopDetails = ({
                               </button>
                             </div>
                           </div>
+
                           <div className="product-meta">
                             <span className="sku-wrapper">
                               SKU: <span className="sku">D2300-3-2-2</span>

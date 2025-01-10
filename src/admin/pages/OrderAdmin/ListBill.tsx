@@ -130,7 +130,7 @@ const Orders1: React.FC = () => {
         toast.error("Cập nhật thất bại!");
       }
     } catch (err) {
-      setError("Failed to update order status. Please try again.");
+      toast.error("Failed to update order status. Please try again.");
     }
   };
 
@@ -141,7 +141,6 @@ const Orders1: React.FC = () => {
         `http://127.0.0.1:8000/api/all-ordersAdmin/${orderId}`
       );
       setSelectedOrder(response.data);
-      // console.log(response.data);
       setIsModalOpen(true);
     } catch (err) {
       toast.error("Failed to load order details");
@@ -149,13 +148,11 @@ const Orders1: React.FC = () => {
       setLoading(false);
     }
   };
-  // console.log(selectedOrder?.data?.id);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
   };
-  // console.log(selectedOrder?.products[]);
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -168,9 +165,27 @@ const Orders1: React.FC = () => {
         pauseOnHover={true}
         draggable={true}
       />
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
         Order Management
       </h2>
+
+      <div className="mb-4 flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+          <label className="text-sm text-gray-600">Filter by status:</label>
+          <select
+            className="p-2 border text-sm font-medium text-gray-600 text-center rounded-md w-32 h-11"
+            value={statusFilter}
+            onChange={handleStatusChange}
+          >
+            <option value="">All</option>
+            {statusOptions.map((status) => (
+              <option key={status.key} value={status.value}>
+                {status.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       {loading ? (
         <div className="flex justify-center py-10">
@@ -179,122 +194,122 @@ const Orders1: React.FC = () => {
       ) : error ? (
         <p className="text-red-500 text-center">{error}</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse table-auto border block md:table">
-            <thead className="block md:table-header-group">
-              <tr className="border-b border-gray-200 md:border-none block md:table-row">
-                {/* Table headers */}
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+        <div className="overflow-x-auto shadow-lg rounded-lg">
+          <table className="min-w-full border-collapse table-auto">
+            <thead className="bg-gray-100 border-b">
+              <tr>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Order ID
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Order Number
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   User ID
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Payment Method
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider w-24">
                   Total Money
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Shipping Address
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Billing Address
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
-                  <select
-                    className="p-2 border border-gray-300 rounded"
-                    value={statusFilter}
-                    onChange={handleStatusChange}
-                  >
-                    <option value="">All Status</option>
-                    {statusOptions.map((status) => (
-                      <option key={status.key} value={status.value}>
-                        {status.label}
-                      </option>
-                    ))}
-                  </select>
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                  Status
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Created At
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Updated At
                 </th>
-                <th className="bg-gray-100 p-2 text-gray-600 font-bold text-left block md:table-cell">
+                <th className="px-2 py-4 text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="block md:table-row-group">
+            <tbody className="divide-y">
               {currentOrders.map((order) => (
                 <tr
                   key={order.id}
-                  className="border border-gray-200 md:border-none block md:table-row mb-4 md:mb-0 hover:bg-gray-200"
+                  className="hover:bg-gray-50 transition duration-200"
                 >
-                  {/* Table data */}
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  <td className="px-2 py-3 text-sm text-gray-800">
                     {order.id}
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  <td className="text-sm font-medium text-gray-600 whitespace-nowrap max-w-48 truncate">
                     {order.oder_number}
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  <td className="px-2 py-3 text-sm text-gray-800">
                     {order.user_id}
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  <td className="px-2 py-3 text-sm font-medium text-gray-600">
                     {order.payment_method === "1"
                       ? "Thanh toán trực tiếp"
                       : order.payment_method === "2"
                       ? "Thanh toán online"
-                      : "credit_card"}
+                      : "Credit Card"}
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  <td className="text-sm font-medium text-gray-600 w-24">
                     {order.total_money} VND
                   </td>
-                  <td className="p-2 text-gray                    .700 block md:table-cell">
+                  <td className="px-2 py-3 text-sm font-medium text-gray-600">
                     {order.shipping_address}
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  <td className="px-2 py-3 text-sm font-medium text-gray-600">
                     {order.billing_address}
                   </td>
                   <td className="p-2 text-gray-700 block md:table-cell">
                     <select
-                      className="border border-gray-300 rounded p-2 "
+                      className="border border-gray-300 rounded p-2"
                       value={order.status || ""}
                       onChange={(e) =>
                         handleStatusChangeSubmit(order.id, e.target.value)
                       }
                       disabled={order.status === "bị hủy"}
                     >
-                      {statusOptions.map((status) => (
-                        <option
-                          key={status.key}
-                          value={status.value}
-                          disabled={
-                            status.value === "bị hủy" &&
-                            order.status !== "bị hủy"
-                          }
-                          className="disabled:bg-gray-300"
-                        >
-                          {status.label}
-                        </option>
-                      ))}
+                      {statusOptions.map((status) => {
+                        const currentStatusKey = statusOptions.find(
+                          (option) => option.value === order.status
+                        )?.key;
+
+                        const isCurrentStatus = order.status === status.value;
+
+                        return (
+                          <option
+                            key={status.key}
+                            value={status.value}
+                            disabled={
+                              (currentStatusKey !== undefined &&
+                                status.key < currentStatusKey) ||
+                              (status.value === "bị hủy" &&
+                                order.status !== "bị hủy")
+                            }
+                            className={`${
+                              isCurrentStatus ? "bg-blue-500 font-bold" : ""
+                            } disabled:bg-gray-300`}
+                          >
+                            {status.label}
+                          </option>
+                        );
+                      })}
                     </select>
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+
+                  <td className="px-4 py-3 text-sm font-medium text-gray-600">
                     {new Date(order.created_at).toLocaleString()}
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-600">
                     {new Date(order.updated_at).toLocaleString()}
                   </td>
-                  <td className="p-2 text-gray-700 block md:table-cell">
+                  <td className="px-4 py-3 text-sm text-gray-800">
                     <button
-                      className=" hover:bg-amber-300 font-bold  rounded mr-2"
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
                       onClick={() => handleViewDetails(order.id)}
                     >
                       View Details
@@ -312,7 +327,7 @@ const Orders1: React.FC = () => {
               (_, index) => (
                 <button
                   key={index}
-                  className={`py-2 px-4 mx-1 rounded ${
+                  className={`py-2 px-4 mx-1 rounded-md ${
                     index + 1 === currentPage
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-700"
@@ -326,9 +341,10 @@ const Orders1: React.FC = () => {
           </div>
         </div>
       )}
+
       {isModalOpen && selectedOrder && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center mt-20 z-50">
-          <div className="bg-white rounded-lg w-3/4 lg:w-1/2 p-6 overflow-y-auto max-h-[80vh] shadow-lg">
+        <div className="fixed inset-0  flex justify-center items-center  z-50">
+          <div className="bg-white rounded-lg w-2/4 lg:w-1/2  overflow-y-auto max-h-[80vh] shadow-lg">
             <h3 className="text-2xl font-semibold mb-6 text-gray-800 mt-10">
               Chi tiết đơn hàng
             </h3>
