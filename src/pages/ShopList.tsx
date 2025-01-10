@@ -1,31 +1,73 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TProduct from "../Types/TProduct";
+import Tcategory from "../Types/TCategories";
 import apisphp from "../Service/api";
-
+import { useLoading } from "./Loadings/LoadinfContext";
 const ShopList = () => {
+  const { startLoading, stopLoading } = useLoading();
   const [products, setProducts] = useState<TProduct[]>([]);
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
   const [totalPages, setTotalPages] = useState(0); // Tổng số trang
   const [sortOption, setSortOption] = useState<string>("default");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  const [priceRange, setPriceRange] = useState<string>("");
+
+  const [selectedCategory, setSelectedCategory] = useState<number | null>();
+  const [categories, setCategories] = useState<Tcategory[]>([]); // Khai báo state để lưu danh mục
+
   const navigate = useNavigate();
 
   // Fetch product data from API
   useEffect(() => {
     const fetchProducts = async () => {
+      startLoading();
       try {
-        const response = await apisphp.get(`shop/products?page=${currentPage}`);
+        const response = await apisphp.get(
+          `shop/products?page=${currentPage}${
+            priceRange ? `&price_range=${priceRange}` : ""
+          }${selectedCategory ? `&category_id=${selectedCategory}` : ""}`
+        );
+
         setProducts(response.data.data); // Sản phẩm trên trang hiện tại
         setTotalPages(response.data.last_page); // Tổng số trang
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        stopLoading();
       }
     };
 
     fetchProducts();
-  }, [currentPage]);
+  }, [currentPage, priceRange, selectedCategory]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apisphp.get("getall/categories");
+
+        if (Array.isArray(response.data.data)) {
+          setCategories(response.data.data); // Cập nhật categories
+        } else {
+          console.error("Dữ liệu không phải là mảng:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleCategorySelect = (categoryId: number) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1); // Reset trang khi thay đổi danh mục
+  };
+
+  const handlePriceFilterChange = (selectedPriceRange: string) => {
+    setPriceRange(selectedPriceRange); // Cập nhật priceRange và fetch lại sản phẩm
+  };
 
   // Điều hướng đến trang chi tiết sản phẩm
   const goToProductDetail = (id: number) => {
@@ -48,6 +90,9 @@ const ShopList = () => {
       case "price-high-to-low":
         sortedProducts.sort((a, b) => b.price_sale - a.price_sale);
         break;
+      case "default":
+        // Chỉ cần không sắp xếp khi chọn default
+        break;
       default:
         sortedProducts = products; // Sắp xếp mặc định
     }
@@ -56,6 +101,11 @@ const ShopList = () => {
   };
 
   const handleSortChange = (option: string) => {
+    // Nếu chọn "Default sorting", không lọc theo giá và gọi lại API
+    if (option === "default") {
+      setPriceRange(""); // Reset khoảng giá
+    }
+
     setSortOption(option);
     sortProducts(option);
   };
@@ -91,49 +141,75 @@ const ShopList = () => {
                 <div className="row">
                   {/* Sidebar: Brand and Feature Product */}
                   <div className="col-xl-3 col-lg-3 col-md-12 col-12 sidebar left-sidebar md-b-50">
-                    {/* Block Product Categories */}
-                    <div className="block block-product-cats">
+                    {/* Danh sách các danh mục */}
+                    <div className="filter-category block block-product-cats">
                       <div className="block-title">
                         <h2>Brand</h2>
                       </div>
                       <div className="block-content">
                         <div className="product-cats-list">
                           <ul>
+                            {/* Nút "All Brands" */}
                             <li className="current">
-                              <a href="#">
-                                Nike <span className="count">9</span>
-                              </a>
+                              <button
+                                onClick={() => handleCategorySelect(0)} // Trả về tất cả sản phẩm khi chọn "All Brands"
+                                className="btn btn-light w-100 text-left rounded-0"
+                                style={{
+                                  opacity: 0.4,
+                                  transition: "opacity 0.3s",
+                                }}
+                                onMouseEnter={(e) =>
+                                  (e.currentTarget.style.opacity = "1")
+                                }
+                                onMouseLeave={(e) =>
+                                  (e.currentTarget.style.opacity = "0.4")
+                                }
+                              >
+                                <a href="#">
+                                  All Brands
+                                  <span className="count">
+                                    {products.length}{" "}
+                                  </span>
+                                </a>
+                              </button>
                             </li>
-                            <li>
-                              <a href="#">
-                                Adidas <span className="count">4</span>
-                              </a>
-                            </li>
-                            <li>
-                              <a href="#">
-                                Balenciaga <span className="count">3</span>
-                              </a>
-                            </li>
-                            <li>
-                              <a href="#">
-                                Puma <span className="count">6</span>
-                              </a>
-                            </li>
-                            <li>
-                              <a href="#">
-                                Converse <span className="count">2</span>
-                              </a>
-                            </li>
-                            <li>
-                              <a href="#">
-                                Vans <span className="count">4</span>
-                              </a>
-                            </li>
+                            {categories.map((category) => {
+                              // Đếm số lượng sản phẩm của mỗi danh mục
+                              const productCount = products.filter(
+                                (product) => product.category_id === category.id
+                              ).length;
+                              return (
+                                <li key={category.id} className="current">
+                                  <button
+                                    onClick={() =>
+                                      handleCategorySelect(category.id)
+                                    }
+                                    className="btn btn-light w-100 text-left rounded-0"
+                                    style={{
+                                      opacity: 0.4,
+                                      transition: "opacity 0.3s",
+                                    }}
+                                    onMouseEnter={(e) =>
+                                      (e.currentTarget.style.opacity = "1")
+                                    }
+                                    onMouseLeave={(e) =>
+                                      (e.currentTarget.style.opacity = "0.4")
+                                    }
+                                  >
+                                    <a href="#">
+                                      {category.name}
+                                      <span className="count">
+                                        {productCount}{" "}
+                                      </span>
+                                    </a>
+                                  </button>
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
                       </div>
                     </div>
-
                     {/* sản phẩm sidebar */}
                     <div className="block block-products">
                       <div className="block-title">
@@ -248,6 +324,22 @@ const ShopList = () => {
                               }
                             >
                               <a href="#">Price: High to Low</a>
+                            </li>
+
+                            <li
+                              onClick={() => handlePriceFilterChange("1m-2m")}
+                            >
+                              <a href="#">Price: 1M - 2M</a>
+                            </li>
+                            <li
+                              onClick={() => handlePriceFilterChange("2m-5m")}
+                            >
+                              <a href="#">Price: 2M - 5M</a>
+                            </li>
+                            <li
+                              onClick={() => handlePriceFilterChange("5m-10m")}
+                            >
+                              <a href="#">Price: 5M - 10M</a>
                             </li>
                           </ul>
                         </div>

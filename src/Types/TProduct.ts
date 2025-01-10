@@ -35,7 +35,7 @@ export interface TProduct {
   description: string;
   total_quatity: number;
   image_product: string;
-  image_description?: string[];
+  image_description?: [];
   price: number;
   price_sale: number;
   type: string;

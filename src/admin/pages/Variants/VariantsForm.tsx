@@ -3,6 +3,7 @@ import { AiOutlinePlus, AiOutlineClose } from "react-icons/ai";
 import { FaSave } from "react-icons/fa";
 import { Color, Size } from "../../../Types/TProduct";
 import apisphp from "../../../Service/api";
+import { toast } from "react-toastify";
 
 // Interface định nghĩa cấu trúc dữ liệu của một biến thể sản phẩm
 interface Variant {
@@ -107,18 +108,17 @@ const VariantsForm: React.FC<Props> = ({
   const toggleSelection = (id: number, field: keyof Variant, value: string) => {
     setVariants((prevVariants) => {
       const updatedVariants = prevVariants.map((variant) => {
-        if (variant.id !== id) return variant; // Nếu không phải biến thể cần chỉnh sửa, trả về như cũ
+        if (variant.id !== id) return variant; // Không chỉnh sửa biến thể khác
 
-        // Kiểm tra xem variant[field] có phải là mảng string[] hoặc number[] không
-        const updatedField = Array.isArray(variant[field]) // Kiểm tra nếu là mảng
-          ? (variant[field] as string[]).includes(value)
-            ? (variant[field] as string[]).filter((v) => v !== value) // Bỏ giá trị nếu đã chọn
-            : [...(variant[field] as string[]), value] // Thêm giá trị nếu chưa chọn
-          : variant[field]; // Nếu không phải mảng, giữ nguyên giá trị
+        // Nếu là size hoặc color, thay thế giá trị thay vì thêm/bỏ giá trị
+        const updatedField =
+          field === "sizes" || field === "colors"
+            ? [value] // Chỉ chọn một giá trị duy nhất
+            : variant[field];
 
         return {
           ...variant,
-          [field]: updatedField, // Cập nhật giá trị mới cho biến thể
+          [field]: updatedField, // Cập nhật giá trị mới
         };
       });
 
@@ -131,6 +131,7 @@ const VariantsForm: React.FC<Props> = ({
         }))
       );
 
+      console.log(updatedVariants);
       return updatedVariants;
     });
   };
@@ -150,15 +151,15 @@ const VariantsForm: React.FC<Props> = ({
           quantity: variant.quantity,
         }))
       );
-
+      console.log(updatedVariants);
       return updatedVariants;
     });
   };
 
   // Hàm xử lý khi nhấn nút lưu
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Ngăn chặn reload trang
-    console.log("Submitted Variants:", variants); // Log biến thể ra console
+    e.preventDefault();
+    console.log("Submitted Variants:", variants);
   };
 
   return (
@@ -172,7 +173,7 @@ const VariantsForm: React.FC<Props> = ({
             key={variant.id}
             className="mb-6 p-6 bg-gray-50 border border-gray-200 rounded-md shadow-sm relative"
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex justify-center gap-6">
               {/* Size */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

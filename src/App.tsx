@@ -1,4 +1,11 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
@@ -38,12 +45,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./libs/mmenu/css/mmenu.min.css";
 import LoginRegister from "./pages/AuthClient/Login"; // Only one import
-import ShopDetails from "./pages/ShopDetails";
 import Wishlist from "./pages/Wishlist";
-import ShopCart from "./pages/ShopCart";
+import ShopCart from "./pages/payment/ShopCart";
 import CartList from "./function/CartList";
 import About from "./pages/About";
-import Checkout from "./pages/Checkout";
+import Checkout from "./pages/payment/Checkout";
 import BillOrder from "./pages/BillOrder";
 import MyAccountPage from "./pages/MyAccountPage";
 import { toast } from "react-toastify";
@@ -63,21 +69,25 @@ import createCategory from "./Service/categories";
 import createProduct from "./Service/Product";
 import { useNavigate } from "react-router-dom";
 import CategoriesClient from "./pages/CategoriesClient/CategoriesClient";
-import Orders from "./admin/pages/ListBill";
+import Orders from "./admin/pages/OrderAdmin/ListBill";
 import SearchResults from "./pages/SearchResults";
 import apisphp from "./Service/api";
 import LoginAdmin from "./admin/pages/LoginAdmin";
 import ProfileAdmin from "./admin/pages/ProfileAdmin";
-import PrivateRoute from "./admin/components/PrivateRoute";
 // import HeaderclientC from "./components/HeaderClient copy";
 // import HeaderClientC from "./components/HeaderClient copy";
 
-// import LoginAdmin from "./admin/pages/LoginAdmin";
+import PrivateRoute from "./admin/components/PrivateRoute";
 // import ProfileAdmin from "./admin/pages/ProfileAdmin";
 import SizeForm from "./admin/pages/Variants/SizeForm";
 import ColorForm from "./admin/pages/Variants/ColorForm";
 import VariantForm from "./admin/pages/Variants/VariantsForm";
-
+import ShopDetails from "./pages/payment/ShopDetails";
+import ThongKe from "./admin/pages/ThongKe";
+import { LoadingProvider } from "./pages/Loadings/LoadinfContext";
+import RefundForm from "./pages/Order/FormRefund";
+import RefundNotification from "./pages/Order/RefundNotification";
+import CancelOrder from "./admin/pages/OrderAdmin/CancelOrder";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -85,6 +95,7 @@ function App() {
   const [category, setCategory] = useState<Tcategory[]>([]);
   const [carCount, setCarCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const fetchWihsListCount = async () => {
     try {
@@ -95,9 +106,11 @@ function App() {
       console.error("Error fetching cart count:", error);
     }
   };
+
   useEffect(() => {
     fetchWihsListCount();
   }, []);
+
   const addToWishlist = async (product: TProduct) => {
     try {
       const wishlistResponse = await fetch("http://localhost:3000/wishlist");
@@ -213,8 +226,8 @@ function App() {
         const newProduct = await createProduct(formData);
         setProduct((prev) => [...prev, newProduct]);
         toast.success("Thêm sản phẩm thành công!");
-        navigate("/admin/products"); // Điều hướng sau khi thêm thành công
-        window.location.reload(); // Tải lại trang nếu cần thiết
+        // navigate("/admin/products"); // Điều hướng sau khi thêm thành công
+        // window.location.reload(); // Tải lại trang nếu cần thiết
       } catch (error) {
         console.error("Error adding product:", error);
       }
@@ -262,6 +275,7 @@ function App() {
     };
     fetchCategory();
   }, []);
+
   const handleAddCategory = async (newCategory: Tcategory): Promise<void> => {
     try {
       const addedCategory = await createCategory(newCategory);
@@ -308,255 +322,268 @@ function App() {
   return (
     <>
       <div className="content">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <HeaderClient
-                  carCount={carCount}
-                  wishlisCount={wishlistCount}
-                />
-                <Banner />
-                <div style={{ padding: "70px", marginTop: "80px" }}>
-                  <Category />
-                </div>
-                <Home addToWishlist={addToWishlist} />
-                <ProductSale />
-                <FooterClient />
-              </>
-            }
-          />
-          <Route
-            path="/shoplist"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <ShopList />
-                <FooterClient />
-              </>
-            }
-          />
-          <Route
-            path="/shop-details/:id"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <ShopDetails addToWishlist={addToWishlist} />
-                <FooterClient />
-              </>
-            }
-          />
-          <Route
-            path="/checkout"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <Checkout />
-                <FooterClient />
-              </>
-            }
-          />
-          <Route
-            path="/shopcart"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <ShopCart />
-                <FooterClient />
-              </>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <LoginRegister />
-                <FooterClient />
-              </>
-            }
-          />
-
-          <Route path="/checkout" element={<Checkout />} />
-          <Route
-            path="/pay_done"
-            element={
-              <>
-                <Headerclient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <div style={{ padding: "70px", marginTop: "80px" }}>
-                  <Pay_done />
-                </div>
-                <FooterClient />
-              </>
-            }
-          />
-          <Route
-            path="/billorder"
-            element={
-              <>
-                <Headerclient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <div style={{ padding: "70px", marginTop: "80px" }}>
-                  <BillOrder />
-                </div>
-                <FooterClient />
-              </>
-            }
-          />
-          <Route path="/shopcart" element={<ShopCart />} />
-          <Route path="/login" element={<LoginRegister />} />
-          <Route
-            path="/wishlist"
-            element={
-              <>
-                <Headerclient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <Wishlist />
-                <FooterClient />
-              </>
-            }
-          />
-
-          <Route
-            path="/profile"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <div style={{ marginTop: "100px" }}>
-                  <Profile />
-                </div>
-                <FooterClient />
-              </>
-            }
-          />
-
-          <Route
-            path="/about"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <About />
-                <FooterClient />
-              </>
-            }
-          />
-          <Route
-            path="/blog"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <About />
-                <FooterClient />
-              </>
-            }
-          />
-
-          <Route
-            path="/categoriesnike/:id"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <CategoriesClient />
-                <FooterClient />
-              </>
-            }
-          />
-          <Route
-            path="/searchresults"
-            element={
-              <>
-                <HeaderClient
-                  wishlisCount={wishlistCount}
-                  carCount={carCount}
-                />
-                <SearchResults />
-                <FooterClient />
-              </>
-            }
-          />
-        </Routes>
-        <Routes>
-          {/* <Route path="loginadmin" element={<LoginAdmin />} /> */}
-        </Routes>
-        <Routes>
-        <Route path="/loginadmin" element={<LoginAdmin />} />
-        <Route path="/admin" element={<Admin />}>
-            <Route index element={<div>Welcome to Admin Dashboard</div>} />
-            <Route path="listuser" element={<ListUser listuser={user} />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="profileadmin" element={<ProfileAdmin />} />
-            <Route path="products" element={<ProductList />} />
-
+        <LoadingProvider>
+          <Routes>
             <Route
-              path="products/add"
+              path="/"
               element={
-                <ProductAdd onAdd={handleAddProduct} categories={category} />
+                <>
+                  <HeaderClient
+                    carCount={carCount}
+                    wishlisCount={wishlistCount}
+                  />
+                  <Banner />
+                  <div style={{ padding: "70px", marginTop: "80px" }}>
+                    <Category />
+                  </div>
+                  <Home addToWishlist={addToWishlist} />
+                  <ProductSale />
+                  <FooterClient />
+                </>
               }
             />
             <Route
-              path="products/edit/:id"
+              path="/shoplist"
               element={
-                <ProductUpdate
-                  onEdit={handleEditProduct}
-                  categories={category}
-                />
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <ShopList />
+                  <FooterClient />
+                </>
               }
             />
+            <Route
+              path="/shop-details/:id"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <ShopDetails addToWishlist={addToWishlist} />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <Checkout />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/shopcart"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <ShopCart />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <LoginRegister />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route
+              path="/pay_done"
+              element={
+                <>
+                  <Headerclient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <div style={{ padding: "70px", marginTop: "80px" }}>
+                    <Pay_done />
+                  </div>
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/billorder"
+              element={
+                <>
+                  <Headerclient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <div style={{ padding: "70px", marginTop: "80px" }}>
+                    <BillOrder />
+                  </div>
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route path="/shopcart" element={<ShopCart />} />
+            <Route path="/login" element={<LoginRegister />} />
+            <Route
+              path="/wishlist"
+              element={
+                <>
+                  <Headerclient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <Wishlist />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <div style={{ marginTop: "100px" }}>
+                    <Profile />
+                  </div>
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <About />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/blog"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <About />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/categoriesnike/:id"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <CategoriesClient />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/searchresults"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <SearchResults />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/formrefund/:order_id"
+              element={
+                <>
+                  <HeaderClient
+                    wishlisCount={wishlistCount}
+                    carCount={carCount}
+                  />
+                  <RefundForm />
+                  <FooterClient />
+                </>
+              }
+            />
+            <Route
+              path="/refund-notification"
+              element={<RefundNotification />}
+            />
+          </Routes>
+        </LoadingProvider>
+        <Routes>
+          {/* Route không cần xác thực */}
+          <Route path="/loginadmin" element={<LoginAdmin />} />
 
-            <Route
-              path="categorieslist"
-              element={<CategoriesList listcategories={category} />}
-            />
-            <Route
-              path="categories/add"
-              element={<CategoriesAdd onAddCategory={handleAddCategory} />}
-            />
-            <Route
-              path="categories/edit/:id"
-              element={
-                <CategoriesUpadate onEditCategory={handleEditCategory} />
-              }
-            />
-            <Route path="size" element={<SizeForm />} />
-            <Route path="color" element={<ColorForm />} />
-            <Route path="size" element={<SizeForm />} />
-            <Route path="color" element={<ColorForm />} />
-            {/* <Route path="variants" element={<VariantForm />} /> */}
+          {/* Các route yêu cầu xác thực được bọc trong PrivateRoute */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/admin" element={<Admin />}>
+              <Route index element={<ThongKe />} />
+              <Route path="listuser" element={<ListUser listuser={user} />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="profileadmin" element={<ProfileAdmin />} />
+              <Route path="products" element={<ProductList />} />
+              <Route
+                path="products/add"
+                element={
+                  <ProductAdd onAdd={handleAddProduct} categories={category} />
+                }
+              />
+              <Route
+                path="products/edit/:id"
+                element={
+                  <ProductUpdate
+                    onEdit={handleEditProduct}
+                    categories={category}
+                  />
+                }
+              />
+              <Route
+                path="categorieslist"
+                element={<CategoriesList listcategories={category} />}
+              />
+              <Route
+                path="categories/add"
+                element={<CategoriesAdd onAddCategory={handleAddCategory} />}
+              />
+              <Route
+                path="categories/edit/:id"
+                element={
+                  <CategoriesUpadate onEditCategory={handleEditCategory} />
+                }
+              />
+              <Route path="size" element={<SizeForm />} />
+              <Route path="color" element={<ColorForm />} />
+              <Route path="cancel_order" element={<CancelOrder />} />
+            </Route>
           </Route>
         </Routes>
       </div>
