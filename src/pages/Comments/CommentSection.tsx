@@ -12,6 +12,11 @@ type TComments = {
   product_item_id: number;
   user_id: number;
   user: TUser;
+  name: string;
+  color_name: string;
+  size_name: string;
+  image: string;
+  image_user: string;
   content: string;
   rating: number;
   reported: boolean;
@@ -35,6 +40,24 @@ const CommentSection = () => {
 
   // Xác định số lượng bình luận hiển thị
   const visibleComments = comments.slice(0, visibleCommentsCount);
+
+  const [filter, setFilter] = useState<{
+    rating: number | null;
+    hasImage: boolean | null;
+  }>({
+    rating: null,
+    hasImage: null,
+  });
+
+  const filteredComments = comments.filter((comment) => {
+    const matchesRating =
+      filter.rating === null || comment.rating === filter.rating;
+    const matchesImage =
+      filter.hasImage === null ||
+      (filter.hasImage ? !!comment.image : !comment.image);
+    return matchesRating && matchesImage;
+  });
+
 
   const toggleSection = (section: any) => {
     setOpenSection(openSection === section ? null : section);
@@ -74,15 +97,56 @@ const CommentSection = () => {
     );
   };
 
-  // xổ menu
-  const handleMenuToggle = (commentId: number) => {
-    setMenuVisibleCommentId(
-      menuVisibleCommentId === commentId ? null : commentId
-    );
+  // định dạng lại ngày giờ theo việt nam
+  const formatDateToVietnamese = (dateString: any) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("vi-VN", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(date);
   };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<React.ReactNode>(null);
+
+  const openModal = (content: React.ReactNode) => {
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalContent(null);
+    setIsModalOpen(false);
+  };
+
+  const getStarCount = (star: number) => {
+    return comments.filter((comment) => comment.rating === star).length;
+  };
+
 
   return (
     <>
+      {/* Modal phóng to ảnh bình luận của user  */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+          onClick={closeModal} // Đóng modal khi click bên ngoài
+        >
+          <div
+            className="relative bg-white p-4 rounded-lg"
+            onClick={(e) => e.stopPropagation()} // Ngăn đóng modal khi click vào nội dung
+          >
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+              onClick={closeModal}
+            >
+              ✕
+            </button>
+            {modalContent}
+          </div>
+        </div>
+      )}
+
       {showAlert}
       {/* Description Additional information Reviews */}
       <div className="w-full border-t border-gray-300 mt-[50px]">
@@ -106,31 +170,95 @@ const CommentSection = () => {
                   ({comments.length} đánh giá)
                 </span>
               </div>
-
+              <div className="flex space-x-4 my-4">
+                {/* Dropdown để chọn số sao */}
+                <select
+                  className="px-4 py-2 border rounded bg-white text-gray-700"
+                  value={filter.rating || ""}
+                  onChange={(e) =>
+                    setFilter((prev) => ({
+                      ...prev,
+                      rating: e.target.value ? Number(e.target.value) : null,
+                    }))
+                  }
+                >
+                  <option value="">Tất Cả</option>
+                  {[5, 4, 3, 2, 1].map((star) => (
+                    <option key={star} value={star}>
+                      {"★".repeat(star)} ({getStarCount(star)})
+                    </option>
+                  ))}
+                </select>
+                {/* Lọc theo ảnh */}
+                <select
+                  className="border p-2 rounded"
+                  value={filter.hasImage === null ? "" : filter.hasImage ? "true" : "false"}
+                  onChange={(e) =>
+                    setFilter({ ...filter, hasImage: e.target.value === "" ? null : e.target.value === "true" })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  <option value="true">Có ảnh</option>
+                  <option value="false">Không có ảnh</option>
+                </select>
+              </div>
               <div className="space-y-4">
-                {comments.map((comment, index) => (
-                  <div key={index} className="border-b pb-4">
-                    <div>
-                      <p className="font-semibold">{comment.name}</p>
-                      {/* Nếu có ảnh, hiển thị ảnh */}
-                      {comment.image && (
+                {/* map data */}
+                {filteredComments.map((cmt) => (
+                  <div className="p-4 border-b">
+                    {/* img và biến thể */}
+                    <div className="flex items-center gap-2">
+                      <div>
                         <img
-                          src={comment.image}
-                          alt={`Comment image by ${comment.name}`}
-                          className="w-16 h-16 mt-2 rounded"
+                          className="object-cover  w-10 h-10 rounded-full bg-gray-200"
+                          src={`http://127.0.0.1:8000${cmt.image_user}`}
+                          alt=""
                         />
-                      )}
+                      </div>
+                      <div className="text-left">
+                        <div className="font-semibold text-gray-700">{cmt.name}</div>
+                        <div className="text-sm text-gray-500">
+                          {/* {formatDateToVietnamese(cmt.created_at)}  | Phân loại hàng : {cmt.color_name} - {cmt.size_name} */}
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-2">
-                      <p className="text-gray-700">{comment.content}</p>
-                      {renderStars(comment.rating)}
+
+                    {/* content */}
+                    <div className="pl-12">
+                      <div className="text-left mt-2 text-yellow-500"> {renderStars(cmt.rating)}</div>
+
+                      <div className="text-left mt-2 text-gray-700">
+                        {cmt.content}
+                      </div>
+
+                      <div className="mt-4 flex gap-2">
+                        <div className="relative group w-24 h-24">
+                          <img
+                            src={`http://127.0.0.1:8000/storage/${cmt.image}`}
+                            alt="Ảnh"
+                            className="w-full h-full object-cover rounded-lg"
+                            onClick={() =>
+                              openModal(
+                                <img
+                                  src={`http://127.0.0.1:8000/storage/${cmt.image}`}
+                                  alt="QR"
+                                  className=" w-[400px] max-h-screen"
+                                />
+                              )
+                            }
+                          />
+
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
+
               </div>
             </div>
           )}
         </div>
+
 
         {/* Mô tả */}
         <div className="border-b border-gray-300">
