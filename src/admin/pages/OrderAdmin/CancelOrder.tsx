@@ -12,7 +12,18 @@ const Row = ({ row, setCancelOrder }: { row: any, setCancelOrder: Function }) =>
   // Giải mã JSON và xử lý undefined
   const parsedNoteUser = row.note_user ? JSON.parse(row.note_user) : {};
   const accountInfo = parsedNoteUser.account_info || {};
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<React.ReactNode>(null);
 
+  const openModal = (content: React.ReactNode) => {
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalContent(null);
+    setIsModalOpen(false);
+  };
   const handleSubmitRefndandCancel = async (check_refund: number, reason: string) => {
     startLoading();
     try {
@@ -70,8 +81,72 @@ const Row = ({ row, setCancelOrder }: { row: any, setCancelOrder: Function }) =>
         </td>
 
         <td className="px-4 py-2 border border-gray-300">{row.oder_number}</td>
-        <td className="px-4 py-2 border border-gray-300">Chờ kiên</td>
-        <td className="px-4 py-2 border border-gray-300">Chờ kiên</td>
+
+        {/* ảnh qr ngân hàng của khách hàng */}
+        <td className="px-4 py-2 border border-gray-300">
+          {parsedNoteUser.file_note ? (
+            <img
+              src={`http://127.0.0.1:8000${parsedNoteUser.file_note}`}
+              alt="QR"
+              className="w-[4rem] object-cover rounded-lg border cursor-pointer"
+              onClick={() =>
+                openModal(
+                  <img
+                    src={`http://127.0.0.1:8000${parsedNoteUser.file_note}`}
+                    alt="QR"
+                    className="w-auto max-w-full max-h-screen"
+                  />
+                )
+              }
+            />
+          ) : (
+            <span>QR</span>
+          )}
+        </td>
+
+        {/* video sản phẩm hoàn trả */}
+        <td className="px-4 py-2 border border-gray-300">
+          {parsedNoteUser.extra_file ? (
+            <video
+              controls
+              src={`http://127.0.0.1:8000${parsedNoteUser.extra_file}`}
+              className="w-[10rem] object-cover rounded-lg border cursor-pointer"
+              onClick={() =>
+                openModal(
+                  <video
+                    controls
+                    src={`http://127.0.0.1:8000${parsedNoteUser.extra_file}`}
+                    className="w-auto max-w-full max-h-screen"
+                  />
+                )
+              }
+            />
+          ) : (
+            <span>Video</span>
+          )}
+        </td>
+
+        {/* Modal phóng to ảnh qr  */}
+        {isModalOpen && (
+          <div
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+            onClick={closeModal} // Đóng modal khi click bên ngoài
+          >
+            <div
+              className="relative bg-white p-4 rounded-lg"
+              onClick={(e) => e.stopPropagation()} // Ngăn đóng modal khi click vào nội dung
+            >
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-black"
+                onClick={closeModal}
+              >
+                ✕
+              </button>
+              {modalContent}
+            </div>
+          </div>
+        )}
+
         <td className="px-4 py-2 border border-gray-300 text-right">
           {row.created_at}
         </td>
@@ -256,8 +331,6 @@ const CancelOrder = (props: Props) => {
     dataCancel();
   }, []);
 
-
-
   if (loading) {
     return <div className="flex items-center justify-center h-screen bg-gray-50">
       <div className="flex flex-col items-center">
@@ -280,7 +353,7 @@ const CancelOrder = (props: Props) => {
           <tr>
             <th className="px-4 py-2 border border-gray-300">Thao Tác</th>
             <th className="px-4 py-2 border border-gray-300">Mã đơn hàng</th>
-            <th className="px-4 py-2 border border-gray-300 text-right">Ảnh QR</th>
+            <th className="px-4 py-2 border border-gray-300 text-right">Ảnh QR Bank</th>
             <th className="px-4 py-2 border border-gray-300 text-right">Video Sản Phẩm</th>
             <th className="px-4 py-2 border border-gray-300 text-right">Ngày tạo</th>
             <th className="px-4 py-2 border border-gray-300 text-right">Thanh toán</th>

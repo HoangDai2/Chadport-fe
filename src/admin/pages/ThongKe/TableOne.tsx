@@ -66,7 +66,7 @@ const TableOne = () => {
             <select
               value={month}
               onChange={handleMonthChange}
-              className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="w-full bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               {[...Array(12)].map((_, i) => (
                 <option key={i + 1} value={i + 1}>
@@ -79,7 +79,7 @@ const TableOne = () => {
             <select
               value={year}
               onChange={handleYearChange}
-              className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="w-full bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               {[...Array(new Date().getFullYear() - 1999)].map((_, i) => (
                 <option key={i} value={new Date().getFullYear() - i}>
@@ -125,7 +125,7 @@ const TableOne = () => {
             ) : (
               productData.map((product, key) => (
                 <tr
-                  className="border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200"
+                  className=" bg-white-800 text-black "
                   key={key}
                   onClick={() => openProductDetails(product)}
                 >
@@ -139,7 +139,7 @@ const TableOne = () => {
                   </td>
                   <th
                     scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    className="px-6 py-4 font-medium text-black whitespace-nowrap dark:text-white"
                   >
                     {product.product_name.length > 20
                       ? `${product.product_name.substring(0, 20)}....`
@@ -149,9 +149,9 @@ const TableOne = () => {
                   <td className="px-6 py-4 text-green-400">
                     {product.total_revenue
                       ? new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(Math.ceil(product.total_revenue))
+                        style: "currency",
+                        currency: "VND",
+                      }).format(Math.ceil(product.total_revenue))
                       : "null"}
                   </td>
                 </tr>
@@ -160,70 +160,7 @@ const TableOne = () => {
           </tbody>
         </table>
       </div>
-      {selectedProduct && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center ">
-          <div className="bg-white rounded-lg w-3/4 lg:w-1/2 p-6 overflow-y-auto max-h-[80vh] shadow-lg">
-            <h3 className="text-2xl font-semibold mb-6 text-gray-800 mt-10">
-              Chi tiết đơn hàng {selectedProduct.product_id}
-            </h3>
-            <div className="mt-6 space-y-6">
-              <div className="flex space-x-8">
-                <div className="w-full">
-                  <div>
-                    <p className="text-lg font-semibold text-gray-800">
-                      Sản phẩm
-                    </p>
-                    <div className="space-y-4 mt-4">
-                      <div
-                        key={selectedProduct.product_id}
-                        className="flex items-center space-x-4 border-b pb-4"
-                      >
-                        <img
-                          src={`http://127.0.0.1:8000/storage/${selectedProduct.product_image}`}
-                          alt={selectedProduct.product_name}
-                          className="w-16 h-16 object-cover rounded-md"
-                        />
-                        <div>
-                          <p className="text-sm text-gray-800">
-                            {selectedProduct.product_name}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="text-sm">
-                        Giá:{" "}
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(selectedProduct.total_revenue)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 space-y-2">
-                <p className="text-lg font-semibold text-gray-800">
-                  Doanh thu:{" "}
-                  <span className="text-green-500 font-semibold">
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(selectedProduct.total_revenue)}
-                  </span>
-                </p>
-              </div>
-            </div>
 
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={closeProductDetails}
-                className="bg-gray-600 text-white px-4 py-2 rounded-md"
-              >
-                Đóng
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

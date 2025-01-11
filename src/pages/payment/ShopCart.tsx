@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useLoading } from "../Loadings/LoadinfContext";
 import axios from "axios";
+import { FaTimes } from "react-icons/fa";
 
 const ShopCart = ({ onClose }: any) => {
   const navigate = useNavigate();
@@ -185,8 +186,8 @@ const ShopCart = ({ onClose }: any) => {
       toast.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng");
     }
   };
-  // cộng
 
+  // cộng
   const handleQuantityChange = async (itemId: number, newQuantity: number) => {
     try {
       const token = localStorage.getItem("jwt_token");
@@ -204,21 +205,6 @@ const ShopCart = ({ onClose }: any) => {
         { cart_item_ids: itemId, quantity: newQuantity },
         { headers }
       );
-
-      // if (response.status === 200) {
-      //   // setCartData((prevState) => ({
-      //   //   ...prevState!,
-      //   //   cart_items: prevState!.cart_items.map((item) =>
-      //   //     item.cart_item_ids === itemId
-      //   //       ? { ...item, quantity: newQuantity, }
-      //   //       : item
-      //   //   ),
-      //   // }));
-      //   console.log(cartData);
-      //   toast.success("Cập nhật số lượng thành công");
-      // } else {
-      //   toast.error("Cập nhật số lượng that bai");
-      // }
       if (response.status === 200) {
         // Cập nhật state của giỏ hàng và tổng tiền
         setCartData((prevState) => {
@@ -268,20 +254,6 @@ const ShopCart = ({ onClose }: any) => {
     // console.log("color", variant);
   };
 
-  // const handleConfirm = () => {
-  //   if (selectedSize && selectedColor) {
-  //     console.log("Selected Variant:", selectedColor);
-  //   }
-  //   setDropdownOpen(false);
-  // };
-
-  // const handleCancel = () => {
-  //   setSelectedSize(null);
-  //   setSelectedColor(null);
-  //   setDropdownOpen(false);
-  // };
-  // dropdiow
-  // console.log(variants);
   const handleConfirm = async (itemId: number, newQuantity: number) => {
     if (!selectedSize || !selectedColor) {
       alert("Vui lòng chọn size và màu sắc!");
@@ -340,7 +312,7 @@ const ShopCart = ({ onClose }: any) => {
       if (onClose) {
         onClose(); // Đóng modal hoặc thực hiện hành động khác
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Lỗi khi cập nhật biến thể: ", err);
       setError(err.response?.data?.message || "Có lỗi xảy ra!");
       toast.error(err.status === 401);
@@ -405,7 +377,6 @@ const ShopCart = ({ onClose }: any) => {
                     <li
                       key={item.product_item_id}
                       className="relative flex items-center gap-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-white"
-                      onClick={() => handleItemSelect(item.cart_item_ids)} // Gọi hàm chọn item
                     >
                       <div
                         className="absolute top-2 right-2 p-1 text-red-500 hover:text-red-700 cursor-pointer"
@@ -414,7 +385,7 @@ const ShopCart = ({ onClose }: any) => {
                           handleRemoveItem(item.product_item_id);
                         }}
                       >
-                        {/* <FaTimes /> */}x
+                        <FaTimes style={{ color: "black" }} />
                       </div>
                       {/* Checkbox */}
                       <input
@@ -445,6 +416,8 @@ const ShopCart = ({ onClose }: any) => {
                               <dt className="inline">Color:</dt>{" "}
                               <dd className="inline">{item.color.name}</dd>
                             </div>
+
+                            {/* phần này là chọn lại size mà màu sắc */}
                             <div className="relative  z-10 ">
                               <button
                                 id="dropdownDefaultButton"
@@ -452,15 +425,14 @@ const ShopCart = ({ onClose }: any) => {
                                   event.stopPropagation();
                                   toggleDropdown(item.cart_item_ids);
                                 }}
-                                className="focus:outline-none z-10 font-medium rounded-lg text-sm px-2 py-1 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                className="focus:outline-none z-10 font-medium rounded-lg text-sm px-2 py-1 text-center inline-flex items-center  dark:focus:ring-blue-800"
                                 type="button"
                               >
                                 <svg
-                                  className={`w-2.5 h-2.5 ms-3 transition-transform duration-300 ${
-                                    isDropdownOpen === item.cart_item_ids
-                                      ? "transform rotate-180"
-                                      : ""
-                                  }`}
+                                  className={`w-2.5 h-2.5 ms-3 transition-transform duration-200 ${isDropdownOpen === item.cart_item_ids
+                                    ? "transform rotate-90"
+                                    : ""
+                                    }`}
                                   aria-hidden="true"
                                   xmlns="http://www.w3.org/2000/svg"
                                   fill="none"
@@ -481,41 +453,38 @@ const ShopCart = ({ onClose }: any) => {
                                   onClick={() => toggleDropdown(null)} // Đóng dropdown khi click vào overlay
                                 ></div>
                               )}
+                              {/* hàm mở ra form chọn lại màu và size */}
                               {isDropdownOpen === item.cart_item_ids && (
-                                <div className="absolute top-full left-20 z-20 bg-white text-center justify-center border-1 border-gray-400 rounded-lg shadow-sm w-44">
-                                  <div className="py-2 z-20 text-sm text-gray-700 dark:text-gray-200">
-                                    <div className="flex flex-wrap gap-2 justify-center text-center">
+                                <div className="absolute top-full left-20 z-20 bg-white text-left justify-center border border-gray-300 rounded-md shadow-md w-80">
+                                  <div className="py-4 px-6 text-gray-700">
+                                    <div className="font-bold text-lg mb-4">Chọn thuộc tính:</div>
+
+                                    {/* size */}
+                                    <div className="font-semibold mb-2">Size:</div>
+                                    <div className="grid grid-cols-3 gap-3 justify-center mb-6">
                                       {variants
                                         .map((variant) => variant.size.name)
-                                        .filter(
-                                          (value, index, self) =>
-                                            self.indexOf(value) === index
-                                        ) // Lọc unique size
+                                        .filter((value, index, self) => self.indexOf(value) === index)
                                         .map((size) => {
-                                          // Tìm variant có size tương ứng
                                           const selectedVariant = variants.find(
-                                            (variant) =>
-                                              variant.size.name === size
+                                            (variant) => variant.size.name === size
                                           );
-
                                           return (
                                             <button
                                               key={size}
-                                              className={`w-20 z-20 h-10 rounded-md border text-sm font-semibold transition-colors duration-300 ${
-                                                size === selectedSize
-                                                  ? "bg-blue-500 text-white"
-                                                  : "bg-gray-100 hover:bg-gray-200"
-                                              }`}
+                                              className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all duration-300 focus:outline-none ${size === selectedSize
+                                                ? "bg-black text-white border-black"
+                                                : "bg-gray-100 border-gray-300 hover:bg-gray-200"
+                                                }`}
                                               onClick={(event) => {
                                                 event.stopPropagation();
-                                                // Nếu đã chọn size, thì bỏ chọn
                                                 if (selectedSize === size) {
-                                                  setSelectedSize(null); // Bỏ chọn size
+                                                  setSelectedSize(null);
+                                                  setSelectedColor(null); // Bỏ chọn màu khi bỏ size
                                                 } else {
-                                                  setSelectedSize(size); // Chọn size
-                                                  handleSizeSelect(
-                                                    selectedVariant
-                                                  ); // Xử lý khi chọn size
+                                                  setSelectedSize(size);
+                                                  setSelectedColor(null); // Reset màu khi chọn size mới
+                                                  handleSizeSelect(selectedVariant);
                                                 }
                                               }}
                                             >
@@ -524,44 +493,30 @@ const ShopCart = ({ onClose }: any) => {
                                           );
                                         })}
                                     </div>
-                                    <div className="my-2 mx-auto w-full h-0.5 bg-gray-400"></div>
 
-                                    {(selectedSize
-                                      ? variants.filter(
-                                          (variant) =>
-                                            variant.size.name ===
-                                              selectedSize &&
-                                            variant.quantity > 0
-                                        )
-                                      : allColors
-                                    ) // Nếu không có size, hiển thị tất cả màu sắc
-                                      .map((variantOrColor) => {
-                                        const color = selectedSize
-                                          ? variantOrColor.color
-                                          : variantOrColor;
+                                    {/* màu sắc */}
+                                    <div className="font-semibold mb-2">Màu Sắc:</div>
+                                    <div className="grid grid-cols-4 gap-3 justify-center mb-4">
+                                      {(selectedSize
+                                        ? variants.filter(variant => variant.size.name === selectedSize)
+                                        : allColors
+                                      ).map(variantOrColor => {
+                                        const color = selectedSize ? variantOrColor.color : variantOrColor;
                                         return (
                                           <button
                                             key={color.id}
-                                            className={`w-10 h-10 rounded-full border text-center justify-center transition-all duration-300 ${
-                                              selectedColor?.color.id ===
-                                              color.id
-                                                ? "w-12 h-12 border-4 border-blue-800"
-                                                : "border-gray-400"
-                                            }`}
+                                            className={`w-10 h-10 rounded-full border transition-transform duration-300 focus:outline-none ${selectedColor?.color.id === color.id
+                                              ? "border-red-500 ring-2 ring-red-300 scale-110"
+                                              : "border-gray-300 hover:border-gray-500"
+                                              }`}
                                             style={{
                                               backgroundColor: color.hex,
-                                              color:
-                                                color.hex === "#FFFFFF"
-                                                  ? "black"
-                                                  : "white",
+                                              color: color.hex === "#FFFFFF" ? "black" : "white",
                                             }}
                                             onClick={(e) => {
                                               e.stopPropagation();
-
                                               if (!selectedSize) {
-                                                toast.error(
-                                                  "Bạn cần chọn size trước khi chọn màu!"
-                                                );
+                                                toast.error("Bạn cần chọn size trước khi chọn màu!");
                                                 return;
                                               }
                                               handleColorSelect(variantOrColor);
@@ -569,34 +524,33 @@ const ShopCart = ({ onClose }: any) => {
                                           ></button>
                                         );
                                       })}
-                                  </div>
+                                    </div>
 
-                                  <div className="flex justify-around mb-2">
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCancel();
-                                      }}
-                                      className="text-gray-500 bg-gray-200 py-2 px-3 rounded-lg hover:bg-gray-300"
-                                    >
-                                      Cancel
-                                    </button>
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleConfirm(item.cart_item_ids, 1);
-                                      }}
-                                      className={`text-white bg-blue-500 px-3 py-2 rounded-lg hover:bg-red-300`}
-                                      disabled={
-                                        !selectedSize ||
-                                        !selectedColor ||
-                                        isLoading
-                                      }
-                                    >
-                                      {isLoading
-                                        ? "Đang cập nhật..."
-                                        : "Confirm"}
-                                    </button>
+                                    {/* nút xác nhận đổi màu và size */}
+                                    <div className="gap-[10px] flex justify-between items-center mt-4">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleCancel();
+                                        }}
+                                        className="text-gray-600 bg-gray-200 py-2 px-5 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                      >
+                                        Trở Lại
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleConfirm(item.cart_item_ids, 1);
+                                        }}
+                                        className={`text-white bg-black px-5 py-2 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-300 ${!selectedSize || !selectedColor || isLoading
+                                          ? "opacity-50 cursor-not-allowed"
+                                          : ""
+                                          }`}
+                                        disabled={!selectedSize || !selectedColor || isLoading}
+                                      >
+                                        {isLoading ? "Đang cập nhật..." : "Xác Nhận"}
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               )}

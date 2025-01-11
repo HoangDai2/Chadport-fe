@@ -118,6 +118,7 @@ const Orders1: React.FC = () => {
     setEndDate(endDate); // Cập nhậ
   };
 
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -136,14 +137,6 @@ const Orders1: React.FC = () => {
     };
     fetchOrders();
   }, []);
-  // console.log(orders);
-  // useEffect(() => {
-  //   const filtered = statusFilter
-  //     ? orders.filter((order) => order.status === statusFilter)
-  //     : orders;
-  //   setFilteredOrders(filtered);
-  // }, [statusFilter, orders]);
-  // console.log(filteredOrders);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -284,13 +277,13 @@ const Orders1: React.FC = () => {
         <div className="flex items-center space-x-4">
           <label className="text-sm text-gray-600">Filter by status:</label>
           <select
-            className="p-2 border text-sm font-medium text-gray-600 text-center rounded-md w-20 h-9"
+            className=" p-2 border text-sm font-medium text-gray-600 text-center rounded-md w-20 h-9"
             value={statusFilter}
             onChange={handleStatusChange}
           >
-            <option value="">All</option>
+            <option className="text-left" value="">All</option>
             {statusOptions.map((status) => (
-              <option key={status.key} value={status.value}>
+              <option className="text-left" key={status.key} value={status.value}>
                 {status.label}
               </option>
             ))}
@@ -330,13 +323,22 @@ const Orders1: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-10">
-          <PuffLoader color="#3b82f6" size={60} />
+        <div className="flex items-center justify-center h-screen bg-gray-50">
+          <div className="flex flex-col items-center">
+            {/* Vòng tròn quay */}
+            <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin"></div>
+
+            {/* Dòng thông báo */}
+            <p className="mt-4 text-gray-600 text-lg font-medium">
+              Đang tải dữ liệu
+              <span className="animate-pulse">...</span>
+            </p>
+          </div>
         </div>
       ) : error ? (
         <p className="text-red-500 text-center">{error}</p>
       ) : (
-        <div className="overflow-x-auto shadow-lg rounded-lg">
+        <div className="overflow-x-auto rounded-lg">
           <table className="min-w-full border-collapse table-auto">
             <thead className="bg-gray-100 border-b">
               <tr>
@@ -394,8 +396,8 @@ const Orders1: React.FC = () => {
                     {order.payment_method === "1"
                       ? "Thanh toán trực tiếp"
                       : order.payment_method === "2"
-                      ? "Thanh toán online"
-                      : "Credit Card"}
+                        ? "Thanh toán online"
+                        : "Credit Card"}
                   </td>
                   <td className="text-sm font-medium text-gray-600 w-24">
                     {order.total_money} VND
@@ -416,6 +418,7 @@ const Orders1: React.FC = () => {
                       }
                       disabled={order.status === "bị hủy"}
                     >
+
                       {statusOptions
                         .filter(
                           (status) =>
@@ -428,7 +431,6 @@ const Orders1: React.FC = () => {
                           const currentStatusKey = statusOptions.find(
                             (option) => option.value === order.status
                           )?.key;
-
                           const isCurrentStatus = order.status === status.value;
 
                           return (
@@ -441,9 +443,8 @@ const Orders1: React.FC = () => {
                                 (status.value === "bị hủy" &&
                                   order.status !== "bị hủy")
                               }
-                              className={`${
-                                isCurrentStatus ? "bg-blue-500 font-bold" : ""
-                              } disabled:bg-gray-300`}
+                              className={`${isCurrentStatus ? "bg-blue-500 font-bold" : ""
+                                } disabled:bg-gray-300`}
                             >
                               {status.label}
                             </option>
@@ -471,11 +472,10 @@ const Orders1: React.FC = () => {
               (_, index) => (
                 <button
                   key={index}
-                  className={`py-2 px-4 mx-1 rounded-md ${
-                    index + 1 === currentPage
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
+                  className={`py-2 px-4 mx-1 rounded-md ${index + 1 === currentPage
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700"
+                    }`}
                   onClick={() => handlePageChange(index + 1)}
                 >
                   {index + 1}

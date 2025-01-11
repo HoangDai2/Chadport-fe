@@ -41,6 +41,7 @@ export interface TProduct {
   type: string;
   date_create: string;
   date_update: string;
+  deleted_at: string;
   category?: Tcategory[];
   variants?: TVariant[]; // Thêm danh sách các biến thể của sản phẩm
 }

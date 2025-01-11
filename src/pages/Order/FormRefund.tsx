@@ -7,6 +7,10 @@ import apisphp from "../../Service/api";
 import RefundRequest, { AccountInfo, Note } from "../../Types/TCancelOrder";
 import { useNavigate } from "react-router-dom";
 import { useLoading } from "../Loadings/LoadinfContext";
+import { MdOutlineCameraAlt } from "react-icons/md";
+import { CiVideoOn } from "react-icons/ci";
+import { FaRegTrashCan } from "react-icons/fa6";
+
 interface Product {
   product_item_id: number;
   product_name: string;
@@ -28,18 +32,72 @@ const RefundForm = () => {
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]); // Lưu ID của sản phẩm được chọn
   const [totalMoney, setTotalMoney] = useState(0); // Lưu tổng tiền
   const [showPopup, setShowPopup] = useState(false); // Trạng thái hiển thị popup
-  const [refundRequest, setRefundRequest] = useState<RefundRequest>({
-    order_id: parseInt(order_id || "0"), // Gán id từ URL
-    note: {
-      reason: "",
-      account_info: {
-        account_number: "",
-        bank_name: "",
-        account_holder: "",
-      },
-    },
+  const [refundRequest, setRefundRequest] = useState({
+    reason: "",
+    account_number: "",
+    bank_name: "",
+    account_holder: "",
     check_refund: 0,
+    file: "",
   });
+
+  const [images, setImages] = useState<File[]>([]); // Store the files
+  const [imageURLs, setImageURLs] = useState<string[]>([]); // Store the object URLs
+  const [video, setVideo] = useState<File | null>(null);
+  const [fileNote, setFileNote] = useState<string | null>(null);
+
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+
+  // hàm này để upload ảnh
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      const validImages = files.filter((file) =>
+        ["image/jpeg", "image/png", "image/jpg"].includes(file.type)
+      );
+      setImages((prev) => [...prev, ...validImages]);
+      e.target.value = "";
+    }
+  };
+
+
+  // hàm này để upload video 
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedVideo = e.target.files[0];
+      if (selectedVideo.type === "video/mp4") {
+        setVideo(selectedVideo);
+      } else {
+        toast.error("Chỉ hỗ trợ định dạng video MP4");
+      }
+      e.target.value = "";
+    }
+  };
+
+  // hàm xóa ảnh qr bank cảu user
+  const handleDeleteImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index)); // Remove the file
+    setImageURLs((prev) => {
+      URL.revokeObjectURL(prev[index]); // Revoke the object URL
+      return prev.filter((_, i) => i !== index); // Remove the URL
+    });
+  };
+
+
+
+  // hàm xóa video sản phẩm hoàn trả của user
+  const handleDeleteVideo = () => {
+    setVideo(null);
+  };
+
+
+  const handleChange = (key: string, value: string | number) => {
+    setRefundRequest((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
 
   // call data và giải dữ liệu
   useEffect(() => {
@@ -60,68 +118,80 @@ const RefundForm = () => {
     }
   }, [productsData]);
 
-  const handleChange = (
-    key: keyof RefundRequest | keyof Note | keyof AccountInfo,
-    value: string | number
-  ) => {
-    if (key in refundRequest) {
-      setRefundRequest((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
-    } else if (key in refundRequest.note) {
-      setRefundRequest((prev) => ({
-        ...prev,
-        note: {
-          ...prev.note,
-          [key]: value,
-        },
-      }));
-    } else {
-      setRefundRequest((prev) => ({
-        ...prev,
-        note: {
-          ...prev.note,
-          account_info: {
-            ...prev.note.account_info,
-            [key]: value,
-          },
-        },
-      }));
-    }
-  };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    if (!order_id) {
+      toast.error("Không tìm thấy ID đơn hàng");
+      return;
+    }
+
     const token = localStorage.getItem("jwt_token");
-    if (!token) return toast.error("Vui lòng đăng nhập");
-    console.log(token);
+    if (!token) {
+      toast.error("Vui lòng đăng nhập");
+      return;
+    }
+
     startLoading();
+    const formData = new FormData();
+
+    formData.append("order_id", order_id);
+    formData.append("reason", refundRequest.reason);
+    formData.append("account_number", refundRequest.account_number);
+    formData.append("bank_name", refundRequest.bank_name);
+    formData.append("account_holder", refundRequest.account_holder);
+    formData.append("check_refund", refundRequest.check_refund.toString());
+
+    // Thêm ảnh vào `file`
+    images.forEach((image) => {
+      formData.append("file", image); // Chỉ dành cho ảnh
+    });
+
+    // Thêm video vào `extra_file`
+    if (video) {
+      formData.append("extra_file", video); // Chỉ dành cho video
+    }
+
+    console.log("FormData:", images, video);
+
     try {
-      const PostResponse = await apisphp.post(
-        "/user/change_status_order",
+      const response = await apisphp.post(
+        '/user/change_status_order',
+        formData,
         {
-          ...refundRequest,
-          order_id: parseInt(order_id || "0"), // Đảm bảo order_id được lấy từ URL
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
-      setShowPopup(true);
-      console.log("Phản hồi từ BE:", PostResponse);
+      const noteUser = JSON.parse(response.data.data.note_user);
+      setFileNote(noteUser.file_note);
+      toast.success(response.data.message);
+      setShowPopup(true)
+      setIsSubmitted(true); // Bắt đầu trạng thái submit
     } catch (error: any) {
-      console.error("Lỗi:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
     } finally {
       stopLoading();
     }
   };
-
-  console.log("idd", selectedProducts);
+  // console.log("idd", selectedProducts);
 
   return (
     <>
+      <ToastContainer
+        theme="light"
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick={true}
+        pauseOnHover={true}
+        draggable={true}
+      />
+
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className=" bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
@@ -219,17 +289,17 @@ const RefundForm = () => {
                   Giá:{" "}
                   {product.price
                     ? new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(Math.ceil(product.price))
+                      style: "currency",
+                      currency: "VND",
+                    }).format(Math.ceil(product.price))
                     : "null"}
                 </p>
                 <p className="text-lg text-red-600 font-semibold">
                   {product.price
                     ? new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(Math.ceil(product.price))
+                      style: "currency",
+                      currency: "VND",
+                    }).format(Math.ceil(product.price))
                     : "null"}
                 </p>
               </div>
@@ -247,14 +317,17 @@ const RefundForm = () => {
             <h2 className="text-lg font-semibold mb-6 text-gray-800">
               Lý do cần Trả hàng và Hoàn tiền
             </h2>
+
+            {/* lý do hoàn tiền */}
             <div>
               <label className="block text-base font-medium mb-3 text-gray-700">
-                Lý do
+                Lý do hoàn tiền
               </label>
               <select
-                value={refundRequest.note.reason}
+                value={refundRequest.reason}
                 onChange={(e) => handleChange("reason", e.target.value)}
                 className="w-full border p-4 rounded-lg focus:ring focus:ring-orange-300 text-gray-700"
+
               >
                 <option value="">Chọn Lý Do</option>
                 <option value="Hàng bị hư hỏng">Hàng bị hư hỏng</option>
@@ -263,24 +336,27 @@ const RefundForm = () => {
               </select>
             </div>
 
+            {/* số tài khoản */}
             <div>
               <label className="block text-base font-medium mb-3 text-gray-700">
                 Số tài khoản
               </label>
               <input
-                value={refundRequest.note.account_info.account_number}
+                value={refundRequest.account_number}
                 onChange={(e) => handleChange("account_number", e.target.value)}
                 type="number"
                 placeholder="Nhập Số Tài Khoản"
                 className="w-full border p-4 rounded-lg focus:ring focus:ring-orange-300 text-gray-700"
               />
             </div>
+
+            {/* họ và tên dk ngân hàng */}
             <div>
               <label className="block text-base font-medium mb-3 text-gray-700">
                 Họ và tên
               </label>
               <input
-                value={refundRequest.note.account_info.account_holder}
+                value={refundRequest.account_holder}
                 onChange={(e) => handleChange("account_holder", e.target.value)}
                 type="text"
                 placeholder="Nhập Họ Và Tên Tài Khoản"
@@ -288,22 +364,127 @@ const RefundForm = () => {
               />
             </div>
 
+
+            {/* tên ngân hàng  */}
             <div>
               <label className="block text-base font-medium mb-3 text-gray-700">
                 Tên ngân hàng
               </label>
               <input
-                value={refundRequest.note.account_info.bank_name}
+                value={refundRequest.bank_name}
                 onChange={(e) => handleChange("bank_name", e.target.value)}
                 type="text"
                 placeholder="Nhập Tên Ngân Hàng"
                 className="w-full border p-4 rounded-lg focus:ring focus:ring-orange-300 text-gray-700"
               />
             </div>
+
+            {/* Upload Image */}
+            <div >
+              <label className="block text-base font-medium mb-3 text-gray-700">
+                Tải QR Bank
+              </label>
+              <div className="flex items-center justify-start gap-4">
+                {/* Label Upload ảnhảnh */}
+                <label
+                  htmlFor="upload-image"
+                  className="w-[90px] h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-black"
+                >
+                  <MdOutlineCameraAlt className="text-2xl text-gray-600" />
+                  <p className="text-xs text-gray-600">Thêm Hình ảnh</p>
+                </label>
+                <input
+                  id="upload-image"
+                  type="file"
+                  className="hidden"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+
+                {/* Preview Images */}
+                <div className="flex gap-4">
+                  {images.map((image, index) => (
+                    <div>
+                      <div className="relative w-24 h-24 bg-gray-300 group overflow-hidden">
+                        {/* Hình ảnh */}
+                        <div>
+                          <img
+                            key={index}
+                            src={URL.createObjectURL(image)}
+                            alt={`Hình ${index + 1}`}
+                            className="w-24 h-24 object-cover rounded-lg"
+                          />
+                        </div>
+
+                        <div
+                          className="absolute bottom-0 left-0 right-0 bg-black/60 py-2 flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-all duration-300 ease-in-out"
+                        >
+                          <span onClick={() => handleDeleteImage(index)} className="text-white text-sm">
+                            <FaRegTrashCan />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Thông tin hoàn tiền */}
+          {/* Thông tin hoàn tiền và phần upload ảnh và video lên */}
           <div className="col-span-1 p-6 border rounded-lg bg-white ">
+
+            {/* phần upload video sản phẩm muốn hoàn trả lên  */}
+            <div className="p-4 border rounded-lg">
+              <p className="text-black text-sm mb-4">
+                *Đăng tải video thấy rõ số lượng và tất cả sản phẩm nhận muốn hoàn trả.
+              </p>
+              <div className="flex gap-4">
+                {/* Upload Video */}
+                <label
+                  htmlFor="upload-video"
+                  className={`w-[90px] h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg ${video ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-black"
+                    }`}
+                >
+                  <CiVideoOn className="text-2xl text-gray-600" />
+                  <p className="text-xs text-gray-600">Thêm Video</p>
+                </label>
+                <input
+                  id="upload-video"
+                  type="file"
+                  className="hidden"
+                  accept="video/*"
+                  onChange={handleVideoUpload}
+                  disabled={!!video}
+                />
+              </div>
+
+              {/* Preview Video */}
+              <div className="mt-4">
+                {video && (
+                  <div className="relative group overflow-hidden">
+                    {/* video */}
+                    <div >
+                      <video controls className=" max-w-md rounded-lg">
+                        <source src={URL.createObjectURL(video)} type="video/mp4" />
+                      </video>
+                    </div>
+
+                    {/* Thẻ hiện từ dưới lên */}
+                    <div
+                      className="w-[70%] absolute bottom-0 left-0 right-0 bg-black/60 py-2 flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-all duration-300 ease-in-out"
+                    >
+                      <span onClick={handleDeleteVideo} className="text-white text-sm">
+                        <FaRegTrashCan />
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* thông tin số tiền muốn hoàn trả */}
             <h2 className="text-lg font-semibold mb-6 text-gray-800">
               Thông tin hoàn tiền
             </h2>
@@ -321,7 +502,7 @@ const RefundForm = () => {
               <p className="text-base mb-6 text-gray-700">
                 Hoàn tiền vào:{" "}
                 <span className="font-semibold text-gray-800">
-                  Số dư TK VNPAY
+                  SỐ DƯ TÀI KHOẢN CỦA KHÁCH HÀNG
                 </span>
               </p>
             </div>
@@ -331,11 +512,16 @@ const RefundForm = () => {
           <div className="col-span-2 flex justify-end mt-6">
             <button
               type="submit"
-              className="bg-black text-white py-3 px-8 rounded-lg hover:bg-orange-600 transition-all text-base font-medium"
+              disabled={isSubmitted} // Disable nút nếu đã submit thành công
+              className={`py-3 px-8 rounded-lg transition-all text-base font-medium ${isSubmitted
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-black text-white hover:bg-orange-600"
+                }`}
             >
-              Hoàn thành
+              {isSubmitted ? "Đã hoàn thành" : "Hoàn thành"}
             </button>
           </div>
+
         </form>
       </div>
     </>

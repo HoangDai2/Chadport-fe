@@ -25,22 +25,23 @@ const ListUser = ({ listuser }: Props) => {
   const [loadingRoleId, setLoadingRoleId] = useState<number | null>(null);
 
   const roleOptions = {
-    1: "Boss",
+    1: "Super Admin",
     2: "Admin",
     3: "Client",
   };
 
   useEffect(() => {
-    setUsers(listuser);
+    // Lọc bỏ người dùng có role_id = 1 (Super Admin)
+    const filteredUsers = listuser.filter(user => user.role_id !== 1);
+    setUsers(filteredUsers);
   }, [listuser]);
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('jwt_token');
   if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
     console.error("Token không tồn tại hoặc chưa được lưu trữ!");
   }
-
   const handleError = (error: unknown) => {
     setMessageType('error');
     if (axios.isAxiosError(error)) {
@@ -71,18 +72,18 @@ const ListUser = ({ listuser }: Props) => {
       return;
     }
 
-    // Prevent Boss accounts from being modified
+    // Prevent Super Admin accounts from being modified
     if (targetUser.role_id === 1) {
       setMessageType('error');
-      setMessage("Không thể thay đổi trạng thái tài khoản có chức vụ Boss.");
+      setMessage("Không thể thay đổi trạng thái tài khoản có chức vụ Super Admin.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
 
-    // Admins cannot modify other Admins or Bosses
+    // Admins cannot modify other Admins or Super Admin
     if (user?.role_id === 2 && (targetUser.role_id === 1 || targetUser.role_id === 2)) {
       setMessageType('error');
-      setMessage("Bạn không thể thay đổi trạng thái của tài khoản Boss hoặc Admin khác.");
+      setMessage("Bạn không thể thay đổi trạng thái của tài khoản Super Admin hoặc Admin khác.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -115,7 +116,9 @@ const ListUser = ({ listuser }: Props) => {
 
   const handleRoleChange = async (userId: number, newRoleId: number) => {
     const targetUser = users.find(u => u.id === userId);
-
+    console.log(userId);
+    console.log(newRoleId);
+    
     if (!targetUser) {
       setMessageType('error');
       setMessage("Người dùng không tồn tại.");
@@ -123,10 +126,10 @@ const ListUser = ({ listuser }: Props) => {
       return;
     }
 
-    // Prevent Boss accounts from being modified
+    // Prevent Super Admin accounts from being modified
     if (targetUser.role_id === 1) {
       setMessageType('error');
-      setMessage("Không thể thay đổi chức vụ của tài khoản Boss.");
+      setMessage("Không thể thay đổi chức vụ của tài khoản Super Admin.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -139,7 +142,7 @@ const ListUser = ({ listuser }: Props) => {
       return;
     }
 
-    // Check if user has permission (must be Boss - role_id 1)
+    // Check if user has permission (must be Super Admin - role_id 1)
     if (user?.role_id !== 1) {
       setMessageType('error');
       setMessage("Bạn không có quyền thay đổi chức vụ người dùng.");
@@ -147,20 +150,22 @@ const ListUser = ({ listuser }: Props) => {
       return;
     }
 
-    // Ensure there is only one Boss account
+    // Ensure there is only one Super Admin account
     if (newRoleId === 1) {
-      const existingBoss = users.find(u => u.role_id === 1);
-      if (existingBoss) {
+      const existingSuperAdmin = users.find(u => u.role_id === 1);
+      if (existingSuperAdmin) {
         setMessageType('error');
-        setMessage("Chỉ có thể có một tài khoản Boss. Không thể thêm Boss mới.");
+        setMessage("Chỉ có thể có một tài khoản Super Admin. Không thể thêm Super Admin mới.");
         setTimeout(() => setMessage(null), 2000);
         return;
       }
     }
-
+    const token = localStorage.getItem('jwt_token');
     setLoadingRoleId(userId);
     try {
-      const response = await apisphp.put(`/user/role/${userId}`, { role_id: newRoleId });
+      const response = await apisphp.post(`/admin/changeUserRole`, { role_id: newRoleId , id: userId}, {headers: {
+        Authorization: `Bearer ${token}`,
+      },});
       if (response.status === 200) {
         setUsers(users.map((u) =>
           u.id === userId ? { ...u, role_id: newRoleId } : u
@@ -174,6 +179,9 @@ const ListUser = ({ listuser }: Props) => {
       setLoadingRoleId(null);
       setTimeout(() => setMessage(null), 2000);
     }
+    
+    console.log("Token:", token);
+
   };
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -184,9 +192,8 @@ const ListUser = ({ listuser }: Props) => {
           </div>
 
           {message && (
-            <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${
-              messageType === 'error' ? "bg-red-500" : "bg-green-500"
-            } text-white`}>
+            <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${message.includes("khóa") ? "bg-red-500" : "bg-green-500"
+              } text-white`}>
               {message}
             </div>
           )}
@@ -225,11 +232,10 @@ const ListUser = ({ listuser }: Props) => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        userData.status === "active" 
-                          ? "bg-green-100 text-green-800" 
-                          : "bg-red-100 text-red-800"
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${userData.status === "active"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                        }`}>
                         {userData.status}
                       </span>
                     </td>
@@ -295,11 +301,11 @@ const ListUser = ({ listuser }: Props) => {
                             after:content-[''] after:absolute after:top-0.5 after:left-[2px] 
                             after:bg-white after:border-gray-300 after:border after:rounded-full 
                             after:h-5 after:w-5 after:transition-all
-                            ${userData.status === "active" 
-                              ? 'bg-green-500 after:translate-x-full' 
+                            ${userData.status === "active"
+                              ? 'bg-green-500 after:translate-x-full'
                               : 'bg-gray-400'} 
-                            ${loadingUserId !== null || userData.id === user?.id 
-                              ? 'opacity-50 cursor-not-allowed' 
+                            ${loadingUserId !== null || userData.id === user?.id
+                              ? 'opacity-50 cursor-not-allowed'
                               : 'cursor-pointer'}`}>
                           </div>
                         </label>
