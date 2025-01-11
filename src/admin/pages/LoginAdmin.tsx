@@ -17,7 +17,7 @@ const LoginAdmin: React.FC = () => {
     validationSchema: loginValidationSchema,
     onSubmit: async (values, { setSubmitting, setErrors }) => {
       try {
-        const response = await apisphp.post("/user/login", values);
+        const response = await apisphp.post("/admin/login", values);
 
         if (response.data.message === "Successfully logged in") {
           const userData = response.data.data;
