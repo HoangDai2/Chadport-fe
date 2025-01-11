@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../../pages/AuthClient/UserContext"; 
+import { useUserContext } from "../../pages/AuthClient/UserContext";
 
 import {
   FaHome,
@@ -18,32 +18,31 @@ import { RiPlayListAddFill } from "react-icons/ri";
 
 import logo from "../../img/logochadport.png";
 
-
 type Props = {};
 
 const SideBarAD = (props: Props) => {
   // Lấy thông tin URL hiện tại
   const location = useLocation();
   const { user, setUser } = useUserContext(); // Lấy thông tin người dùng từ context
-const navigate = useNavigate();
-const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
 
-useEffect(() => {
-  if (!user) {
-    // Nếu chưa đăng nhập, điều hướng đến trang login
-    navigate("/loginadmin");
-  }
-}, [user, navigate]);
+  useEffect(() => {
+    if (!user) {
+      // Nếu chưa đăng nhập, điều hướng đến trang login
+      navigate("/loginadmin");
+    }
+  }, [user, navigate]);
 
-const handleLogout = () => {
-  setIsLoading(true);
-  // Xử lý logout
-  setTimeout(() => {
-    setUser(null); // Xóa thông tin người dùng trong context
-    localStorage.removeItem("jwt_token"); // Xóa token
-    navigate("/loginadmin"); // Điều hướng đến trang login
-  }, 1000);
-};
+  const handleLogout = () => {
+    setIsLoading(true);
+    // Xử lý logout
+    setTimeout(() => {
+      setUser(null); // Xóa thông tin người dùng trong context
+      localStorage.removeItem("jwt_token"); // Xóa token
+      navigate("/loginadmin"); // Điều hướng đến trang login
+    }, 1000);
+  };
   // Trạng thái mở rộng cho các mục quản lý
   const [openSections, setOpenSections] = useState<{
     orderManagement: boolean;
@@ -290,12 +289,17 @@ const handleLogout = () => {
                   </li>
 
                   <li>
-                    <a
-                      href="#"
-                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-all duration-300 hover:pl-6"
+                    <Link
+                      to="/admin/orders/bill"
+                      onClick={() => handleLinkClick("/admin/orders/bill")}
+                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${
+                        activeLink === "/admin/orders/bill"
+                          ? "bg-gray-200 text-gray-700 font-semibold"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                      }`}
                     >
-                      Add Categories
-                    </a>
+                      Bill
+                    </Link>
                   </li>
                 </ul>
               </details>
@@ -341,7 +345,10 @@ const handleLogout = () => {
         </div>
 
         <div className="flex items-center justify-between sticky inset-x-0 bottom-0 border-t border-gray-100 bg-white">
-          <a href="/admin/profileadmin" className="flex items-center gap-2 p-4 hover:bg-gray-50">
+          <a
+            href="/admin/profileadmin"
+            className="flex items-center gap-2 p-4 hover:bg-gray-50"
+          >
             <img
               alt=""
               src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
@@ -350,14 +357,16 @@ const handleLogout = () => {
 
             <div>
               <p className="text-xs">
-                <strong className="block font-medium">{user.firt_name} {user.last_name}</strong>
+                <strong className="block font-medium">
+                  {user.firt_name} {user.last_name}
+                </strong>
                 <span> {user.email} </span>
               </p>
             </div>
           </a>
 
           <button
-          onClick={handleLogout}
+            onClick={handleLogout}
             type="submit"
             className="group relative flex items-center justify-center rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
           >
