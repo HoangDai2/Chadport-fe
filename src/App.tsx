@@ -88,6 +88,7 @@ import { LoadingProvider } from "./pages/Loadings/LoadinfContext";
 import RefundForm from "./pages/Order/FormRefund";
 import RefundNotification from "./pages/Order/RefundNotification";
 import CancelOrder from "./admin/pages/OrderAdmin/CancelOrder";
+import ListBillDetailsr from "./admin/pages/OrderAdmin/ListBillDetailsr";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -549,6 +550,7 @@ function App() {
               <Route index element={<ThongKe />} />
               <Route path="listuser" element={<ListUser listuser={user} />} />
               <Route path="orders" element={<Orders />} />
+              <Route path="orders/bill" element={<ListBillDetailsr />} />
               <Route path="profileadmin" element={<ProfileAdmin />} />
               <Route path="products" element={<ProductList />} />
               <Route

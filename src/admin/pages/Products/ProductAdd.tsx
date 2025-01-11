@@ -46,7 +46,7 @@ function ProductAdd({ onAdd, categories }: Props) {
   // console.log(variant);
   const [sizes, setSizes] = useState<Size[]>([]); // Thêm state để lưu sizes
   const [colors, setColors] = useState<Color[]>([]); // Thêm state để lưu colors
-
+  // console.log(categories);
   const initialValues: TProduct = {
     id: 0,
     category_id: categoryId ?? 0,

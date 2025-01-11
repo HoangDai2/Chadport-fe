@@ -34,3 +34,28 @@
 .grid-cutoms {
   grid-template-columns: none !important;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+    /* Ẩn toàn bộ nội dung */
+  }
+
+  #bill,
+  #bill * {
+    visibility: visible;
+    /* Chỉ hiển thị phần tử với id="bill" */
+  }
+
+  #bill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  #bill img {
+    max-width: 100%;
+    height: auto;
+  }
+}
