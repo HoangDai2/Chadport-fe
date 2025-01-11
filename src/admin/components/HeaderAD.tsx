@@ -102,15 +102,15 @@ const HeaderAD = (props: Props) => {
           <ul className="nav nav-tabs mt-4 overflow-x border-b border-gray-200 flex space-x-6">
             {[
               { label: "Đơn Hoàn Trả", to: "/admin/cancel_order" },
-              { label: "Shared", to: "/admin/listuser" },
-              { label: "File requests", to: "/admin/file_requests" },
+              { label: "Đơn hàng mới", to: "/admin/new_order" },
+              { label: "Mã Giảm giá", to: "/admin/file_requests" },
             ].map((tab, index) => (
               <li key={index} className="nav-item">
                 <Link
                   to={tab.to}
                   className={`relative pb-2 text-sm font-medium transition-all duration-300 ${location.pathname === tab.to
-                      ? "text-black after:content-[''] after:block after:w-full after:h-[3px] after:bg-black after:absolute after:bottom-0 after:left-0 after:transition-all after:duration-300"
-                      : "text-gray-600 hover:text-black after:content-[''] after:block after:w-0 after:h-[3px] after:bg-black after:absolute after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
+                    ? "text-black after:content-[''] after:block after:w-full after:h-[3px] after:bg-black after:absolute after:bottom-0 after:left-0 after:transition-all after:duration-300"
+                    : "text-gray-600 hover:text-black after:content-[''] after:block after:w-0 after:h-[3px] after:bg-black after:absolute after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
                     }`}
                 >
                   {tab.label}

@@ -88,6 +88,7 @@ import { LoadingProvider } from "./pages/Loadings/LoadinfContext";
 import RefundForm from "./pages/Order/FormRefund";
 import RefundNotification from "./pages/Order/RefundNotification";
 import CancelOrder from "./admin/pages/OrderAdmin/CancelOrder";
+import NewOrder from "./admin/pages/OrderAdmin/NewOrder";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -583,6 +584,7 @@ function App() {
               <Route path="size" element={<SizeForm />} />
               <Route path="color" element={<ColorForm />} />
               <Route path="cancel_order" element={<CancelOrder />} />
+              <Route path="new_order" element={<NewOrder />} />
             </Route>
           </Route>
         </Routes>

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Đảm bảo đã import useNavigate
+import { Link, useNavigate } from "react-router-dom"; // Đảm bảo đã import useNavigate
 import Tcategory from "../../../Types/TCategories";
 import { ToastContainer, toast } from "react-toastify";
 import apisphp from "../../../Service/api";
-import { tuple } from "yup";
-
+import { CiEdit } from "react-icons/ci";
+import { RiDeleteBin2Line } from "react-icons/ri";
+import { FaUndo } from "react-icons/fa";
 type Props = {
   listcategories: Tcategory[];
 };
@@ -181,12 +182,15 @@ const CategoriesList = ({ listcategories }: Props) => {
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap">
                         <div className="flex space-x-2 justify-center">
-                          <button
-                            onClick={() => navigateToEdit(category.id)}
-                            className="px-4 py-2 bg-green-500 w-28 text-white font-semibold rounded-lg shadow-md hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
-                          >
-                            Cập Nhật
-                          </button>
+                          <Link to={`/categories/edit/${category.id}`}>
+                            <button
+                              className="border border-black inline-flex items-center justify-center gap-2 rounded-md w-28 h-10 px-4 py-2 text-sm text-gray-500 hover:text-white hover:bg-black transition duration-300 ease-in-out focus:ring-2 focus:ring-blue-500"
+                            >
+                              <CiEdit />
+                              Cập Nhật
+                            </button>
+                          </Link>
+
                           {category.deleted_at ? (
                             <button
                               onClick={() => handleRestore(category.id)}
@@ -194,12 +198,15 @@ const CategoriesList = ({ listcategories }: Props) => {
                             >
                               Hoàn tác
                             </button>
+
                           ) : (
+
                             <button
                               onClick={() => handleDelete(category.id)}
-                              className="px-4 py-2 bg-red-500 w-28 text-white font-semibold rounded-lg shadow-md hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
+                              className="border border-black inline-flex items-center justify-center gap-2 rounded-md w-28 h-10 px-4 py-2 text-sm text-red-500 hover:text-white hover:bg-red-500 transition duration-300 ease-in-out focus:ring-2 focus:ring-red-500"
                             >
-                              Xóa
+                              <RiDeleteBin2Line />
+                              Delete
                             </button>
                           )}
                         </div>
@@ -238,8 +245,8 @@ const CategoriesList = ({ listcategories }: Props) => {
                         <td className="px-4 py-2 whitespace-nowrap">
                           <button
                             onClick={() => handleRestore(category.id)}
-                            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
-                          >
+                            className="border border-black inline-flex items-center justify-center gap-2 rounded-md w-28 h-10 px-4 py-2 text-sm text-gray-500 hover:text-white hover:bg-black transition duration-300 ease-in-out focus:ring-2 focus:ring-blue-500"                          >
+                            <FaUndo />
                             Hoàn tác
                           </button>
                         </td>

@@ -47,6 +47,8 @@ function ProductAdd({ onAdd, categories }: Props) {
   const [sizes, setSizes] = useState<Size[]>([]); // Thêm state để lưu sizes
   const [colors, setColors] = useState<Color[]>([]); // Thêm state để lưu colors
 
+  const [displayValue, setDisplayValue] = useState<string>("");
+
   const initialValues: TProduct = {
     id: 0,
     category_id: categoryId ?? 0,
@@ -88,10 +90,38 @@ function ProductAdd({ onAdd, categories }: Props) {
   };
 
   // Hàm cập nhật giá gốc
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+    });
+  };
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPrice = Math.floor(parseFloat(e.target.value) || 0); // Đảm bảo giá là số nguyên
-    setPrice(newPrice);
-    setFinalPrice(newPrice - (newPrice * discount) / 100); // Tính lại giá sau giảm
+    const rawValue = e.target.value.replace(/[^0-9]/g, ""); // Loại bỏ các ký tự không phải số
+    if (rawValue === "") {
+      setPrice(null); // Cho phép giá trị trống
+      setDisplayValue(""); // Cập nhật hiển thị trống
+    } else {
+      const numericValue = parseInt(rawValue, 10) || 0; // Chuyển giá trị sang số nguyên
+      setPrice(numericValue);
+      setDisplayValue(rawValue); // Hiển thị số thô (không định dạng)
+    }
+  };
+
+  const handleFocus = () => {
+    if (price !== null) {
+      setDisplayValue(price.toString()); // Chuyển về dạng số khi focus
+    }
+  };
+
+  const handleBlur = () => {
+    if (price !== null) {
+      setDisplayValue(formatCurrency(price)); // Hiển thị dạng tiền tệ khi blur
+    } else {
+      setDisplayValue(""); // Hiển thị trống nếu không có giá trị
+    }
   };
 
   // Hàm xử lý khi chọn ảnh chính
@@ -341,9 +371,9 @@ function ProductAdd({ onAdd, categories }: Props) {
                   </h2>
                   <div
                     className=" gap-4"
-                    // style={{
-                    //   gridTemplateColumns: `repeat(var(--x-columns, 2), 1fr)`,
-                    // }}
+                  // style={{
+                  //   gridTemplateColumns: `repeat(var(--x-columns, 2), 1fr)`,
+                  // }}
                   >
                     {/* giá gốc */}
                     <div>
@@ -351,13 +381,15 @@ function ProductAdd({ onAdd, categories }: Props) {
                         Giá cơ bản
                       </label>
                       <Field
-                        type="number"
+                        type="text"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-800 text-sm"
                         placeholder="Nhập giá gốc"
                         id="price"
                         name="price"
-                        value={price}
-                        onChange={handlePriceChange}
+                        value={displayValue} // Hiển thị giá trị
+                        onChange={handlePriceChange} // Cập nhật khi nhập
+                        onFocus={handleFocus} // Chuyển về số khi focus
+                        onBlur={handleBlur} // Hiển thị tiền tệ khi blur
                       />
                       <ErrorMessage
                         name="price"
