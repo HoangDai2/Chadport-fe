@@ -103,7 +103,7 @@ const HeaderAD = (props: Props) => {
             {[
               { label: "Đơn Hoàn Trả", to: "/admin/cancel_order" },
               { label: "Đơn hàng mới", to: "/admin/new_order" },
-              { label: "Mã Giảm giá", to: "/admin/file_requests" },
+              { label: "Mã Giảm giá", to: "/admin/viewvoucher" },
             ].map((tab, index) => (
               <li key={index} className="nav-item">
                 <Link

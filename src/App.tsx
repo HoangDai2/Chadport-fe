@@ -90,6 +90,7 @@ import RefundNotification from "./pages/Order/RefundNotification";
 import CancelOrder from "./admin/pages/OrderAdmin/CancelOrder";
 import ListBillDetailsr from "./admin/pages/OrderAdmin/ListBillDetailsr";
 import NewOrder from "./admin/pages/OrderAdmin/NewOrder";
+import ViewVoucher from "./admin/pages/Voucher/ViewVoucher";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -587,6 +588,7 @@ function App() {
               <Route path="color" element={<ColorForm />} />
               <Route path="cancel_order" element={<CancelOrder />} />
               <Route path="new_order" element={<NewOrder />} />
+              <Route path="viewvoucher" element={<ViewVoucher />} />
             </Route>
           </Route>
         </Routes>
