@@ -29,8 +29,10 @@ const Home = ({
         setLoading(true); // Bắt đầu loading
         NProgress.start(); // Hiển thị thanh loading trên đầu trang
 
-        const response = await apisphp.get("list/products");
+        const response = await apisphp.get("/products/rating");
         setProducts(response.data.data);
+        console.log("111", products);
+
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Error fetching products");
@@ -41,6 +43,8 @@ const Home = ({
 
     fetchProducts();
   }, []);
+
+
 
   const settings = {
     dots: false,
@@ -112,7 +116,7 @@ const Home = ({
                       <div className="products-entry clearfix product-wapper">
                         <div className="products-thumb">
                           <div className="product-lable">
-                            <div className="hot">Hot</div>
+                            <div className="hot">HOT</div>
                           </div>
                           <a href={`/shop-details/${product.id}`}>
                             <img

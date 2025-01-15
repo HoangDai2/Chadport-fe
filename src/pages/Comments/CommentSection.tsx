@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import imm1 from "../../img/WMNS+AIR+JORDAN+1.jpg";
-
 import { useEffect } from "react";
 import apisphp from "../../Service/api";
 import { useParams, useNavigate } from "react-router-dom";
@@ -40,6 +39,24 @@ const CommentSection = () => {
 
   // Xác định số lượng bình luận hiển thị
   const visibleComments = comments.slice(0, visibleCommentsCount);
+
+  const [filter, setFilter] = useState<{
+    rating: number | null;
+    hasImage: boolean | null;
+  }>({
+    rating: null,
+    hasImage: null,
+  });
+
+  const filteredComments = comments.filter((comment) => {
+    const matchesRating =
+      filter.rating === null || comment.rating === filter.rating;
+    const matchesImage =
+      filter.hasImage === null ||
+      (filter.hasImage ? !!comment.image : !comment.image);
+    return matchesRating && matchesImage;
+  });
+
 
   const toggleSection = (section: any) => {
     setOpenSection(openSection === section ? null : section);
@@ -101,6 +118,11 @@ const CommentSection = () => {
     setIsModalOpen(false);
   };
 
+  const getStarCount = (star: number) => {
+    return comments.filter((comment) => comment.rating === star).length;
+  };
+
+
   return (
     <>
       {/* Modal phóng to ảnh bình luận của user  */}
@@ -147,10 +169,41 @@ const CommentSection = () => {
                   ({comments.length} đánh giá)
                 </span>
               </div>
-
+              <div className="flex space-x-4 my-4">
+                {/* Dropdown để chọn số sao */}
+                <select
+                  className="px-4 py-2 border rounded bg-white text-gray-700"
+                  value={filter.rating || ""}
+                  onChange={(e) =>
+                    setFilter((prev) => ({
+                      ...prev,
+                      rating: e.target.value ? Number(e.target.value) : null,
+                    }))
+                  }
+                >
+                  <option value="">Tất Cả</option>
+                  {[5, 4, 3, 2, 1].map((star) => (
+                    <option key={star} value={star}>
+                      {"★".repeat(star)} ({getStarCount(star)})
+                    </option>
+                  ))}
+                </select>
+                {/* Lọc theo ảnh */}
+                <select
+                  className="border p-2 rounded"
+                  value={filter.hasImage === null ? "" : filter.hasImage ? "true" : "false"}
+                  onChange={(e) =>
+                    setFilter({ ...filter, hasImage: e.target.value === "" ? null : e.target.value === "true" })
+                  }
+                >
+                  <option value="">Tất cả</option>
+                  <option value="true">Có ảnh</option>
+                  <option value="false">Không có ảnh</option>
+                </select>
+              </div>
               <div className="space-y-4">
                 {/* map data */}
-                {comments.map((cmt) => (
+                {filteredComments.map((cmt) => (
                   <div className="p-4 border-b">
                     {/* img và biến thể */}
                     <div className="flex items-center gap-2">

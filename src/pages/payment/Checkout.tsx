@@ -14,6 +14,12 @@ import { checkoutPayment } from "./PaymentService";
 import { useNavigate } from "react-router-dom";
 import { validateForm, Errors } from "./ValidateFormCheckOut.tsx";
 import { useLoading } from "../Loadings/LoadinfContext.tsx";
+import DiscountCard from "../VouCherClient/ApplyVoucher.tsx";
+interface Moneys {
+  original_total: number
+  total_discounted_amount: number
+}
+
 const Checkout = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
@@ -37,8 +43,18 @@ const Checkout = () => {
 
   const [getaddress, setGetaddress] = useState<AddressData | null>(null);
 
+  const [cartItemIds, setCartItemIds] = useState<number[]>([]); // Lưu danh sách cart_item_ids
+
+
   // state quản lí trạng thái form thanh toán online và offline
   const [formpayment, setFormPayment] = useState("");
+
+  // show trang lấy mã giảm giá
+  const [showModal, setShowModal] = useState(false);
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
+
+  const [newmonyvoucher, setNewmonyvoucher] = useState<Moneys[]>([]);
 
   // state quản lí khi chọn địa chỉ mặc định hoặc new
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -48,6 +64,9 @@ const Checkout = () => {
     phone_number: "",
     address: "",
   });
+
+  const [promoCode, setPromoCode] = useState(""); // Lưu mã voucher
+
 
   // State for order details
   const [orderDetails, setOrderDetails] = useState({
@@ -63,46 +82,46 @@ const Checkout = () => {
     setIsFormVisible(true); // Hiển thị form thêm địa chỉ
   };
 
-  // bỏ trạng thanh từ false thành true từ bên checkout để k thanh toán
-  const handleRemoveItem = async (cartItemIds: number) => {
-    try {
-      const token = localStorage.getItem("jwt_token");
-      if (!token) {
-        console.error("Token không hợp lệ");
-        return;
-      }
+  // // bỏ trạng thanh từ false thành true từ bên checkout để k thanh toán
+  // const handleRemoveItem = async (cartItemIds: number) => {
+  //   try {
+  //     const token = localStorage.getItem("jwt_token");
+  //     if (!token) {
+  //       console.error("Token không hợp lệ");
+  //       return;
+  //     }
 
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
+  //     const headers = {
+  //       Authorization: `Bearer ${token}`,
+  //     };
 
-      const response = await apisphp.post(
-        "/user/updatecheckcart",
-        { cart_item_id: cartItemIds },
-        { headers }
-      );
-      // Kiểm tra xem yêu cầu đã thành công chưa
-      if (response.status === 200) {
-        // Cập nhật lại giỏ hàng sau khi xóa sản phẩm
-        setCheckes((prevChecked) => {
-          if (prevChecked) {
-            // Cập nhật lại state để bỏ sản phẩm vừa bỏ chọn
-            return {
-              ...prevChecked,
-              cart_items: prevChecked.cart_items.filter(
-                (item) => item.cart_item_ids !== cartItemIds
-              ),
-            };
-          }
-          return prevChecked;
-        });
+  //     const response = await apisphp.post(
+  //       "/user/updatecheckcart",
+  //       { cart_item_id: cartItemIds },
+  //       { headers }
+  //     );
+  //     // Kiểm tra xem yêu cầu đã thành công chưa
+  //     if (response.status === 200) {
+  //       // Cập nhật lại giỏ hàng sau khi xóa sản phẩm
+  //       setCheckes((prevChecked) => {
+  //         if (prevChecked) {
+  //           // Cập nhật lại state để bỏ sản phẩm vừa bỏ chọn
+  //           return {
+  //             ...prevChecked,
+  //             cart_items: prevChecked.cart_items.filter(
+  //               (item) => item.cart_item_ids !== cartItemIds
+  //             ),
+  //           };
+  //         }
+  //         return prevChecked;
+  //       });
 
-        toast.success("Sản phẩm đã được bỏ chọn!");
-      }
-    } catch (error) {
-      console.error("Lỗi khi xóa sản phẩm", error);
-    }
-  };
+  //       toast.success("Sản phẩm đã được bỏ chọn!");
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi khi xóa sản phẩm", error);
+  //   }
+  // };
 
   // call dữ liệu được chọn từ bên giỏ hàng
   useEffect(() => {
@@ -127,6 +146,13 @@ const Checkout = () => {
         setCheckes(dataChecked.data);
         console.log("data checked", dataChecked.data);
 
+        // Lấy danh sách cart_item_ids
+        const ids = dataChecked.data.cart_items.map(
+          (item: { cart_id: number }) => item.cart_id
+        );
+        setCartItemIds(ids);
+
+        console.log("Cart Item IDs:", ids);
         return dataChecked.data;
       } catch (error) {
       } finally {
@@ -135,7 +161,6 @@ const Checkout = () => {
     };
     fetchdataChecked();
   }, []);
-
   // call data address mới
   useEffect(() => {
     const fetchNewAddress = async () => {
@@ -160,7 +185,7 @@ const Checkout = () => {
         // console.log("data address", dataChecked.data.address);
 
         return dataChecked.data;
-      } catch (error) {}
+      } catch (error) { }
     };
     fetchNewAddress();
   }, []);
@@ -282,7 +307,7 @@ const Checkout = () => {
       const vnpayResponse = await apisphp.post(
         "/user/create_paymentVnPay",
         {
-          amount: totalAmount,
+          amount: newmonyvoucher.total_discounted_amount,
           order_number,
           order_id,
         },
@@ -349,6 +374,42 @@ const Checkout = () => {
 
     formpayment === "online" ? handleVNPayPayment() : handleCODPayment();
   };
+
+  const handleApplyVoucher = async () => {
+
+    console.log("ids", cartItemIds);
+
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        toast.error("Bạn cần đăng nhập để áp dụng mã giảm giá.");
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await apisphp.post(
+        "/applyVoucher",
+        {
+          cart_id: cartItemIds, // Thay bằng `cart_id` của người dùng
+          voucher_code: promoCode,
+        },
+        { headers }
+      );
+
+      setNewmonyvoucher(response.data)
+      console.log(response);
+
+      toast.success(response.data.message);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.error || "Có lỗi xảy ra khi áp dụng mã giảm giá.";
+      toast.error(errorMessage);
+    }
+  };
+
 
   // Kiểm tra dữ liệu và đảm bảo rằng nó đã được tải thành công
   if (!checked) {
@@ -544,13 +605,6 @@ const Checkout = () => {
                       key={item.product_item_id}
                       className="relative  flex items-center justify-between gap-6 p-4 border-b border-gray-200"
                     >
-                      {/* Biểu tượng đóng */}
-                      <div
-                        onClick={() => handleRemoveItem(item.cart_item_ids)} // Hàm xử lý xóa sản phẩm
-                        className="absolute top-[-16px] right-[-15px] p-2 cursor-pointer"
-                      >
-                        <FaTimes />
-                      </div>
 
                       {/* Hình ảnh sản phẩm */}
                       <img
@@ -590,9 +644,9 @@ const Checkout = () => {
                         {isNaN(Number(item.product_sale_price))
                           ? "Giá không hợp lệ"
                           : new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(Number(item.product_sale_price))}
+                            style: "currency",
+                            currency: "VND",
+                          }).format(Number(item.product_sale_price))}
                       </span>
                     </li>
                   ))
@@ -632,15 +686,12 @@ const Checkout = () => {
                     </div>
                     <div className="pl-3">
                       <span className="font-semibold text-black">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(
-                          // Kiểm tra dữ liệu trước khi truy cập thuộc tính
-                          checked?.cart_items?.[0]?.product_price
-                            ? Number(checked.cart_items[0].product_sale_price)
-                            : 0
-                        )}
+                        {newmonyvoucher?.discount_type === "fixed"
+                          ? new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(Number(newmonyvoucher?.discount_value || 0))
+                          : `${Number(newmonyvoucher?.discount_value || 0)}%`}
                       </span>
                     </div>
                   </div>
@@ -653,15 +704,17 @@ const Checkout = () => {
                       <span className="text-gray-600">Tổng Tiền</span>
                     </div>
                     <div className="pl-3">
-                      <span
-                        className="font-semibold"
-                        style={{ color: "black" }}
-                      >
+                      <span className="font-semibold" style={{ color: "black" }}>
                         {new Intl.NumberFormat("vi-VN", {
                           style: "currency",
                           currency: "VND",
-                        }).format(checked?.total_amount || 0)}
+                        }).format(
+                          newmonyvoucher?.original_total
+                            ? newmonyvoucher.total_discounted_amount
+                            : checked?.total_amount || 0
+                        )}
                       </span>
+
                     </div>
                   </div>
                 </div>
@@ -757,11 +810,10 @@ const Checkout = () => {
                             </label>
                             <input
                               id="firstName"
-                              className={`w-full px-4 py-3 border ${
-                                errors.first_name
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
+                              className={`w-full px-4 py-3 border ${errors.first_name
+                                ? "border-red-500"
+                                : "border-gray-300"
+                                } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
                               placeholder="John"
                               type="text"
                               name="first_name"
@@ -848,22 +900,6 @@ const Checkout = () => {
                             </div>
                           )}
                         </div>
-
-                        {/* code giảm giá  */}
-                        <div className="mb-6">
-                          <label
-                            htmlFor="cardNumber"
-                            className="text-left text-sm font-semibold text-gray-700 mb-2 block"
-                          >
-                            Have a promo code
-                          </label>
-                          <input
-                            id="cardNumber"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                            placeholder="Code"
-                            type="text"
-                          />
-                        </div>
                       </div>
                     )}
 
@@ -882,11 +918,10 @@ const Checkout = () => {
                             </label>
                             <input
                               id="firstName"
-                              className={`w-full px-4 py-3 border ${
-                                errors.first_name
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
+                              className={`w-full px-4 py-3 border ${errors.first_name
+                                ? "border-red-500"
+                                : "border-gray-300"
+                                } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition`}
                               placeholder="John"
                               type="text"
                               name="firt_name"
@@ -973,24 +1008,58 @@ const Checkout = () => {
                             </div>
                           )}
                         </div>
+                      </div>
+                    )}
 
-                        {/* code giảm giá  */}
-                        <div className="mb-6">
-                          <label
-                            htmlFor="cardNumber"
-                            className="text-left text-sm font-semibold text-gray-700 mb-2 block"
+                    {/* code giảm giá  */}
+                    <div className="mb-6">
+                      <label
+                        htmlFor="promoCode"
+                        className="text-left text-sm font-semibold text-gray-700 mb-2 block"
+                      >
+                        VouCher
+                      </label>
+                      <div className="flex items-center">
+                        <input
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value)}
+                          id="promoCode"
+                          className="flex-1 px-4 py-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                          placeholder="Code"
+                          type="text"
+                        />
+                        <button
+                          onClick={() => handleApplyVoucher(checked.cart_id)}
+                          type="button"
+                          className="px-4 py-3 bg-black text-white font-semibold rounded-r-md hover:bg-indigo-600 transition"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      className="mt-4 px-4 py-2 bg-black text-white text-center rounded cursor-pointer"
+                      onClick={openModal}
+                    >
+                      Lấy Code
+                    </div>
+                    {/* Modal Overlay */}
+                    {showModal && (
+                      <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                        {/* Modal Content */}
+                        <div className="bg-white rounded-lg shadow-lg p-6 relative w-[55rem] top-[58px] h-[560px]">
+                          <button
+                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                            onClick={closeModal}
                           >
-                            Have a promo code
-                          </label>
-                          <input
-                            id="cardNumber"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                            placeholder="Code"
-                            type="text"
-                          />
+                            &times; {/* Close Button */}
+                          </button>
+                          <DiscountCard /> {/* Render DiscountCard Component */}
                         </div>
                       </div>
                     )}
+
                   </div>
                 </div>
                 {/* nút thanh toán pay now */}

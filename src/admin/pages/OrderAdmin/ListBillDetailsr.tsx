@@ -6,6 +6,7 @@ import logoBase64 from "../../../img/logochadport.png";
 import JsBarcode from "jsbarcode";
 import { Barcode } from "./OrderQR";
 import { toast, ToastContainer } from "react-toastify";
+import { QRCodeSVG } from "qrcode.react";
 
 Modal.setAppElement("#root");
 
@@ -344,16 +345,15 @@ const BillTable = () => {
           <p style="font-weight: bold;">Nội dung hàng:</p>
           <ul style="list-style: none; padding: 0; margin: 0;">
             ${order.products
-              .map(
-                (product, index) => `
+          .map(
+            (product, index) => `
                   <li style="margin-bottom: 5px;">
-                    ${index + 1}. ${product.product_name} - SL: ${
-                  product.quantity
-                }
+                    ${index + 1}. ${product.product_name} - SL: ${product.quantity
+              }
                   </li>
                 `
-              )
-              .join("")}
+          )
+          .join("")}
           </ul>
         </div>
         <div style="
@@ -833,11 +833,10 @@ const BillTable = () => {
             (page) => (
               <button
                 key={page}
-                className={`px-3 py-1 mx-1 rounded ${
-                  page === currentPage
+                className={`px-3 py-1 mx-1 rounded ${page === currentPage
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 text-black"
-                }`}
+                  }`}
                 onClick={() => handlePageChange(page)}
               >
                 {page}

@@ -7,6 +7,7 @@ import apisphp from "../Service/api";
 import { useUserContext } from "../pages/AuthClient/UserContext";
 import CartData from "../Types/TCart";
 import axios from "axios";
+import { BiSolidDiscount } from "react-icons/bi";
 const HeaderClientC = ({
   carCount,
   wishlisCount,
@@ -63,43 +64,6 @@ const HeaderClientC = ({
     fetchCategories();
   }, []);
 
-  // chức năng thích sản phẩm
-  // useEffect(() => {
-  //   const updateWishlistCount = () => {
-  //     const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
-  //     setWishlistCount(wishlist.length);
-  //   };
-  //   updateWishlistCount();
-  //   window.addEventListener("storage", updateWishlistCount);
-  //   return () => {
-  //     window.removeEventListener("storage", updateWishlistCount);
-  //   };
-  // }, []);
-
-  // Hàm lấy và cập nhật số lượng sản phẩm trong giỏ hàng từ cơ sở dữ liệu
-  // useEffect(() => {
-  //   const fetchCartCount = async () => {
-  //     try {
-  //       const response = await fetch("http://localhost:3000/carts");
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch cart data");
-  //       }
-  //       const cartItems = await response.json();
-  //       setCarCount(cartItems.length); // Đếm số lượng sản phẩm trong giỏ hàng
-  //     } catch (error) {
-  //       console.error("Error fetching cart count:", error);
-  //     }
-  //   };
-
-  //   fetchCartCount();
-
-  //   // Cập nhật số lượng sản phẩm mỗi khi có sự kiện thay đổi trong giỏ hàng
-  //   window.addEventListener("storage", fetchCartCount);
-  //   return () => {
-  //     window.removeEventListener("storage", fetchCartCount);
-  //   };
-  // }, []);
-  // hàm này để show tên người dùng sau khi đăng nhập và được lưu và sessionStoeage
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
@@ -291,20 +255,18 @@ const HeaderClientC = ({
 
                 {/* Menu - Ẩn khi thanh tìm kiếm mở */}
                 <div
-                  className={`col-xl-6 col-lg-6 col-md-12 col-sm-12 text-center header-center mt-[30px] transition-all duration-500 ease-in-out ${
-                    isSearchOpen
-                      ? "opacity-0 pointer-events-none"
-                      : "opacity-100"
-                  }`}
+                  className={`col-xl-6 col-lg-6 col-md-12 col-sm-12 text-center header-center mt-[30px] transition-all duration-500 ease-in-out ${isSearchOpen
+                    ? "opacity-0 pointer-events-none"
+                    : "opacity-100"
+                    }`}
                 >
                   <div className="site-navigation">
                     <nav id="main-navigation">
                       <ul id="menu-main-menu" className="menu">
                         {/* home */}
                         <li
-                          className={`level-0  ${
-                            isActive("/") ? "current-menu-item" : ""
-                          }`}
+                          className={`level-0  ${isActive("/") ? "current-menu-item" : ""
+                            }`}
                         >
                           {" "}
                           <Link to="/" className="menu-item-text">
@@ -314,9 +276,8 @@ const HeaderClientC = ({
 
                         {/* list menu */}
                         <li
-                          className={`level-0  ${
-                            isActive("/shoplist") ? "current-menu-item" : ""
-                          }`}
+                          className={`level-0  ${isActive("/shoplist") ? "current-menu-item" : ""
+                            }`}
                         >
                           <a href="/shoplist">
                             <span className="menu-item-text">Shop</span>
@@ -363,9 +324,8 @@ const HeaderClientC = ({
 
                         {/* blog */}
                         <li
-                          className={`level-0  ${
-                            isActive("/blog") ? "current-menu-item" : ""
-                          }`}
+                          className={`level-0  ${isActive("/blog") ? "current-menu-item" : ""
+                            }`}
                         >
                           <a href="/blog">
                             <span className="menu-item-text">Blog</span>
@@ -374,9 +334,8 @@ const HeaderClientC = ({
 
                         {/* about */}
                         <li
-                          className={`level-0  ${
-                            isActive("/about") ? "current-menu-item" : ""
-                          }`}
+                          className={`level-0  ${isActive("/about") ? "current-menu-item" : ""
+                            }`}
                         >
                           <a href="/about">
                             <span className="menu-item-text">About</span>
@@ -385,9 +344,8 @@ const HeaderClientC = ({
 
                         {/* contact */}
                         <li
-                          className={`level-0  ${
-                            isActive("/contact") ? "current-menu-item" : ""
-                          }`}
+                          className={`level-0  ${isActive("/contact") ? "current-menu-item" : ""
+                            }`}
                         >
                           <a href="/contact">
                             <span className="menu-item-text">Contact</span>
@@ -406,18 +364,13 @@ const HeaderClientC = ({
                         style={{ fontSize: "25px" }}
                       ></i>
                     </button>
+
                     <div className="relative">
-                      <a href="/wishlist">
+                      <a href="/list_voucher">
                         <button>
-                          <i
-                            className="far fa-heart text-lg"
-                            style={{ fontSize: "25px" }}
-                          ></i>
+                          <BiSolidDiscount style={{ fontSize: "30px", marginTop: "6px" }} />
                         </button>
                       </a>
-                      <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
-                        {wishlisCount}
-                      </span>
                     </div>
 
                     {/* phần Sidebar */}
@@ -445,9 +398,8 @@ const HeaderClientC = ({
 
                         {/* Sidebar với lớp `custom-sidebar` */}
                         <div
-                          className={`custom-sidebar ${
-                            isSidebarOpen ? "open" : ""
-                          }`}
+                          className={`custom-sidebar ${isSidebarOpen ? "open" : ""
+                            }`}
                         >
                           {/* Thông tin người dùng */}
                           <div
@@ -456,9 +408,8 @@ const HeaderClientC = ({
                           >
                             <a href="/profile" className="flex gap-[100px]">
                               <img
-                                src={`http://127.0.0.1:8000${
-                                  user ? user.image_user : "Ảnh"
-                                }`}
+                                src={`http://127.0.0.1:8000${user ? user.image_user : "Ảnh"
+                                  }`}
                                 alt={user ? user.firt_name : "User Avatar"}
                                 className="w-12 h-12 rounded-full object-cover"
                               />
@@ -489,18 +440,16 @@ const HeaderClientC = ({
                               <i className="fa-solid fa-wallet mr-4"></i>
                               <span>Payments</span>
                               <i
-                                className={` fa-solid fa-chevron-down ml-auto transition-transform duration-300 ${
-                                  isSubmenuOpen ? "rotate-180" : ""
-                                }`}
+                                className={` fa-solid fa-chevron-down ml-auto transition-transform duration-300 ${isSubmenuOpen ? "rotate-180" : ""
+                                  }`}
                               ></i>
                             </li>
                             {isSubmenuOpen && (
                               <ul
-                                className={`text-left pl-8 mt-2 space-y-2 text-gray-500 text-sm transition-all duration-300 ease-in-out overflow-hidden ${
-                                  isSubmenuOpen
-                                    ? "max-h-40 opacity-100"
-                                    : "max-h-0 opacity-0"
-                                }`}
+                                className={`text-left pl-8 mt-2 space-y-2 text-gray-500 text-sm transition-all duration-300 ease-in-out overflow-hidden ${isSubmenuOpen
+                                  ? "max-h-40 opacity-100"
+                                  : "max-h-0 opacity-0"
+                                  }`}
                               >
                                 <li className="submenu-item">Pay</li>
                                 <li className="submenu-item">Get Paid</li>
@@ -577,9 +526,8 @@ const HeaderClientC = ({
 
                           {/* Menu Di Động */}
                           <nav
-                            className={`fixed top-0 right-0 h-full bg-white shadow-lg transition-transform transform ${
-                              isMenuOpen ? "translate-x-0" : "translate-x-full"
-                            } lg:translate-x-0 lg:static lg:shadow-none`}
+                            className={`fixed top-0 right-0 h-full bg-white shadow-lg transition-transform transform ${isMenuOpen ? "translate-x-0" : "translate-x-full"
+                              } lg:translate-x-0 lg:static lg:shadow-none`}
                             style={{
                               width: "30%",
                               maxWidth: "300px",
@@ -706,7 +654,7 @@ const HeaderClientC = ({
               <div className="col-span-4 row-span-4 flex justify-center">
                 {/* Hiển thị dữ liệu sản phẩm mà người dùng tìm kiếm */}
                 {Array.isArray(filteredProducts) &&
-                filteredProducts.length > 0 ? (
+                  filteredProducts.length > 0 ? (
                   filteredProducts.map((product, index) => (
                     <div
                       className="row-span-3 col-start-2 row-start-1 "

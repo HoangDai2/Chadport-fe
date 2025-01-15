@@ -10,6 +10,7 @@ import TProduct from "../../Types/TProduct";
 import { BsBookmarkHeart } from "react-icons/bs";
 import { useLoading } from "../Loadings/LoadinfContext";
 import tablesize from "../../img/bang-size-giay-1024x571-1.jpg";
+import TComments from "../../Types/TComments";
 
 const ShopDetails = ({
   addToWishlist,
@@ -37,6 +38,28 @@ const ShopDetails = ({
     setIsOpen(!isOpen);
   };
 
+  const [comments, setComments] = useState<TComments[]>([]);
+  // Lấy bình luận từ API
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await apisphp.get(`/commentsByProductId/${id}`);
+        setComments(response.data.comments || []);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+    fetchComments();
+  }, [id]);
+
+  // Tính tổng và trung bình số sao
+  const calculateAverageRating = () => {
+    if (comments.length === 0) return 0;
+    const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0);
+    return (totalRating / comments.length).toFixed(1); // Tính trung bình và làm tròn 1 chữ số thập phân
+  };
+
+  const averageRating = calculateAverageRating(); // Tính toán trung bình số sao
   const navigate = useNavigate();
 
   // Danh sách tất cả màu từ DB
@@ -502,13 +525,20 @@ const ShopDetails = ({
                               </span>
                             </ins>
                           </span>
+
                           {/* star sản phẩm chính */}
-                          <div className="rating text-left">
-                            <div className="star star-5" />
-                            <div className="review-count">
-                              (3<span> reviews</span>)
-                            </div>
+                          <div className="rating text-left flex items-center gap-2">
+                            {/* Hiển thị số sao trung bình */}
+                            <span className="text-yellow-500 font-semibold text-lg">
+                              ★ {averageRating}
+                            </span>
+
+                            {/* Hiển thị số lượng đánh giá */}
+                            <span className="text-gray-500 text-sm">
+                              ({comments.length} đánh giá)
+                            </span>
                           </div>
+
                           {/* mổ tả sản phẩm chính */}
                           <div className="description text-left">
                             <p>{product.description}</p>
@@ -521,8 +551,8 @@ const ShopDetails = ({
                                 {selectedSize && selectedColor ? (
                                   <span
                                     className={`text-sm font-semibold ${warehouse > 0
-                                        ? "text-green-600"
-                                        : "text-red-600"
+                                      ? "text-green-600"
+                                      : "text-red-600"
                                       }`}
                                   >
                                     {warehouse > 0 ? "Còn hàng" : "Hết hàng"}
@@ -587,11 +617,10 @@ const ShopDetails = ({
                                 <button
                                   key={variant.size?.name}
 
-                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 ${
-                                    selectedSize === variant.size?.id
-                                      ? "bg-black text-white"
-                                      : "bg-white text-gray-700 border-gray-300"
-                                  } hover:bg-primary hover:text-black`}
+                                  className={`px-4 py-2 rounded-md border text-sm font-semibold transition-colors duration-300 ${selectedSize === variant.size?.id
+                                    ? "bg-black text-white"
+                                    : "bg-white text-gray-700 border-gray-300"
+                                    } hover:bg-primary hover:text-black`}
                                   onClick={() =>
                                     handleSizeChange(variant.size?.id || "")
                                   }
@@ -613,11 +642,10 @@ const ShopDetails = ({
                                   <button
                                     key={color.id}
 
-                                    className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 ${
-                                      selectedColor === color.id
-                                        ? "border-black scale-110"
-                                        : "border-gray-300"
-                                    }`}
+                                    className={`w-10 h-10 rounded-full border text-sm font-semibold transition-colors duration-300 ${selectedColor === color.id
+                                      ? "border-black scale-110"
+                                      : "border-gray-300"
+                                      }`}
 
                                     style={{
                                       backgroundColor: color.hex,
@@ -632,7 +660,7 @@ const ShopDetails = ({
                                   >
 
                                     {" "}
-                                    {}{" "}
+                                    { }{" "}
                                   </button>
                                 )
                               )}
@@ -658,11 +686,11 @@ const ShopDetails = ({
                                   style={{
                                     display:
                                       quantity >=
-                                      product?.variants.find(
-                                        (variant) =>
-                                          variant.size?.id === selectedSize &&
-                                          variant.color?.id === selectedColor
-                                      )?.quantity
+                                        product?.variants.find(
+                                          (variant) =>
+                                            variant.size?.id === selectedSize &&
+                                            variant.color?.id === selectedColor
+                                        )?.quantity
                                         ? "none"
                                         : "inline-block",
                                   }}

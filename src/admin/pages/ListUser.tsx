@@ -3,6 +3,7 @@ import TUser from "../../Types/TUsers";
 import apisphp from "../../Service/api";
 import { useUserContext } from "../../pages/AuthClient/UserContext";
 import axios, { AxiosError } from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 // Define interfaces for API error responses
 interface ApiErrorResponse {
@@ -25,7 +26,7 @@ const ListUser = ({ listuser }: Props) => {
   const [loadingRoleId, setLoadingRoleId] = useState<number | null>(null);
 
   const roleOptions = {
-    1: "Super Admin",
+    // 1: "Super Admin",
     2: "Admin",
     3: "Client",
   };
@@ -47,18 +48,18 @@ const ListUser = ({ listuser }: Props) => {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       if (axiosError.response?.status === 401) {
-        setMessage("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+        toast.warning("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
       } else if (axiosError.response?.status === 403) {
-        setMessage(axiosError.response.data?.error || "Bạn không có quyền thực hiện thao tác này.");
+        toast.warning(axiosError.response.data?.error || "Bạn không có quyền thực hiện thao tác này.");
       } else if (axiosError.response?.status === 404) {
-        setMessage("Người dùng không tồn tại.");
+        toast.warning("Người dùng không tồn tại.");
       } else if (axiosError.response?.status === 422) {
-        setMessage("Giá trị không hợp lệ.");
+        toast.error("Giá trị không hợp lệ.");
       } else {
-        setMessage(axiosError.response?.data?.error || "Đã xảy ra lỗi. Vui lòng thử lại!");
+        toast.error(axiosError.response?.data?.error || "Đã xảy ra lỗi. Vui lòng thử lại!");
       }
     } else {
-      setMessage("Đã xảy ra lỗi không xác định. Vui lòng thử lại!");
+      toast.error("Đã xảy ra lỗi không xác định. Vui lòng thử lại!");
     }
   };
 
@@ -67,7 +68,7 @@ const ListUser = ({ listuser }: Props) => {
 
     if (!targetUser) {
       setMessageType('error');
-      setMessage("Người dùng không tồn tại.");
+      toast.error("Người dùng không tồn tại.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -75,7 +76,7 @@ const ListUser = ({ listuser }: Props) => {
     // Prevent Super Admin accounts from being modified
     if (targetUser.role_id === 1) {
       setMessageType('error');
-      setMessage("Không thể thay đổi trạng thái tài khoản có chức vụ Super Admin.");
+      toast.warning("Không thể thay đổi trạng thái tài khoản có chức vụ Super Admin.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -83,7 +84,7 @@ const ListUser = ({ listuser }: Props) => {
     // Admins cannot modify other Admins or Super Admin
     if (user?.role_id === 2 && (targetUser.role_id === 1 || targetUser.role_id === 2)) {
       setMessageType('error');
-      setMessage("Bạn không thể thay đổi trạng thái của tài khoản Super Admin hoặc Admin khác.");
+      toast.warning("Bạn không thể thay đổi trạng thái của tài khoản Super Admin hoặc Admin khác.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -91,7 +92,7 @@ const ListUser = ({ listuser }: Props) => {
     // Prevent changing own account status
     if (userId === user?.id) {
       setMessageType('error');
-      setMessage("Không thể thay đổi trạng thái tài khoản của chính mình!");
+      toast.warning("Không thể thay đổi trạng thái tài khoản của chính mình!");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -104,7 +105,7 @@ const ListUser = ({ listuser }: Props) => {
           user.id === userId ? { ...user, status: action } : user
         ));
         setMessageType('success');
-        setMessage(`Tài khoản ${action === "inactive" ? "bị khóa" : "mở khóa"} thành công!`);
+        toast.success(`Tài khoản ${action === "inactive" ? "bị khóa" : "mở khóa"} thành công!`);
       }
     } catch (error) {
       handleError(error);
@@ -118,10 +119,10 @@ const ListUser = ({ listuser }: Props) => {
     const targetUser = users.find(u => u.id === userId);
     console.log(userId);
     console.log(newRoleId);
-    
+
     if (!targetUser) {
       setMessageType('error');
-      setMessage("Người dùng không tồn tại.");
+      toast.warning("Người dùng không tồn tại.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -129,7 +130,7 @@ const ListUser = ({ listuser }: Props) => {
     // Prevent Super Admin accounts from being modified
     if (targetUser.role_id === 1) {
       setMessageType('error');
-      setMessage("Không thể thay đổi chức vụ của tài khoản Super Admin.");
+      toast.warning("Không thể thay đổi chức vụ của tài khoản Super Admin.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -137,7 +138,7 @@ const ListUser = ({ listuser }: Props) => {
     // Prevent changing own role
     if (userId === user?.id) {
       setMessageType('error');
-      setMessage("Bạn không thể tự thay đổi vai trò của mình.");
+      toast.warning("Bạn không thể tự thay đổi vai trò của mình.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -145,7 +146,7 @@ const ListUser = ({ listuser }: Props) => {
     // Check if user has permission (must be Super Admin - role_id 1)
     if (user?.role_id !== 1) {
       setMessageType('error');
-      setMessage("Bạn không có quyền thay đổi chức vụ người dùng.");
+      toast.warning("Bạn không có quyền thay đổi chức vụ người dùng.");
       setTimeout(() => setMessage(null), 2000);
       return;
     }
@@ -155,7 +156,7 @@ const ListUser = ({ listuser }: Props) => {
       const existingSuperAdmin = users.find(u => u.role_id === 1);
       if (existingSuperAdmin) {
         setMessageType('error');
-        setMessage("Chỉ có thể có một tài khoản Super Admin. Không thể thêm Super Admin mới.");
+        toast.warning("Chỉ có thể có một tài khoản Super Admin. Không thể thêm Super Admin mới.");
         setTimeout(() => setMessage(null), 2000);
         return;
       }
@@ -163,23 +164,25 @@ const ListUser = ({ listuser }: Props) => {
     const token = localStorage.getItem('jwt_token');
     setLoadingRoleId(userId);
     try {
-      const response = await apisphp.post(`/admin/changeUserRole`, { role_id: newRoleId , id: userId}, {headers: {
-        Authorization: `Bearer ${token}`,
-      },});
+      const response = await apisphp.post(`/admin/changeUserRole`, { role_id: newRoleId, id: userId }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.status === 200) {
         setUsers(users.map((u) =>
           u.id === userId ? { ...u, role_id: newRoleId } : u
         ));
         setMessageType('success');
-        setMessage("Cập nhật chức vụ thành công!");
+        toast.success("Cập nhật chức vụ thành công!");
       }
     } catch (error) {
       handleError(error);
     } finally {
       setLoadingRoleId(null);
-      setTimeout(() => setMessage(null), 2000);
+      setTimeout(() => toast.error(null), 2000);
     }
-    
+
     console.log("Token:", token);
 
   };
@@ -191,12 +194,15 @@ const ListUser = ({ listuser }: Props) => {
             <h2 className="text-2xl font-bold text-gray-800">Danh Sách Người Dùng</h2>
           </div>
 
-          {message && (
-            <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 ${message.includes("khóa") ? "bg-red-500" : "bg-green-500"
-              } text-white`}>
-              {message}
-            </div>
-          )}
+          <ToastContainer
+            theme="light"
+            position="top-right"
+            autoClose={1000}
+            hideProgressBar={false}
+            closeOnClick={true}
+            pauseOnHover={true}
+            draggable={true}
+          />
 
           <div className="overflow-x-auto">
             <table className="w-full">

@@ -217,8 +217,8 @@ function ProductAdd({ onAdd, categories }: Props) {
 
       await onAdd(productData, images, imageProduct!, variant, sizes, colors); // Truyền cả sản phẩm và biến thể
       // console.log(variant);
-      navigate("/admin/products");
-      window.location.reload();
+      // navigate("/admin/products");
+      // window.location.reload();
     } catch (error) {
       console.error("Error adding product:", error);
       toast.error("Error adding product!");

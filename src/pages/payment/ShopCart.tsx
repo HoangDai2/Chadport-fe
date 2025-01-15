@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useLoading } from "../Loadings/LoadinfContext";
 import axios from "axios";
 import { FaTimes } from "react-icons/fa";
-
+import { AiOutlinePlus } from "react-icons/ai";
 const ShopCart = ({ onClose }: any) => {
   const navigate = useNavigate();
   const { startLoading, stopLoading } = useLoading();
@@ -61,6 +61,7 @@ const ShopCart = ({ onClose }: any) => {
 
         const response = await apisphp.get("user/cart", { headers });
         setCartData(response.data);
+        console.log("tien", response);
 
         // Gọi API để lấy biến thể cho mỗi sản phẩm trong giỏ hàng
         if (response.data.cart_items) {
@@ -140,10 +141,13 @@ const ShopCart = ({ onClose }: any) => {
         { cart_item_ids: selectedItems },
         { headers }
       );
+
+      console.log("2", response);
+
       // console.log(selectedItems);
       if (response.status === 200) {
         toast.success("Sản phẩm đã được chuyển sang thanh toán!");
-        navigate("/checkout");
+        // navigate("/checkout");
       } else {
         toast.error("Có lỗi khi chuyển sản phẩm.");
       }
@@ -563,53 +567,53 @@ const ShopCart = ({ onClose }: any) => {
                       <div className="w-[20px]"></div>
                       {/* trừ */}
                       <div className="w-[150px] mr-7">
-                        <div className="flex items-center justify-center space-x-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleQuantityChange(
-                                item.cart_item_ids,
-                                item.quantity - 1
-                              );
-                            }}
-                            className="bg-gray-200 text-gray-700 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
-                          >
-                            -
-                          </button>
 
-                          <input
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) =>
-                              handleQuantityChange(
-                                item.cart_item_ids,
-                                parseInt(e.target.value) || 1 // Đảm bảo số lượng tối thiểu là 1
-                              )
-                            }
-                            min="1"
-                            readOnly
-                            style={{
-                              border: "2px solid #cccccc",
-                              borderRadius: "8px",
-                              padding: "4px",
-                              width: "50px",
-                              textAlign: "center",
-                            }}
-                          />
+                        <div>
+                          <label htmlFor="Quantity" className="sr-only">Quantity</label>
 
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleQuantityChange(
-                                item.cart_item_ids,
-                                item.quantity + 1
-                              );
-                            }}
-                            className="bg-gray-200 text-gray-700 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
-                          >
-                            +
-                          </button>
+                          <div className="flex items-center rounded border border-gray-200">
+                            {/* Nút Giảm Số Lượng */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleQuantityChange(item.cart_item_ids, item.quantity - 1);
+                              }}
+                              className="w-12 h-12 flex items-center justify-center text-gray-600 transition hover:opacity-75"
+                            >
+                              &minus;
+                            </button>
+
+                            {/* Input Số Lượng */}
+                            <input
+                              type="number"
+                              id="Quantity"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleQuantityChange(
+                                  item.cart_item_ids,
+                                  parseInt(e.target.value) || 1 // Đảm bảo số lượng tối thiểu là 1
+                                )
+                              }
+                              min="1"
+                              readOnly
+                              className="h-12 w-16 border-l border-r border-gray-200 text-center text-sm [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                            />
+
+                            {/* Nút Tăng Số Lượng */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleQuantityChange(item.cart_item_ids, item.quantity + 1);
+                              }}
+                              className="w-12 h-12 flex items-center justify-center text-gray-600 transition hover:opacity-75"
+                            >
+                              <AiOutlinePlus />
+                            </button>
+                          </div>
                         </div>
+
                       </div>
                       <div className="w-[120px] mr-10 text-right font-semibold text-sm">
                         {new Intl.NumberFormat("vi-VN", {

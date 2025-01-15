@@ -91,6 +91,8 @@ import CancelOrder from "./admin/pages/OrderAdmin/CancelOrder";
 import ListBillDetailsr from "./admin/pages/OrderAdmin/ListBillDetailsr";
 import NewOrder from "./admin/pages/OrderAdmin/NewOrder";
 import ViewVoucher from "./admin/pages/Voucher/ViewVoucher";
+import AddVoucher from "./admin/pages/Voucher/AddVoucher";
+import ListVoucherClient from "./pages/VouCherClient/ListVoucherClient";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -412,7 +414,7 @@ function App() {
             />
             <Route path="/checkout" element={<Checkout />} />
             <Route
-              path="/pay_done"
+              path="/payment-result"
               element={
                 <>
                   <Headerclient
@@ -444,14 +446,14 @@ function App() {
             <Route path="/shopcart" element={<ShopCart />} />
             <Route path="/login" element={<LoginRegister />} />
             <Route
-              path="/wishlist"
+              path="/list_voucher"
               element={
                 <>
                   <Headerclient
                     wishlisCount={wishlistCount}
                     carCount={carCount}
                   />
-                  <Wishlist />
+                  <ListVoucherClient />
                   <FooterClient />
                 </>
               }
@@ -540,6 +542,7 @@ function App() {
               path="/refund-notification"
               element={<RefundNotification />}
             />
+
           </Routes>
         </LoadingProvider>
         <Routes>
@@ -589,6 +592,7 @@ function App() {
               <Route path="cancel_order" element={<CancelOrder />} />
               <Route path="new_order" element={<NewOrder />} />
               <Route path="viewvoucher" element={<ViewVoucher />} />
+              <Route path="add/voucher" element={<AddVoucher />} />
             </Route>
           </Route>
         </Routes>
