@@ -15,6 +15,8 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ReviewForm from "./ReviewForm";
 import TComments from "../../Types/TComments";
+import { FaTelegramPlane } from "react-icons/fa";
+import { SiZalo } from "react-icons/si";
 type Props = {};
 const genderMapping = {
   male: 1,
@@ -51,9 +53,11 @@ const Profile = (props: Props) => {
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
   const ordersPerPage = 4; // Số đơn hàng mỗi trang
   const [showCancelForm, setShowCancelForm] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
+  // const [showDropdown, setShowDropdown] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
   const [showReviewForm, setShowReviewForm] = useState(false); // State để điều khiển hiển thị ReviewForm
+  const [showDetails, setShowDetails] = useState<number | null>(null); // State để điều khiển hiển thị chi tết sp
   const [reviewFormData, setReviewFormData] = useState<TComments | null>(null); // Sử dụng TComments
 
   // xử lí nút hoàn trả tiền hiện form
@@ -66,7 +70,12 @@ const Profile = (props: Props) => {
   const handleCloseRefundForm = () => {
     setRefundFormOpen(false);
   };
-
+  const toggleDropdown = (orderId: number) => {
+    setOpenDropdownId((prevId) => (prevId === orderId ? null : orderId));
+  };
+  const toggleDropdownDetails = (orderId: number) => {
+    setOpenDropdownId((prevId) => (prevId === orderId ? null : orderId));
+  };
   // Hàm xử lý tải ảnh
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -237,50 +246,18 @@ const Profile = (props: Props) => {
     setSelectedOrder(null);
   };
 
-  // Hàm chuyển sang trang kế tiếp
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  // Hàm quay lại trang trước
-  const handlePreviousPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
   // hiện các nút và xử lí theo trạng thái đơn hàng
 
   const renderButtonCancelOrder = (order: any) => {
-    // Chuẩn bị dữ liệu của tất cả sản phẩm để truyền qua query string
-    const productsQuery = order.products.map((product: any) => ({
-      order_id: product.order_id,
-      product_item_id: product.product_item_id,
-      product_image: product.product_image,
-      product_name: product.product_name,
-      price: product.price,
-      color_name: product.color_name,
-      size_name: product.size_name,
-      color_hex: product.color_hex,
-      quantity: product.quantity,
-    }));
-
-    // Thêm total_money vào dữ liệu gửi đi
-    const payload = {
-      total_money: order.total_money, // Trường total_money
-      products: productsQuery, // Danh sách sản phẩm
-    };
-
-    // console.log("ggg", productsQuery);
-    const queryString = encodeURIComponent(JSON.stringify(payload));
-
     switch (order.status) {
       case "chờ xử lí":
         return (
           <div className="flex space-x-4">
             <button
+              className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300"
               disabled
-              className="bg-gray-200 text-gray-400 px-4 py-2 rounded-lg cursor-not-allowed hover:bg-gray-200"
             >
-              Chờ xử lí...
+              Chờ
             </button>
 
             <button
@@ -289,21 +266,116 @@ const Profile = (props: Props) => {
             >
               Hủy Đơn Hàng
             </button>
+            <div className="relative">
+              <button
+                className="bg-white border px-4 py-2 rounded-lg hover:bg-gray-100 flex items-center"
+                onClick={() => toggleDropdown(order.id)}
+              >
+                Liên hệ
+                <span
+                  className={`ml-2 transform transition-transform ${openDropdownId === order.id ? "rotate-180" : "rotate-0"
+                    }`}
+                >
+                  <FaAngleDown />
+                </span>
+              </button>
+
+              {openDropdownId === order.id && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                  {/* Nút liên hệ Zalo */}
+                  <a
+                    href="https://zalo.me/0346230007" // Thay bằng số Zalo của bạn
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <SiZalo className="text-blue-500" />
+                    Liên hệ Zalo
+                  </a>
+
+                  {/* Nút liên hệ Telegram */}
+                  <a
+                    href="https://t.me/ChadPort" // Thay bằng username Telegram của bạn
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <FaTelegramPlane className="text-blue-400" />
+                    Liên hệ Telegram
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         );
       case "đang giao":
         return (
           <div className="flex space-x-4">
             {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
-            <button
-              disabled
-              className="bg-gray-200 text-gray-400 px-4 py-2 rounded-lg cursor-not-allowed hover:bg-gray-200"
-            >
-              Đang Giao...
+            <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
+              Theo dõi đơn hàng
             </button>
+
+            <div className="relative">
+              <button
+                className="bg-white border px-4 py-2 rounded-lg hover:bg-gray-100 flex items-center"
+                onClick={() => toggleDropdown(order.id)}
+              >
+                Liên hệ
+                <span
+                  className={`ml-2 transform transition-transform ${openDropdownId === order.id ? "rotate-180" : "rotate-0"
+                    }`}
+                >
+                  <FaAngleDown />
+                </span>
+              </button>
+
+              {openDropdownId === order.id && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                  {/* Nút liên hệ Zalo */}
+                  <a
+                    href="https://zalo.me/0346230007" // Thay bằng số Zalo của bạn
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <SiZalo className="text-blue-500" />
+                    Liên hệ Zalo
+                  </a>
+
+                  {/* Nút liên hệ Telegram */}
+                  <a
+                    href="https://t.me/ChadPort" // Thay bằng username Telegram của bạn
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <FaTelegramPlane className="text-blue-400" />
+                    Liên hệ Telegram
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         );
       case "đã hoàn thành":
+        // Chuẩn bị dữ liệu của tất cả sản phẩm để truyền qua query string
+        // const productsQuery = order.products.map((product) => ({
+        //   order_id: product.order_id,
+        //   product_item_id: product.product_item_id,
+        //   product_image: product.product_image,
+        //   product_name: product.product_name,
+        //   price: product.price,
+        //   color_name: product.color_name,
+        //   size_name: product.size_name,
+        //   color_hex: product.color_hex,
+        //   quantity: product.quantity,
+        // }));
+        // console.log("ggg", productsQuery);
+
+        // Mã hóa dữ liệu thành JSON để truyền qua query string
+        // const queryString = encodeURIComponent(JSON.stringify(productsQuery));
+
         return (
           <div className="flex space-x-4">
             {/* Nút Đánh Giá */}
@@ -311,7 +383,7 @@ const Profile = (props: Props) => {
               className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
               onClick={() => {
                 if (order.products && order.products.length > 0 && user?.id) {
-                  const reviewFormsData = order.products.map((product: any) => ({
+                  const reviewFormsData = order.products.map((product) => ({
                     comment_id: 0,
                     product_item_id: product.product_item_id, // Lấy product_item_id từ sản phẩm
                     user_id: user.id, // Lấy user_id từ user
@@ -346,77 +418,240 @@ const Profile = (props: Props) => {
             {/* Nút Yêu Cầu Trả Hàng/Hoàn Tiền */}
 
             {/* Nút Hoàn Tiền - Chuyển sang trang hoàn trả với danh sách sản phẩm */}
-            <Link to={`/formrefund/${order.order_id}?products=${queryString}`}>
-              <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
-                Yêu Cầu Trả Hàng/Hoàn Tiền
-              </button>
-            </Link>
+            <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
+              Yêu Cầu Trả Hàng/Hoàn Tiền
+            </button>
+
             {/* Dropdown Menu */}
             <div className="relative">
               <button
                 className="bg-white border px-4 py-2 rounded-lg hover:bg-gray-100 flex items-center"
-                onClick={() => setShowDropdown(!showDropdown)}
+                onClick={() => toggleDropdown(order.id)}
               >
-                Thêm
+                Liên hệ
                 <span
-                  className={`ml-2 transform transition-transform ${showDropdown ? "rotate-180" : "rotate-0"
+                  className={`ml-2 transform transition-transform ${openDropdownId === order.id ? "rotate-180" : "rotate-0"
                     }`}
                 >
                   <FaAngleDown />
                 </span>
               </button>
 
-              {showDropdown && (
+              {openDropdownId === order.id && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
-                  <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                    Liên Hệ Người Bán
-                  </button>
-                  <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                    Mua Lại
-                  </button>
+                  {/* Nút liên hệ Zalo */}
+                  <a
+                    href="https://zalo.me/0346230007" // Thay bằng số Zalo của bạn
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <SiZalo className="text-blue-500" />
+                    Liên hệ Zalo
+                  </a>
+
+                  {/* Nút liên hệ Telegram */}
+                  <a
+                    href="https://t.me/ChadPort" // Thay bằng username Telegram của bạn
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <FaTelegramPlane className="text-blue-400" />
+                    Liên hệ Telegram
+                  </a>
                 </div>
               )}
             </div>
           </div>
         );
       case "đã thanh toán":
+        // Chuẩn bị dữ liệu của tất cả sản phẩm để truyền qua query string
+        const productsQuery = order.products.map((product: any) => ({
+          order_id: product.order_id,
+          product_item_id: product.product_item_id,
+          product_image: product.product_image,
+          product_name: product.product_name,
+          price: product.price,
+          color_name: product.color_name,
+          size_name: product.size_name,
+          color_hex: product.color_hex,
+          quantity: product.quantity,
+        }));
+
+        // Thêm total_money vào dữ liệu gửi đi
+        const payload = {
+          total_money: order.total_money, // Trường total_money
+          products: productsQuery, // Danh sách sản phẩm
+        };
+
+        // console.log("ggg", productsQuery);
+        const queryString = encodeURIComponent(JSON.stringify(payload));
         return (
           <div className="flex space-x-4">
-
-            {/* nút hủy đơn hàng */}
-            <button
-              disabled
-              className="bg-gray-200 text-gray-400 px-4 py-2 rounded-lg cursor-not-allowed hover:bg-gray-200"
-            >
-              Đang xử lí đơn hàng...
-            </button>
-
             {/* Nút Hoàn Tiền - Chuyển sang trang hoàn trả với danh sách sản phẩm */}
             <Link to={`/formrefund/${order.order_id}?products=${queryString}`}>
-              <button className="bg-black text-white px-4 py-2 rounded-lg cursor-not-allowed hover:bg-gray-200">
+              <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
                 Yêu Cầu Trả Hàng/Hoàn Tiền
               </button>
             </Link>
+
+            {/* nút hủy đơn hàng */}
+            <button
+              className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              onClick={() => setShowCancelForm(true)}
+            >
+              Hủy Đơn Hàng
+            </button>
           </div>
         );
       case "bị hủy":
-
         return (
           <div className="flex space-x-4">
             {/* nút Mua lại */}
-            <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+            {/* <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
               Mua lại
-            </button>
+            </button> */}
 
             {/* Nút Xem chi tiết đơn hàng */}
-            <button className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300">
-              Xem chi tiết đơn hàng
-            </button>
+            {/* <button
+              className="bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300"
+              onClick={() => setShowDetails(order.id)}
+            >
+              Mua lại
+            </button> */}
+            {showDetails === order.id && (
+              <div
+                className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                onClick={() => setShowDetails(null)} // Đóng khi nhấn vào nền
+              >
+                <div
+                  className="relative w-2/3 max-w-3xl bg-white rounded-lg shadow-lg p-6"
+                  onClick={(e) => e.stopPropagation()} // Ngăn không đóng khi nhấn vào nội dung
+                >
+                  <button
+                    className="absolute top-2 right-2 text-gray-600 hover:text-black"
+                    onClick={() => setShowDetails(null)}
+                  >
+                    ✕
+                  </button>
+                  <h4 className="text-lg font-bold mb-4">
+                    Danh sách sản phẩm:
+                  </h4>
+                  <ul>
+                    {/* {console.log(order)} */}
+                    {/* {order.products.map(
+                      (product: any) => (
+                        console.log(product),
+                        (
+                          <li key={product.product_item_id} className="mb-2">
+                            <div className="flex items-center">
+                              <img
+                                src={product.product_image}
+                                alt={product.product_name}
+                                className="w-12 h-12 rounded-lg mr-4"
+                              />
+                              <div>
+                                <p className="font-medium">
+                                  {product.product_name}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  Giá: {product.price} VND | Số lượng:{" "}
+                                  {product.quantity}
+                                </p>
+                              </div>
+                            </div>
+                          </li>
+                        )
+                      )
+                    )} */}
+                    {order.products.map((product: any) => (
+                      <li key={product.product_item_id} className="mb-2">
+                        <div className="flex items-start bg-white rounded-md mb-4 p-4">
+                          {/* Hình ảnh sản phẩm */}
+                          <div className="flex-shrink-0">
+                            <img
+                              src={`http://127.0.0.1:8000/storage/${product.product_image}`} // Thay đường dẫn bằng URL ảnh thực tế
+                              alt="Product Image"
+                              className="w-20 h-20 object-cover rounded-md border border-gray-200"
+                            />
+                          </div>
+
+                          {/* Thông tin sản phẩm */}
+                          <div className="ml-4 flex flex-col justify-between">
+                            {/* Tên sản phẩm */}
+                            <p className="text-base font-semibold text-gray-800">
+                              {product.product_name}
+                            </p>
+
+                            {/* Chi tiết kích cỡ và màu sắc */}
+                            <div className="flex items-center space-x-4 mt-2">
+                              <span
+                                className="inline-block w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm"
+                                style={{
+                                  backgroundColor:
+                                    product.color_hex || "#E5E7EB",
+                                }}
+                              ></span>
+                              <span className="font-medium text-gray-800">
+                                Size: {product.size_name} - {product.color_name}
+                              </span>
+                            </div>
+
+                            {/* Số lượng */}
+                            <p className="text-sm text-gray-600 mt-2">
+                              Số lượng: {product.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
 
             {/* nút  Liên hệ người bán */}
-            <button className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
-              Liên hệ người bán
-            </button>
+            <div className="relative">
+              <button
+                className="bg-white border px-4 py-2 rounded-lg hover:bg-gray-100 flex items-center"
+                onClick={() => toggleDropdown(order.id)}
+              >
+                Liên hệ
+                <span
+                  className={`ml-2 transform transition-transform ${openDropdownId === order.id ? "rotate-180" : "rotate-0"
+                    }`}
+                >
+                  <FaAngleDown />
+                </span>
+              </button>
+
+              {openDropdownId === order.id && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                  {/* Nút liên hệ Zalo */}
+                  <a
+                    href="https://zalo.me/0346230007" // Thay bằng số Zalo của bạn
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <SiZalo className="text-blue-500" />
+                    Liên hệ Zalo
+                  </a>
+
+                  {/* Nút liên hệ Telegram */}
+                  <a
+                    href="https://t.me/ChadPort" // Thay bằng username Telegram của bạn
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    <FaTelegramPlane className="text-blue-400" />
+                    Liên hệ Telegram
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         );
       default:
@@ -435,8 +670,7 @@ const Profile = (props: Props) => {
   };
   return (
     <>
-      <div id="title" className="page-title py-6 mt-[120
-      x]">
+      <div id="title" className="page-title py-6 mt-[120px]">
         <ToastContainer
           theme="light"
           position="top-right"
@@ -660,6 +894,7 @@ const Profile = (props: Props) => {
 
                     {/* Hiển thị danh sách sản phẩm trong đơn hàng */}
                     {order.products.map((product, index) => (
+                      // console.log(order),
                       <div
                         key={index}
                         className="flex flex-col md:flex-row gap-6 p-4 border-b border-gray-300 last:border-b-0"
@@ -673,6 +908,7 @@ const Profile = (props: Props) => {
                           className="w-24 h-24 object-cover rounded-lg border border-gray-200"
                           alt="Product"
                         />
+                        {/* <Link to={`shop-details/${product.product_item_id}`}> */}
                         <div className="flex flex-col text-left flex-1">
                           <p className="text-base text-gray-800 font-semibold">
                             {product.product_name}
@@ -695,6 +931,7 @@ const Profile = (props: Props) => {
                             Số lượng: {product.quantity}
                           </p>
                         </div>
+                        {/* </Link> */}
                         <div className="flex flex-col items-end justify-center">
                           <p className="text-sm text-gray-500 line-through">
                             Giá:{" "}
@@ -891,18 +1128,6 @@ const Profile = (props: Props) => {
             </form>
           </div>
 
-          <div>
-            <button onClick={handlePreviousPage} disabled={currentPage === 1}>
-              Previous
-            </button>
-            <span>{`Page ${currentPage} of ${totalPages}`}</span>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
         </div>
       </div>
       {showReviewForm && reviewFormData && (

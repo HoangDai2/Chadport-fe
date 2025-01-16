@@ -648,24 +648,10 @@ const ShopCart = ({ onClose }: any) => {
               </h2>
               <div className="space-y-4">
                 <div className="flex justify-between text-lg">
-                  <p className="text-gray-600">Subtotal:</p>
-                  <p className="font-semibold">$20.00</p>
+                  <p className="text-gray-600">Phí Vận Chuyển:</p>
+                  <p className="font-semibold">Miễn Phí</p>
                 </div>
-                <div className="flex justify-between text-lg">
-                  <p className="text-gray-600">Shipping:</p>
-                  <p className="font-semibold">$5.00</p>
-                </div>
-                <div className="flex justify-between items-center text-lg">
-                  <label htmlFor="voucher" className="text-gray-600">
-                    Voucher:
-                  </label>
-                  <input
-                    type="text"
-                    id="voucher"
-                    className="w-32 p-2 border border-gray-300 rounded-md"
-                    placeholder="Enter code"
-                  />
-                </div>
+
                 <div className="flex justify-between text-lg">
                   <h3 className="text-xl text-right font-semibold">
                     Tổng tiền:{" "}

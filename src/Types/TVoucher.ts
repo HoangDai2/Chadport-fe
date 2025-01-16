@@ -6,6 +6,8 @@ export type Voucher = {
   expires_at: string; // datetime (ISO 8601 format: YYYY-MM-DDTHH:mm:ss)
   usage_limit: number; // int(11)
   used_count: number; // int(11)
+  is_default: number;
+  is_disabled: boolean;
   created_at: string; // timestamp (ISO 8601 format)
   updated_at: string; // timestamp (ISO 8601 format)
 };

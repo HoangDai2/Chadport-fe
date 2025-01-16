@@ -12,8 +12,8 @@ interface LoadingContextType {
 // Tạo context mặc định
 const LoadingContext = createContext<LoadingContextType>({
   loading: false,
-  startLoading: () => {},
-  stopLoading: () => {},
+  startLoading: () => { },
+  stopLoading: () => { },
 });
 
 // Hook để sử dụng context dễ dàng
@@ -38,11 +38,11 @@ export const LoadingProvider = ({ children }: { children: ReactNode }) => {
   return (
     <LoadingContext.Provider value={{ loading, startLoading, stopLoading }}>
       {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
           <div className="w-full max-w-md">
-            {/* <!-- Thanh loading --> */}
-            <div className="h-1 w-full bg-gray-700 rounded overflow-hidden">
-              <div className="h-full bg-white animate-[loading-bar_1.5s_infinite_linear]"></div>
+            {/* Thanh loading */}
+            <div className="h-1 w-full bg-gray-300 rounded overflow-hidden">
+              <div className="h-full bg-black animate-[loading-bar_1.5s_infinite_linear]"></div>
             </div>
           </div>
         </div>

@@ -656,7 +656,7 @@ const BillTable = () => {
         pauseOnHover={true}
         draggable={true}
       />
-      <h1>Quản Lý Hóa Đơn</h1>
+      <h1 className="mb-4">Quản Lý Hóa Đơn</h1>
 
       <div style={{ marginBottom: "20px" }}>
         <label>
@@ -771,7 +771,7 @@ const BillTable = () => {
             {currentOrders.map((order) => (
               <tr
                 key={order.id}
-                className="border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer"
+                className="border-b text-black hover:bg-gray-300  cursor-pointer"
                 onClick={() => handleToggleOrderSelection(order.id)} // Xử lý chọn hàng
               >
                 <td className="w-4 p-4">
@@ -834,8 +834,8 @@ const BillTable = () => {
               <button
                 key={page}
                 className={`px-3 py-1 mx-1 rounded ${page === currentPage
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-black"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-black"
                   }`}
                 onClick={() => handlePageChange(page)}
               >

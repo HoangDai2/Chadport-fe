@@ -48,7 +48,7 @@ const DiscountCard = () => {
             };
 
             // Gửi yêu cầu claim voucher
-            const response = await apisphp.post(`/claimVoucher`, { voucher_id: voucherId }, { headers });
+            const response = await apisphp.post(`/get-vouchers-user-client`, { voucher_id: voucherId }, { headers });
             toast.success("Bạn đã lấy Voucher thành công");
 
             // Lưu voucher_id vào localStorage
@@ -94,7 +94,7 @@ const DiscountCard = () => {
                         {vouchers.map((item) => (
                             <div
                                 key={item.id}
-                                className={`mb-[30px] bg-white shadow-md transition-shadow rounded-lg flex w-full border border-gray-200 ${item.is_disabled ? 'opacity-50 pointer-events-none' : 'hover:shadow-lg'
+                                className={`mb-[30px] bg-white shadow-md transition-shadow rounded-lg flex w-full border border-gray-200 'hover:shadow-lg'
                                     }`}
                             >
                                 <div
@@ -151,15 +151,9 @@ const DiscountCard = () => {
                                         </div>
                                         <div>
                                             {!item.is_disabled ? (
-                                                <button onClick={() => handleSubmit(item.id)} type="submit">
-                                                    <a
-                                                        className="group relative inline-flex items-center overflow-hidden rounded bg-black px-8 py-3 text-white focus:outline-none focus:ring active:bg-indigo-500"
-                                                        href="#"
-                                                    >
-                                                        <AiOutlineArrowRight className="absolute -start-full transition-all group-hover:start-4" />
-                                                        <span className="text-sm font-medium transition-all group-hover:ms-4"> Lấy Mã </span>
-                                                    </a>
-                                                </button>
+                                                <div>
+
+                                                </div>
                                             ) : (
                                                 <span className="text-sm font-medium text-gray-500">Voucher đã được nhận</span>
                                             )}

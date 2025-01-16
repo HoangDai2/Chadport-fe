@@ -100,11 +100,6 @@ const HeaderClientC = ({
 
   // hàm này xử lý chuyển hướng đến sản phẩm chi tiết
   const goToProductDetail = async (id: number) => {
-    await axios.post(`http://127.0.0.1:8000/api/log-search`, {
-      id: id,
-    });
-    setIsSearchOpen(false);
-
     navigate(`/shop-details/${id}`);
   };
 
@@ -511,9 +506,6 @@ const HeaderClientC = ({
                           ></i>
                         </button>
                       </a>
-                      <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-black rounded-full">
-                        {carCount}
-                      </span>
                       <div className="site-navigation justify-center items-center inline-flex">
                         {/* Nút 3 gạch hiển thị khi màn hình nhỏ */}
                         <div className="block relative md:hidden">

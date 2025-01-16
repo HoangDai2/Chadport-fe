@@ -93,6 +93,7 @@ import NewOrder from "./admin/pages/OrderAdmin/NewOrder";
 import ViewVoucher from "./admin/pages/Voucher/ViewVoucher";
 import AddVoucher from "./admin/pages/Voucher/AddVoucher";
 import ListVoucherClient from "./pages/VouCherClient/ListVoucherClient";
+import ConTact from "./pages/ConTact";
 function App() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<TProduct[]>([]);
@@ -542,7 +543,10 @@ function App() {
               path="/refund-notification"
               element={<RefundNotification />}
             />
-
+            <Route
+              path="/contact"
+              element={<ConTact />}
+            />
           </Routes>
         </LoadingProvider>
         <Routes>

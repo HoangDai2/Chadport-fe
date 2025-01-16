@@ -219,6 +219,7 @@ function ProductAdd({ onAdd, categories }: Props) {
       // console.log(variant);
       // navigate("/admin/products");
       // window.location.reload();
+
     } catch (error) {
       console.error("Error adding product:", error);
       toast.error("Error adding product!");

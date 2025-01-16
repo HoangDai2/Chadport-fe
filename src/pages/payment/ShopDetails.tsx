@@ -275,6 +275,9 @@ const ShopDetails = ({
             autoClose: 3000,
           }
         );
+        console.log("check tien", response);
+
+
         navigate("/checkout");
       } else {
         toast.error("Không thể thêm vào giỏ hàng, vui lòng thử lại", {
@@ -547,8 +550,8 @@ const ShopDetails = ({
                             <div className="flex items-baseline justify-between">
                               {/* Hiển thị số lượng sản phẩm */}
                               <div className="flex  text-sm font-medium text-gray-700">
-                                <label className="mr-2">Kho Hàng:</label>
-                                {selectedSize && selectedColor ? (
+                                <label className="mr-2">Kho Hàng: {warehouse}</label>
+                                {/* {selectedSize && selectedColor ? (
                                   <span
                                     className={`text-sm font-semibold ${warehouse > 0
                                       ? "text-green-600"
@@ -559,7 +562,7 @@ const ShopDetails = ({
                                   </span>
                                 ) : (
                                   <span className="text-gray-400"></span>
-                                )}
+                                )} */}
                               </div>
 
                               {/* bảng hướng dẫn chọn size */}
@@ -759,7 +762,7 @@ const ShopDetails = ({
                             </div>
                           </div>
 
-                          <div className="product-meta">
+                          {/* <div className="product-meta">
                             <span className="sku-wrapper">
                               SKU: <span className="sku">D2300-3-2-2</span>
                             </span>
@@ -806,133 +809,7 @@ const ShopDetails = ({
                               <i className="fa fa-pinterest" />
                               Pinterest
                             </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* Related Products */}
-                <div className="product-related">
-                  <div className="section-padding">
-                    <div className="section-container p-l-r">
-                      <div className="block block-products slider">
-                        <div className="block-title">
-                          <h2>Related Products</h2>
-                        </div>
-                        <div className="block-content">
-                          <div className="content-product-list slick-wrap">
-                            <div
-                              className="products-list grid"
-                              data-slidestoscroll="true"
-                              data-dots="false"
-                              data-nav={1}
-                              data-columns4={1}
-                              data-columns3={2}
-                              data-columns2={3}
-                              data-columns1={3}
-                              data-columns1440={4}
-                              data-columns={4}
-                            >
-                              <div className="slick-sliders">
-                                {relatedProducts.map((relatedProduct) => (
-                                  <div
-                                    className="item-product slick-slider-item"
-                                    key={relatedProduct.id}
-                                  >
-                                    <div className="items">
-                                      <div className="products-entry clearfix product-wapper">
-                                        <div className="products-thumb">
-                                          <div className="product-lable">
-                                            <div className="hot">Hot</div>
-                                          </div>
-                                          <a
-                                            href={`/shop-details/${relatedProduct.id}`}
-                                          >
-                                            <img
-                                              width={600}
-                                              height={600}
-                                              src={`http://127.0.0.1:8000/storage/${product.image_product}`}
-                                              className="post-image"
-                                              alt={relatedProduct.name}
-                                            />
-                                          </a>
-                                          <div className="product-button">
-                                            <div
-                                              className="cart_default"
-                                              data-title="Add to cart"
-                                            >
-                                              <a
-                                                rel="nofollow"
-                                                // href="#"
-                                                className="product-btn"
-                                              >
-                                                Add to cart
-                                              </a>
-                                            </div>
-                                            <div
-                                              className=""
-                                              data-title="Wishlist"
-                                            >
-                                              <button
-                                                className="product-btn"
-                                                onClick={() =>
-                                                  addToWishlist(relatedProduct)
-                                                }
-                                              >
-                                                Add to wishlist
-                                              </button>
-                                            </div>
-                                            <div
-                                              className="btn-compare"
-                                              data-title="Compare"
-                                            >
-                                              <button className="product-btn">
-                                                Compare
-                                              </button>
-                                            </div>
-                                            <span
-                                              className="product-quickview"
-                                              data-title="Quick View"
-                                            >
-                                              <a
-                                                href="#"
-                                                className="quickview quickview-button"
-                                              >
-                                                Quick View{" "}
-                                                <i className="icon-search" />
-                                              </a>
-                                            </span>
-                                          </div>
-                                        </div>
-                                        <div className="products-content">
-                                          <div className="contents text-center">
-                                            <h3 className="product-title">
-                                              <a
-                                                href={`/shop-details/${relatedProduct.id}`}
-                                              >
-                                                {relatedProduct.name}
-                                              </a>
-                                            </h3>
-                                            <div className="rating">
-                                              <div className="star star-5" />
-                                            </div>
-                                            <span className="tracking-wider text-2xl font-semibold text-gray-900">
-                                              {new Intl.NumberFormat("vi-VN", {
-                                                style: "currency",
-                                                currency: "VND",
-                                              }).format(product.price)}
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                {/* <p>{product.name}</p> */}
-                              </div>
-                            </div>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>

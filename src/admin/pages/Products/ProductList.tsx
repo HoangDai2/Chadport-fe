@@ -44,15 +44,18 @@ function ProductList() {
     const fetchProducts = async (page: number) => {
       try {
         const response = await apisphp.get(`list/products?page=${page}`);
-        setProducts(response.data.data);
+        const sortedProducts = response.data.data.sort((a: any, b: any) => {
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+        setProducts(sortedProducts);
         setCurrentPage(response.data.current_page);
         setLastPage(response.data.last_page);
-        setLoading(true)
+        setLoading(true);
       } catch (error) {
         console.error("Error fetching products:", error);
         toast.error("Error fetching products");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
 

@@ -3,9 +3,13 @@ import { useLocation } from "react-router-dom";
 import TProduct from "../Types/TProduct";
 import apisphp from "../Service/api";
 // import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 type Props = {};
 
 const SearchResults = (props: Props) => {
+  const navigate = useNavigate()
+
   const [products, setProducts] = useState<TProduct[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
 
@@ -41,6 +45,15 @@ const SearchResults = (props: Props) => {
   //     id: products.map((item) => item.id),
   //   });
   // }, []);
+
+  // Điều hướng đến trang chi tiết sản phẩm
+  const goToProductDetail = async (id: number) => {
+    await axios.post(`http://127.0.0.1:8000/api/log-search`, {
+      id: id,
+    });
+
+    navigate(`/shop-details/${id}`);
+  };
 
   return (
     <>
@@ -133,17 +146,48 @@ const SearchResults = (props: Props) => {
                               {filteredProducts.length > 0 ? (
                                 filteredProducts.map((product) => (
                                   <div
+                                    onClick={() =>
+                                      goToProductDetail(product.id)
+                                    }
                                     key={product.id}
-                                    className="col-xl-4 col-lg-4 col-md-6 col-12 product-item"
+                                    className="col-xl-4 col-lg-4 col-md-6 col-12 product-item" style={{ cursor: "pointer" }}
                                   >
                                     <div className="product-item-content">
                                       <img
-                                        src={product.image_product}
+                                        src={`http://127.0.0.1:8000/storage/${product.image_product}`}
                                         alt={product.name}
                                         className="w-100 h-auto"
                                       />
-                                      <p>{product.name}</p>
-                                      <p>₫{product.price}</p>
+                                      <h2 className="text-left product-title">
+                                        <a
+                                        >
+                                          {product.name}
+                                        </a>
+                                      </h2>
+                                      <span className="price flex justify-center items-center space-x-6 ">
+                                        <del className="text-sm text-gray-500 ">
+                                          <span style={{ fontSize: "10px" }}>
+                                            {new Intl.NumberFormat("vi-VN", {
+                                              style: "currency",
+                                              currency: "VND",
+                                            }).format(product.price)}
+                                          </span>
+                                        </del>
+
+                                        <ins className="text-2xl font-bold text-red-600">
+                                          <span
+                                            style={{
+                                              fontSize: "15px",
+                                              color: "#d63838",
+                                            }}
+                                          >
+                                            {new Intl.NumberFormat("vi-VN", {
+                                              style: "currency",
+                                              currency: "VND",
+                                            }).format(product.price_sale)}
+                                          </span>
+                                        </ins>
+                                      </span>
                                     </div>
                                   </div>
                                 ))

@@ -103,9 +103,7 @@ const LoginRegister: React.FC = () => {
         localStorage.setItem("jwt_token", token);
 
         // Điều hướng dựa trên role_id
-        if ([1, 2].includes(userData.role_id)) {
-          navigate("/");
-        } else if (userData.role_id === 3) {
+        if (userData.role_id === 3) {
           // User
           navigate("/");
         } else {
@@ -286,12 +284,11 @@ const LoginRegister: React.FC = () => {
                                         <Field
                                           type="text"
                                           name="firt_name"
-                                          className={`mt-1 p-2 w-full border ${
-                                            errors.firt_name &&
-                                            touched.firt_name
+                                          className={`mt-1 p-2 w-full border ${errors.firt_name &&
+                                              touched.firt_name
                                               ? "border-red-500"
                                               : "border-gray-300"
-                                          } rounded focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                                            } rounded focus:outline-none focus:ring-2 focus:ring-purple-500`}
                                         />
                                         <ErrorMessage
                                           name="firt_name"
@@ -309,12 +306,11 @@ const LoginRegister: React.FC = () => {
                                         <Field
                                           type="text"
                                           name="last_name"
-                                          className={`mt-1 p-2 w-full border ${
-                                            errors.last_name &&
-                                            touched.last_name
+                                          className={`mt-1 p-2 w-full border ${errors.last_name &&
+                                              touched.last_name
                                               ? "border-red-500"
                                               : "border-gray-300"
-                                          } rounded focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                                            } rounded focus:outline-none focus:ring-2 focus:ring-purple-500`}
                                         />
                                         <ErrorMessage
                                           name="last_name"
@@ -333,11 +329,10 @@ const LoginRegister: React.FC = () => {
                                     <Field
                                       type="email"
                                       name="email"
-                                      className={`mt-1 p-2 w-full border ${
-                                        errors.email && touched.email
+                                      className={`mt-1 p-2 w-full border ${errors.email && touched.email
                                           ? "border-red-500"
                                           : "border-gray-300"
-                                      } rounded focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                                        } rounded focus:outline-none focus:ring-2 focus:ring-purple-500`}
                                       placeholder="example@gmail.com"
                                     />
                                     <ErrorMessage
@@ -355,11 +350,10 @@ const LoginRegister: React.FC = () => {
                                     <Field
                                       type="password"
                                       name="password"
-                                      className={`mt-1 p-2 w-full border ${
-                                        errors.password && touched.password
+                                      className={`mt-1 p-2 w-full border ${errors.password && touched.password
                                           ? "border-red-500"
                                           : "border-gray-300"
-                                      } rounded focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                                        } rounded focus:outline-none focus:ring-2 focus:ring-purple-500`}
                                       placeholder="YourPassword123"
                                     />
                                     <ErrorMessage
@@ -399,8 +393,8 @@ const LoginRegister: React.FC = () => {
                                     {loading
                                       ? "Đang xử lý..."
                                       : isLogin
-                                      ? "Đăng nhập"
-                                      : "Đăng ký"}
+                                        ? "Đăng nhập"
+                                        : "Đăng ký"}
                                   </button>
                                 </Form>
                               )}

@@ -17,7 +17,7 @@ import { useLoading } from "../Loadings/LoadinfContext.tsx";
 import DiscountCard from "../VouCherClient/ApplyVoucher.tsx";
 interface Moneys {
   original_total: number
-  total_discounted_amount: number
+  total_discounted_amount?: number
 }
 
 const Checkout = () => {
@@ -307,7 +307,7 @@ const Checkout = () => {
       const vnpayResponse = await apisphp.post(
         "/user/create_paymentVnPay",
         {
-          amount: newmonyvoucher.total_discounted_amount,
+          amount: newmonyvoucher.total_discounted_amount ?? checked?.total_amount,
           order_number,
           order_id,
         },
@@ -1013,12 +1013,25 @@ const Checkout = () => {
 
                     {/* code giảm giá  */}
                     <div className="mb-6">
-                      <label
-                        htmlFor="promoCode"
-                        className="text-left text-sm font-semibold text-gray-700 mb-2 block"
-                      >
-                        VouCher
-                      </label>
+                      <div className="flex items-center justify-between space-x-4">
+                        <label
+                          htmlFor="promoCode"
+                          className="text-sm font-semibold text-gray-700"
+                        >
+                          VouCher
+                        </label>
+                        <a
+                          href="#"
+                          className="text-blue-500 hover:underline"
+                          onClick={(e) => {
+                            e.preventDefault(); // Ngăn mặc định nếu bạn không muốn điều hướng.
+                            openModal();
+                          }}
+                        >
+                          View Mã Giảm Giá
+                        </a>
+                      </div>
+
                       <div className="flex items-center">
                         <input
                           value={promoCode}
@@ -1038,12 +1051,6 @@ const Checkout = () => {
                       </div>
                     </div>
 
-                    <div
-                      className="mt-4 px-4 py-2 bg-black text-white text-center rounded cursor-pointer"
-                      onClick={openModal}
-                    >
-                      Lấy Code
-                    </div>
                     {/* Modal Overlay */}
                     {showModal && (
                       <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">

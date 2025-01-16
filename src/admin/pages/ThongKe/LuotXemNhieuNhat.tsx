@@ -60,18 +60,18 @@ const DonHangCoLuotXemNhieuNhat = () => {
   };
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+    <div className=" rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
         Top 5 sản phẩm có lượt xem nhiều nhất
       </h4>
 
       <div className="mb-4 flex gap-4">
-        <form className="w-full flex items-center gap-4">
+        <form className="w-full flex items-center gap-4 ">
           <div className="flex flex-col items-start gap-1">
             <select
               value={month}
               onChange={handleMonthChange}
-              className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="text-black w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               {[...Array(12)].map((_, i) => (
                 <option key={i + 1} value={i + 1}>
@@ -84,7 +84,7 @@ const DonHangCoLuotXemNhieuNhat = () => {
             <select
               value={year}
               onChange={handleYearChange}
-              className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="text-black w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
               {[...Array(new Date().getFullYear() - 1999)].map((_, i) => (
                 <option key={i} value={new Date().getFullYear() - i}>
@@ -132,7 +132,7 @@ const DonHangCoLuotXemNhieuNhat = () => {
               // Nếu có dữ liệu
               productData.map((product, key) => (
                 <tr
-                  className="border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200"
+                  className=" text-black border-b  hover:bg-gray-200"
                   key={key}
                   onClick={() => openProductDetails(product)}
                 >
@@ -141,12 +141,12 @@ const DonHangCoLuotXemNhieuNhat = () => {
                     <img
                       src={`http://127.0.0.1:8000/storage/${product.image_product}`}
                       alt={product.name}
-                      className="w-12 h-12 object-cover"
+                      className="text-black w-12 h-12 object-cover"
                     />
                   </td>
                   <th
                     scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    className="text-black px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
                     {product.name.length > 20
                       ? `${product.name.substring(0, 20)}....`
@@ -155,9 +155,9 @@ const DonHangCoLuotXemNhieuNhat = () => {
                   <td className="px-6 py-4 text-green-400">
                     {product.price
                       ? new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(Math.ceil(product.price))
+                        style: "currency",
+                        currency: "VND",
+                      }).format(Math.ceil(product.price))
                       : "null"}
                   </td>
                   <td className="px-6 py-4">{product.search_count}</td>
@@ -168,7 +168,7 @@ const DonHangCoLuotXemNhieuNhat = () => {
         </table>
       </div>
 
-      {selectedProduct && (
+      {/* {selectedProduct && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center ">
           <div className="bg-white rounded-lg w-3/4 lg:w-1/2 p-6 overflow-y-auto max-h-[80vh] shadow-lg">
             <h3 className="text-2xl font-semibold mb-6 text-gray-800 mt-10">
@@ -231,7 +231,7 @@ const DonHangCoLuotXemNhieuNhat = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

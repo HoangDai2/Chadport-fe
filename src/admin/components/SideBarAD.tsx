@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../pages/AuthClient/UserContext";
-
+import { FaRegUserCircle } from "react-icons/fa";
 import {
   FaHome,
   FaBookmark,
@@ -155,11 +155,10 @@ const SideBarAD = (props: Props) => {
                     <Link
                       to="/admin/products"
                       onClick={() => handleLinkClick("/admin/products")}
-                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${
-                        activeLink === "/admin/products"
-                          ? "bg-gray-200 text-gray-700 font-semibold"
-                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                      }`}
+                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${activeLink === "/admin/products"
+                        ? "bg-gray-200 text-gray-700 font-semibold"
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                        }`}
                     >
                       View Product
                     </Link>
@@ -169,11 +168,10 @@ const SideBarAD = (props: Props) => {
                     <Link
                       to="/admin/products/add"
                       onClick={() => handleLinkClick("/admin/products/add")}
-                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${
-                        activeLink === "/admin/products/add"
-                          ? "bg-gray-200 text-gray-700 font-semibold"
-                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                      }`}
+                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${activeLink === "/admin/products/add"
+                        ? "bg-gray-200 text-gray-700 font-semibold"
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                        }`}
                     >
                       Add Product
                     </Link>
@@ -217,11 +215,10 @@ const SideBarAD = (props: Props) => {
                     <Link
                       to="/admin/categorieslist"
                       onClick={() => handleLinkClick("/admin/categorieslist")}
-                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${
-                        activeLink === "/admin/categorieslist"
-                          ? "bg-gray-200 text-gray-700 font-semibold"
-                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                      }`}
+                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${activeLink === "/admin/categorieslist"
+                        ? "bg-gray-200 text-gray-700 font-semibold"
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                        }`}
                     >
                       View Categories
                     </Link>
@@ -231,11 +228,10 @@ const SideBarAD = (props: Props) => {
                     <Link
                       to="/admin/categories/add"
                       onClick={() => handleLinkClick("/admin/categories/add")}
-                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${
-                        activeLink === "/admin/categories/add"
-                          ? "bg-gray-200 text-gray-700 font-semibold"
-                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                      }`}
+                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${activeLink === "/admin/categories/add"
+                        ? "bg-gray-200 text-gray-700 font-semibold"
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                        }`}
                     >
                       Add Categories
                     </Link>
@@ -278,11 +274,10 @@ const SideBarAD = (props: Props) => {
                     <Link
                       to="/admin/orders"
                       onClick={() => handleLinkClick("/admin/orders")}
-                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${
-                        activeLink === "/admin/orders"
-                          ? "bg-gray-200 text-gray-700 font-semibold"
-                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                      }`}
+                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${activeLink === "/admin/orders"
+                        ? "bg-gray-200 text-gray-700 font-semibold"
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                        }`}
                     >
                       View Order
                     </Link>
@@ -292,11 +287,10 @@ const SideBarAD = (props: Props) => {
                     <Link
                       to="/admin/orders/bill"
                       onClick={() => handleLinkClick("/admin/orders/bill")}
-                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${
-                        activeLink === "/admin/orders/bill"
-                          ? "bg-gray-200 text-gray-700 font-semibold"
-                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                      }`}
+                      className={`block rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:pl-6 ${activeLink === "/admin/orders/bill"
+                        ? "bg-gray-200 text-gray-700 font-semibold"
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                        }`}
                     >
                       Bill
                     </Link>
@@ -322,25 +316,6 @@ const SideBarAD = (props: Props) => {
               </details>
             </li>
 
-            <li>
-              <details className="group [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700">
-                  <span className="text-sm font-medium flex items-center">
-                    <FaGlobe className="menu-icon mr-2" /> Ranking
-                  </span>
-                </summary>
-              </details>
-            </li>
-
-            <li>
-              <details className="group [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700">
-                  <span className="text-sm font-medium flex items-center">
-                    <FaFileAlt className="menu-icon mr-2" /> Posts
-                  </span>
-                </summary>
-              </details>
-            </li>
           </ul>
         </div>
 
@@ -349,11 +324,7 @@ const SideBarAD = (props: Props) => {
             href="/admin/profileadmin"
             className="flex items-center gap-2 p-4 hover:bg-gray-50"
           >
-            <img
-              alt=""
-              src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-              className="size-10 rounded-full object-cover"
-            />
+            <FaRegUserCircle style={{ fontSize: "35px", color: "black" }} />
 
             <div>
               <p className="text-xs">
